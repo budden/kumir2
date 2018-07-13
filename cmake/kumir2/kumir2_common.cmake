@@ -1,7 +1,12 @@
 find_package(PythonInterp 3.2.0 REQUIRED)
 include(CMakeParseArguments)
 
+if(NOT DEFINED USE_QT)
+    set(USE_QT 4)
+endif(NOT DEFINED USE_QT)
+
 set(MINIMUM_QT5_VERSION 5.3.0)
+set(MINIMUM_QT4_VERSION 4.7.0)
 
 if(DEFINED KUMIR2_DISABLED_SUBDIRS)
 #    message(STATUS "Explicitly disabled subdirs: ${KUMIR2_DISABLED_SUBDIRS}")
@@ -17,7 +22,7 @@ else()
 endif()
 
 if(NOT DEFINED KUMIR2_INSTALL_PREFIX)
-    set(KUMIR2_INSTALL_PREFIX "/usr")
+    set(KUMIR2_INSTALL_PREFIX "/usr/local")
 endif(NOT DEFINED KUMIR2_INSTALL_PREFIX)
 
 function(add_opt_subdirectory SUBDIR_NAME)
@@ -36,14 +41,6 @@ function(add_opt_subdirectory SUBDIR_NAME)
     endif()
 endfunction(add_opt_subdirectory)
 
-if(NOT DEFINED USE_QT)
-    set(USE_QT 4)
-endif(NOT DEFINED USE_QT)
-
-if(NOT USE_QT GREATER 4)
-    message(WARNING "Support for Qt4 will be discontinued soon. Please upgrade to Qt5!")
-endif()
-
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -54,7 +51,7 @@ if(${USE_QT} GREATER 4)
     set(QT_LRELEASE_EXECUTABLE "${_qt5Core_install_prefix}/bin/lrelease")
 else()
     # Find Qt4
-    find_package(Qt4 4.8.0 COMPONENTS QtCore REQUIRED)
+    find_package(Qt4 ${MINIMUM_QT4_VERSION} COMPONENTS QtCore REQUIRED)
     include(${QT_USE_FILE})
 endif()
 
@@ -76,7 +73,7 @@ function(kumir2_use_qt)
         endif()
     endforeach(component)
     if(${USE_QT} GREATER 4)        
-        find_package(Qt5 ${MINIMUM_QT5_VERSION} COMPONENTS ${_QT_COMPONENTS} REQUIRED)
+        find_package(Qt5 ${MINIMUM_QT5_VERSION} QUIET COMPONENTS ${_QT_COMPONENTS} REQUIRED)
         foreach(component ${_QT_COMPONENTS})
             include_directories(${Qt5${component}_INCLUDE_DIRS})
             list(APPEND _QT_LIBRARIES ${Qt5${component}_LIBRARIES})
@@ -84,7 +81,7 @@ function(kumir2_use_qt)
         endforeach(component)
     else()
         set(QT_USE_QTMAIN 1)
-        find_package(Qt4 4.8.0 COMPONENTS ${_QT_COMPONENTS} REQUIRED)
+        find_package(Qt4 ${MINIMUM_QT4_VERSION} QUIET COMPONENTS ${_QT_COMPONENTS} REQUIRED)
         include(${QT_USE_FILE})
         include_directories(${QT_INCLUDE_DIR})
         include_directories("${QT_INCLUDE_DIR}/Qt")
