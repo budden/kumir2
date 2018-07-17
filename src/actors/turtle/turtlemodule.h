@@ -124,24 +124,30 @@ namespace ActorTurtle {
         qreal mPosX,mPosY;
     };
     
-    class TurtleView
-    : public QGraphicsView
+    class TurtleView : public QGraphicsView
     {
         Q_OBJECT
     public:
-        TurtleView( QWidget * parent = 0 ){c_scale=1;pressed=false;press_pos=QPoint();firstResize=true;
-            net=true;smallNetLabel=new QLabel(this);smallNetLabel->hide(); smallNetLabel->setText(trUtf8("Слишком мелкая сетка"));};
-        void setDraw(TurtleModule* draw,QMutex* mutex){DRAW=draw;dr_mutex=mutex;};
-        double zoom()const
-        {return c_scale;};
+        TurtleView(QWidget *parent = 0) {
+			Q_UNUSED(parent);
+			c_scale = 1;
+			pressed = false;
+			press_pos = QPoint();
+			firstResize = true;
+            net = true;
+			smallNetLabel = new QLabel(this);
+			smallNetLabel->hide();
+			smallNetLabel->setText(trUtf8("Слишком мелкая сетка"));
+		}
+
+        void setDraw(TurtleModule *draw,QMutex *mutex) {
+			DRAW = draw;
+			dr_mutex = mutex;
+		}
+        double zoom() const {return c_scale;}
         void setZoom(double zoom);
         void setNet();//RESIZE NET
-
-        bool isNet() const
-        {
-            return net;
-            
-        }
+        bool isNet() const { return net; }
         void forceRedraw()
         {
            // horizontalScrollBar()->setValue(horizontalScrollBar()->value() +10);
@@ -176,12 +182,11 @@ namespace ActorTurtle {
     
     
     
-    class TurtleScene
-    : public QGraphicsScene
+    class TurtleScene : public QGraphicsScene
     {
         Q_OBJECT
     public:
-        TurtleScene ( QObject * parent = 0 ){};
+        TurtleScene(QObject *parent = 0 ) { (void) parent; }
         void drawNet(double startx,double endx,double starty,double endy,QColor color,const double step,const double stepY,bool net,qreal nw,qreal aw);
         void setDraw(TurtleModule* draw,QMutex* mutex){DRAW=draw;dr_mutex=mutex;};
   	

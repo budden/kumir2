@@ -175,10 +175,8 @@ protected:
         if (size==0) {
             if (avalue_->size())
                 avalue_->clear();
-        }
-        else {
+        } else {
             if (size != avalue_->size()) {
-                size_t asize = avalue_->size();
                 avalue_->resize(size);
             }
         }

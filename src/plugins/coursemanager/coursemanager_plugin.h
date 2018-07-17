@@ -20,9 +20,9 @@ class KumZadanie;
 namespace CourseManager {
     
 
-class Plugin
-        : public ExtensionSystem::KPlugin
-        , public Shared::CoursesInterface
+class Plugin :
+    public ExtensionSystem::KPlugin,
+    public Shared::CoursesInterface
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
@@ -36,28 +36,29 @@ public:
     QWidget* settingsEditorPage();
     QList<QMenu*> menus() const;
     QString getText();
-   inline QList<ExtensionSystem::CommandLineParameter> acceptableCommandLineParameters() const
+    QList<ExtensionSystem::CommandLineParameter> acceptableCommandLineParameters() const
     {
         QList<ExtensionSystem::CommandLineParameter> params;
         params.append(ExtensionSystem::CommandLineParameter(true,'w',"work",tr("Work book file"),QVariant::String,false));
         params.append(ExtensionSystem::CommandLineParameter(true,'c',"classbook",tr("Classbook file"),QVariant::String,false));
         params.append(ExtensionSystem::CommandLineParameter(true,'o',"output",tr("Output file"),QVariant::String,false));
         return params;
-    };
-    void setParam(QString paramname,QString param){};
+    }
+
+    void setParam(QString paramname, QString param) {
+        Q_UNUSED(paramname);
+        Q_UNUSED(param);
+    }
     bool startNewTask(QStringList isps,KumZadanie* task);
     void setPreProgram(QVariant param);
     void startProgram(QVariant param,KumZadanie* task);
     void checkNext(KumZadanie* task);
-    void showMW()
-        {
-            mainWindow()->showNormal();
-        }
-    inline void activateCourseFromList(QString file) { loadCource(file); }
-     inline QStringList getListOfCourses() const {
-         QString defaultCur=qApp->property("sharePath").toString()+"/courses/practicum/practicum.kurs.xml;";
-         return mySettings()->value("Courses/LastFiles",defaultCur).toString().split(";",QString::SkipEmptyParts); 
-     }
+    void showMW() { mainWindow()->showNormal(); }
+    void activateCourseFromList(QString file) { loadCource(file); }
+    QStringList getListOfCourses() const {
+         QString defaultCur = qApp->property("sharePath").toString() + "/courses/practicum/practicum.kurs.xml;";
+         return mySettings()->value("Courses/LastFiles", defaultCur).toString().split(";", QString::SkipEmptyParts);
+    }
     void rebuildRescentMenu();
     bool isSafeToQuit();
     void start();

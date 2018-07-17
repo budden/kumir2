@@ -29,8 +29,6 @@
 class pultLogger;
 class GrasshopperPult;
 namespace ActorGrasshopper {
-    
-    
     class GrasshopperModule;
 };
 #define DEFAULT_SIZEX 500
@@ -41,42 +39,34 @@ namespace ActorGrasshopper {
 #define ZOOMMULTIP 20
 
 //--------------------------------------------------------
-class KuznSled:public QGraphicsItem
+class KuznSled : public QGraphicsItem
 {
-      
 public:
-      KuznSled(int start,int fin);
+	KuznSled(int start, int fin);
 
 
-      ~KuznSled(){};
+	~KuznSled() {}
 
-     QRectF boundingRect() const
-     {
-         qreal penWidth = 1;
-         return QRectF(St, -ZOOMMULTIP,
-                       Fn, ZOOMMULTIP);
-     }
+	QRectF boundingRect() const {
+		return QRectF(St, -ZOOMMULTIP, Fn, ZOOMMULTIP);
+	}
 
-     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-                QWidget *widget);
+	void paint(
+		QPainter *painter,
+		const QStyleOptionGraphicsItem *option,
+		QWidget *widget
+	);
 
-     void  setStartFin(int start,int fin)
-		{
-		St=start;
-		Fn=fin;
-		};
-     QPoint start_Fin()
-	{
-	return QPoint(St,Fn);
-	};
-     void setInt(int Int)
-	{
-	Intens=Int;
-	update();
-	};
+    void  setStartFin(int start, int fin) {
+		St = start;
+		Fn = fin;
+	}
+	QPoint start_Fin() { return QPoint(St, Fn); }
+	void setInt(int Int) { Intens = Int; update(); }
+
 private:
-int St,Fn;
-int Intens;
+	int St, Fn;
+	int Intens;
 };
 //_____________________________________________________
 class KumScene: public QGraphicsScene
@@ -192,7 +182,7 @@ public:
  int Fstep,Bstep,Finish;
  GrasshopperPult *Kpult;
 
- ActorGrasshopper::GrasshopperModule * myModule;
+ ActorGrasshopper::GrasshopperModule *myModule;
  public slots:	
         void setSteps(int fwd,int backwd)
         {

@@ -91,9 +91,15 @@ public:
     void setCS(QString cs){CS=cs;};
    KumZadanie task;
     void setup(const QDir & resourcesRoot, ExtensionSystem::SettingsPtr sett);
-    void updateSettings(const QStringList & keys,ExtensionSystem::SettingsPtr sett){settings=sett;};
-     QString getFileName(QString fileName);
-     void setTeacher(bool mode);
+    void updateSettings(
+        const QStringList &keys,
+        ExtensionSystem::SettingsPtr sett
+    ) {
+        Q_UNUSED(keys);
+        settings = sett;
+    }
+    QString getFileName(QString fileName);
+    void setTeacher(bool mode);
     QList<QAction*> getActions();
     QString baseCourseFile()
     {

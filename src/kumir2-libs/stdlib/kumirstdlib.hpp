@@ -940,7 +940,11 @@ public:
         return result;
     }
 
-    static String sprintfReal(real value, Char dot, bool expform, int width, int decimals, char al) {
+    static String sprintfReal(
+        real value, Char dot, bool expform,
+        int width, int decimals, char al
+    ) {
+        (void) dot;
         std::stringstream stream;
         if (0 > decimals && !expform) {
             double absVal = fabs(double(value));
@@ -949,16 +953,13 @@ public:
         }
         if (expform) {
             stream << std::scientific;
-//            stream.precision(2);
-            stream.precision(0>decimals ? 6 : decimals);
-        }
-        else {
+            stream.precision(0 > decimals ? 6 : decimals);
+        } else {
             stream << std::fixed;
             stream.precision(0>decimals ? 6 : decimals);
         }
 
         stream << value;
-
         std::string rpart = stream.str();
         std::string expPart;
 
@@ -1591,88 +1592,97 @@ public:
     }
 #endif
 
-    inline static FileType getConsoleBuffer() {
+    static FileType getConsoleBuffer() {
+            FileType ft;
         if (!consoleInputBuffer) {
             Core::abort(Core::fromUtf8("Консоль не доступна"));
             return FileType();
-        }
-        else {
-            FileType ft;
+        } else {
             ft.valid = true;
             ft.setType(FileType::Console);
             return ft;
         }
     }
 
-    inline static FileType open(const String & shortName, FileType::OpenMode mode, bool remember, FILE* *fh) {
-        const String fileName = getAbsolutePath(shortName);
-        for (std::deque<FileType>::const_iterator it = openedFiles.begin(); it!=openedFiles.end(); ++it) {
-            const FileType & f = (*it);
-            if (f.getName()==fileName) {
-                Core::abort(Core::fromUtf8("Файл уже открыт: ")+fileName);
-                return FileType();
-            }
-        }
-        bool isCorrectName = true;
-        std::string localName;
+	static FileType open(
+		const String &shortName, FileType::OpenMode mode,
+		bool remember, FILE* *fh
+	) {
+		FileType ft;
+		String fileName = getAbsolutePath(shortName);
+		for (std::deque<FileType>::const_iterator it = openedFiles.begin(); it != openedFiles.end(); ++it) {
+			if (it->getName() == fileName) {
+				Core::abort(Core::fromUtf8("Файл уже открыт: ") + fileName);
+				return ft;
+			}
+		}
+
+		bool isCorrectName = true;
 #if !defined(WIN32) && !defined(_WIN32)
-        EncodingError encodingError;
-
-        localName = Coder::encode(UTF8, fileName, encodingError);
-        isCorrectName = NoEncodingError == encodingError;
-
+		EncodingError encodingError;
+		std::string localName = Coder::encode(UTF8, fileName, encodingError);
+		isCorrectName = (NoEncodingError == encodingError);
 #endif
-        if (!isCorrectName) {
-            Kumir::Core::abort(Kumir::Core::fromUtf8("Ошибка открытия файла: имя содержит недопустимый символ"));
-            return FileType();
-        }
-        const char * path = localName.c_str();
+		if (!isCorrectName) {
+			Kumir::Core::abort(Kumir::Core::fromUtf8("Ошибка открытия файла: имя содержит недопустимый символ"));
+			return ft;
+		}
+		const char *path = localName.c_str();
 
 #if defined(WIN32) || defined(_WIN32)
-        const wchar_t * fmode;
-        if (mode==FileType::Read)
-            fmode = L"rb";
-        else if (mode==FileType::Write)
-            fmode = L"wb";
-        else if (mode==FileType::Append)
-            fmode = L"ab";
-        FILE * res = _wfopen(fileName.c_str(), fmode);
-//        _wfopen_s(&res, fileName.c_str(), fmode);
-        const bool file_not_exists = ENOENT==errno;
+		const wchar_t *fmode = L"";
+		switch (mode) {
+		case FileType::Read:
+			fmode = L"rb";
+			break;
+		case FileType::Write:
+			fmode = L"wb";
+			break;
+		case FileType::Append:
+			fmode = L"ab";
+			break;
+		default:
+			Core::abort(Core::fromUtf8("Неправильный режим доступа"));
+		}
+		FILE *res = _wfopen(fileName.c_str(), fmode);
 #else
-        const char * fmode;
-        if (mode==FileType::Read)
-            fmode = "rb";
-        else if (mode==FileType::Write)
-            fmode = "wb";
-        else if (mode==FileType::Append)
-            fmode = "ab";
-        FILE* res = fopen(path, fmode);
-        const bool file_not_exists = ENOENT==errno;
+		const char *fmode = "";
+		switch (mode) {
+		case FileType::Read:
+			fmode = "rb";
+			break;
+		case FileType::Write:
+			fmode = "wb";
+			break;
+		case FileType::Append:
+			fmode = "ab";
+			break;
+		default:
+			Core::abort(Core::fromUtf8("Неправильный режим доступа"));
+		}
+
+		FILE *res = fopen(path, fmode);
 #endif
-        FileType f;
-        if (res==0) {
-            if (file_not_exists) {
-                Core::abort(Core::fromUtf8("Файл не существует: ")+fileName);
-            }
-            else {
-                Core::abort(Core::fromUtf8("Невозможно открыть файл: ")+fileName);
-            }
-        }
-        else {
-            if (mode==FileType::Append)
-                mode = FileType::Write;
-            f.setName(fileName);
-            f.setMode(mode);
-            f.handle = res;
-            f.autoClose = !remember;
-            openedFiles.push_back(f);
-            if (fh) {
-                *fh = res;
-            }
-        }
-        return f;
-    }
+		if (res == 0) {
+			if (ENOENT == errno) {
+				Core::abort(Core::fromUtf8("Файл не существует: ")+fileName);
+			} else {
+				Core::abort(Core::fromUtf8("Невозможно открыть файл: ")+fileName);
+			}
+		} else {
+			if (mode == FileType::Append)
+				mode = FileType::Write;
+			ft.setName(fileName);
+			ft.setMode(mode);
+			ft.handle = res;
+			ft.autoClose = !remember;
+			openedFiles.push_back(ft);
+			if (fh)
+				*fh = res;
+		}
+		return ft;
+	}
+
     inline static void close(const FileType & key) {
         std::deque<FileType>::iterator it = openedFiles.begin();        
         for (; it!=openedFiles.end(); ++it) {
@@ -1894,8 +1904,8 @@ public:
             externalBuffer_ = buffer;
         }
 
-        inline const String & getBuffer() const { return buffer; }
-        inline const StreamType type() const { return streamType_; }
+        const String & getBuffer() const { return buffer; }
+        StreamType type() const { return streamType_; }
 
         void writeRawString(const String & s) {
             if (type() == File) {
@@ -2020,6 +2030,7 @@ public:
             else
                 error_ = err;
         }
+
         inline bool hasError() const {
             if (type() != InternalBuffer) {
                 return Core::getError().length()>0;
@@ -2034,7 +2045,7 @@ public:
         inline bool readRawChar(Char & x) {
             lastCharBuffer_[0] = lastCharBuffer_[1] = lastCharBuffer_[2] = '\0';
             if ( type() == InternalBuffer ) {
-                if (currentPosition_==buffer_.length())
+                if (currentPosition_ == (int) buffer_.length())
                     return false;
                 x = buffer_.at(currentPosition_);
                 currentPosition_ += 1;

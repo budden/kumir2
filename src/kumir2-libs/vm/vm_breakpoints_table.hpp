@@ -59,8 +59,11 @@ private:
 
 // ------------ INLINE IMPLEMENTATION
 
-bool BreakpointsTable::processBreakpointHit(const uint8_t modId, const int lineNo, const BreakpointConditionChecker *conditionChecker)
-{
+bool BreakpointsTable::processBreakpointHit(
+	uint8_t modId, int lineNo,
+	const BreakpointConditionChecker *checker
+) {
+	(void) checker;
     if (-1 == lineNo)
         return false;
 
