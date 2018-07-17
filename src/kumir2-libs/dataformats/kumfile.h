@@ -12,32 +12,35 @@
 
 namespace KumFile {
 
-KUMFILE_EXPORT Shared::Analizer::SourceFileInterface::Data insertTeacherMark(Shared::Analizer::SourceFileInterface::Data & data);
+enum VerifyResult {
+	SignatureMatch,
+	SignatureMismatch,
+	NoSignature,
+	CryptographyNotSupported
+};
+
+
+KUMFILE_EXPORT void insertTeacherMark(
+	Shared::Analizer::SourceFileInterface::Data &data
+);
 
 KUMFILE_EXPORT bool hasCryptographicRoutines();
 KUMFILE_EXPORT void generateKeyPair(
-        const QString & passPhrase,
-        QString& privateKey,
-        QString& publicKey
-        );
+	const QString &passPhrase,
+	QString &privateKey,
+	QString &publicKey
+);
 
 KUMFILE_EXPORT void signHiddenText(
-        Shared::Analizer::SourceFileInterface::Data& data,
-        const QString & privateKey,
-        const QString & passPhrase
-        );
-
-enum VerifyResult {
-    SignatureMatch,
-    SignatureMismatch,
-    NoSignature,
-    CryptographyNotSupported
-};
+	Shared::Analizer::SourceFileInterface::Data &data,
+	const QString &privateKey,
+	const QString &passPhrase
+);
 
 KUMFILE_EXPORT VerifyResult verifyHiddenText(
-        const Shared::Analizer::SourceFileInterface::Data& data,
-        const QString& publicKey
-        );
+	const Shared::Analizer::SourceFileInterface::Data &data,
+	const QString &publicKey
+);
 
 } // namespace KumFile
 

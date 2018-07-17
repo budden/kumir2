@@ -5,8 +5,8 @@
 #include <kumir2/runinterface.h>
 #include <kumir2/generatorinterface.h>
 #include <kumir2/runinterface.h>
-    #include <fstream>
-    #include <iostream>
+#include <fstream>
+#include <iostream>
 
 namespace CourseManager {
 
@@ -324,7 +324,7 @@ void Plugin::setPreProgram(QVariant param)
    Shared::GuiInterface::ProgramSourceText text;
    text.content=analizer->sourceFileHandler()->fromString(param.toString());
    if (analizer->defaultDocumentFileNameSuffix()=="kum") {
-    text.content=KumFile::insertTeacherMark(text.content);
+    KumFile::insertTeacherMark(text.content);
     text.language=Shared::GuiInterface::ProgramSourceText::Kumir;
    }
    else if (analizer->defaultDocumentFileNameSuffix()=="py") {
@@ -357,7 +357,7 @@ bool Plugin::setTextFromFile(QString fname)
     file.close();
     if (fname.endsWith(".kum")) {
         text.language=Shared::GuiInterface::ProgramSourceText::Kumir;
-        text.content=KumFile::insertTeacherMark(text.content);
+        KumFile::insertTeacherMark(text.content);
     }
     else if (fname.endsWith(".py")) {
         text.language = Shared::GuiInterface::ProgramSourceText::Python;
