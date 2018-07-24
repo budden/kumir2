@@ -67,11 +67,10 @@ private /*fields*/:
     QChar rawBufferLastReadChar_;
 };
 
-class SimulatedInputBuffer
-        : public Kumir::AbstractInputBuffer
+class SimulatedInputBuffer : public Kumir::AbstractInputBuffer
 {
 public:
-    inline explicit SimulatedInputBuffer(QTextStream * stream): io_(stream), prevChar_(QChar::Null), lastChar_(QChar::Null) {}
+    explicit SimulatedInputBuffer(QTextStream * stream): io_(stream), prevChar_(QChar::Null), lastChar_(QChar::Null) {}
 
     void clear() _override;
     bool readRawChar(Kumir::Char &ch) _override;

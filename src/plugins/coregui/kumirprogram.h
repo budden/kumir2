@@ -76,7 +76,7 @@ private:
 
 
     void setAllActorsAnimationFlag(bool animationEnabled);
-    bool prepareRunner(Shared::GeneratorInterface::DebugLevel);
+    bool prepareRunner(Shared::DebugLevel);
 
 private /*fields*/:
     enum State { Idle, RegularRun, BlindRun, StepRun, TestingRun } state_;

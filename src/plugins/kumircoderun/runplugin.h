@@ -12,9 +12,9 @@
 namespace KumirCodeRun {
 
 
-class KumirRunPlugin
-        : public ExtensionSystem::KPlugin
-        , public Shared::RunInterface
+class KumirRunPlugin :
+	public ExtensionSystem::KPlugin,
+	public Shared::RunInterface
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
@@ -25,10 +25,10 @@ public:
     explicit KumirRunPlugin();
     ~KumirRunPlugin();
 
-    RunMode currentRunMode() const;
+    Shared::RunMode currentRunMode() const;
     bool canStepOut() const;
     void terminateAndWaitForStopped();
-    bool loadProgram(const RunnableProgram &sourceInfo);
+    bool loadProgram(const Shared::RunnableProgram &sourceInfo);
     bool hasMoreInstructions() const;
     bool hasTestingEntryPoint() const;
     bool hasBreakpointsSupport() const;

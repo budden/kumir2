@@ -91,7 +91,7 @@ QPair<quint32,quint32> KumirRunPlugin::currentColumn() const
     return QPair<quint32,quint32>(pRun_->vm->effectiveColumn().first, pRun_->vm->effectiveColumn().second);
 }
 
-bool KumirRunPlugin::loadProgram(const RunnableProgram &program)
+bool KumirRunPlugin::loadProgram(const Shared::RunnableProgram &program)
 {
     const QString programFileName = program.sourceFileName.isEmpty()
             ? program.executableFileName : program.sourceFileName;
@@ -497,18 +497,18 @@ void KumirRunPlugin::handleThreadFinished()
     pRun_->vm->setConsoleOutputBuffer(nullptr);
     if (pRun_->error().length()>0) {
         done_ = true;
-        emit stopped(Shared::RunInterface::SR_Error);
+        emit stopped(Shared::SR_Error);
     }
     else if (pRun_->hasMoreInstructions() && pRun_->stopped()) {
         done_ = true;
-        emit stopped(Shared::RunInterface::SR_UserTerminated);
+        emit stopped(Shared::SR_UserTerminated);
     }
     else if (pRun_->hasMoreInstructions()) {
-        emit stopped(Shared::RunInterface::SR_UserInteraction);
+        emit stopped(Shared::SR_UserInteraction);
     }
     else {
         done_ = true;
-        emit stopped(Shared::RunInterface::SR_Done);
+        emit stopped(Shared::SR_Done);
     }
 }
 
@@ -519,7 +519,8 @@ void KumirRunPlugin::handleLineChanged(int lineNo, quint32 colStart, quint32 col
 
 void KumirRunPlugin::handleBreakpointHit(const QString &fileName, int lineNo)
 {
-    emit lineChanged(lineNo, 0, 0);
+	Q_UNUSED(fileName);
+	emit lineChanged(lineNo, 0, 0);
 }
 
 
@@ -539,7 +540,7 @@ KumirRunPlugin::~KumirRunPlugin()
         delete common_;
 }
 
-Shared::RunInterface::RunMode KumirRunPlugin::currentRunMode() const
+Shared::RunMode KumirRunPlugin::currentRunMode() const
 {
     return pRun_->currentRunMode();
 }
@@ -715,7 +716,7 @@ QString KumirRunPlugin::initialize(const QStringList &configurationArguments,
     pRun_->setSupportBreakpoints(!noBreakpoints);
     qRegisterMetaType<QVariant::Type>("QVariant::Type");
     qRegisterMetaType< QList<QVariant::Type> >("QList<QVariant::Type>");
-    qRegisterMetaType<Shared::RunInterface::StopReason>("Shared::RunInterface::StopReason");
+    qRegisterMetaType<Shared::StopReason>("Shared::StopReason");
 
     if (configurationArguments.contains("console")) {
         prepareConsoleRun();
@@ -754,7 +755,7 @@ QString KumirRunPlugin::initialize(const QStringList &configurationArguments,
         if (!fileName.isEmpty()) {
             QFile f(fileName);
             if (f.open(QIODevice::ReadOnly)) {
-                RunnableProgram program;
+                Shared::RunnableProgram program;
                 program.executableData = f.readAll();
                 program.executableFileName = fileName;
                 loadProgram(program);

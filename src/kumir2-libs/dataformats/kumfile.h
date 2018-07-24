@@ -21,7 +21,7 @@ enum VerifyResult {
 
 
 KUMFILE_EXPORT void insertTeacherMark(
-	Shared::Analizer::SourceFileInterface::Data &data
+	Shared::Analizer::Data &data
 );
 
 KUMFILE_EXPORT bool hasCryptographicRoutines();
@@ -32,13 +32,13 @@ KUMFILE_EXPORT void generateKeyPair(
 );
 
 KUMFILE_EXPORT void signHiddenText(
-	Shared::Analizer::SourceFileInterface::Data &data,
+	Shared::Analizer::Data &data,
 	const QString &privateKey,
 	const QString &passPhrase
 );
 
 KUMFILE_EXPORT VerifyResult verifyHiddenText(
-	const Shared::Analizer::SourceFileInterface::Data &data,
+	const Shared::Analizer::Data &data,
 	const QString &publicKey
 );
 

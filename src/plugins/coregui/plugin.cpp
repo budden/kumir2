@@ -2,6 +2,7 @@
 #include "switchworkspacedialog.h"
 #include "plugin.h"
 #include "mainwindow.h"
+#include "kumir2/browser_instanceinterface.h"
 #include <kumir2-libs/extensionsystem/pluginmanager.h>
 #include <kumir2-libs/widgets/secondarywindow.h>
 #include "debuggerview.h"
@@ -115,12 +116,12 @@ QString Plugin::initialize(const QStringList & parameters, const ExtensionSystem
 
     qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
 
-    qRegisterMetaType<Shared::Analizer::SourceFileInterface::Data>("KumirFile.Data");
+    qRegisterMetaType<Shared::Analizer::Data>("KumirFile.Data");
 
-    qRegisterMetaType<Shared::GuiInterface::ProgramSourceText::Language>
+    qRegisterMetaType<Shared::ProgramSourceText::Language>
             ("Gui.ProgramSourceText.Language");
 
-    qRegisterMetaType<Shared::GuiInterface::ProgramSourceText>
+    qRegisterMetaType<Shared::ProgramSourceText>
             ("Gui.ProgramSourceText");
 
 
@@ -446,7 +447,6 @@ QString Plugin::initialize(const QStringList & parameters, const ExtensionSystem
         const QString actorName = Shared::actorCanonicalName(actor->localizedModuleName(QLocale::Russian));
         const QString actorObjectName = Shared::actorCanonicalName(actor->asciiModuleName()).replace(" ", "-").toLower();
         l_plugin_actors << actor;
-        QWidget * w = 0;
         const QString actorHelpFile = helpPath + o->pluginSpec().name + ".xml";
         if (!actor->localizedModuleName(QLocale::Russian).startsWith("_") && QFile(actorHelpFile).exists()) {
             actorHelpFiles.append(QUrl::fromLocalFile(actorHelpFile));
@@ -813,7 +813,7 @@ void Plugin::showActorWindow(const QByteArray &asciiName)
 void Plugin::changeGlobalState(ExtensionSystem::GlobalState old, ExtensionSystem::GlobalState state)
 {
     using namespace Shared;    
-    if (state==PluginInterface::GS_Unlocked) {
+    if (state==GS_Unlocked) {
 //        m_kumirStateLabel->setText(tr("Editing"));
         mainWindow_->clearMessage();
         mainWindow_->setFocusOnCentralWidget();
@@ -821,32 +821,32 @@ void Plugin::changeGlobalState(ExtensionSystem::GlobalState old, ExtensionSystem
         _debugger->reset();
         _debugger->setDebuggerEnabled(false);
     }
-    else if (state==PluginInterface::GS_Observe) {
+    else if (state==GS_Observe) {
 //        m_kumirStateLabel->setText(tr("Observe"));
         mainWindow_->showMessage(kumirProgram_->endStatusText());
         mainWindow_->setFocusOnCentralWidget();
         mainWindow_->unlockActions();
 //        debugger_->setDebuggerEnabled(kumirProgram_->endStatus() == KumirProgram::Exception);
-        const RunInterface::RunMode runMode = kumirProgram_->runner()->currentRunMode();
-        _debugger->setDebuggerEnabled(RunInterface::RM_ToEnd != runMode);
+        RunMode runMode = kumirProgram_->runner()->currentRunMode();
+        _debugger->setDebuggerEnabled(RM_ToEnd != runMode);
     }
-    else if (state==PluginInterface::GS_Running) {
+    else if (state==GS_Running) {
 //        m_kumirStateLabel->setText(tr("Running"));
         mainWindow_->clearMessage();
         mainWindow_->lockActions();
         _debugger->setDebuggerEnabled(false);
     }
-    else if (state==PluginInterface::GS_Pause) {
+    else if (state==GS_Pause) {
 //        m_kumirStateLabel->setText(tr("Pause"));
         mainWindow_->lockActions();
-        const RunInterface::RunMode runMode = kumirProgram_->runner()->currentRunMode();
-        _debugger->setDebuggerEnabled(RunInterface::RM_ToEnd != runMode);
+        RunMode runMode = kumirProgram_->runner()->currentRunMode();
+        _debugger->setDebuggerEnabled(RM_ToEnd != runMode);
     }
-    else if (state==PluginInterface::GS_Input) {
+    else if (state==GS_Input) {
 //        m_kumirStateLabel->setText(tr("Pause"));
         mainWindow_->lockActions();
-        const RunInterface::RunMode runMode = kumirProgram_->runner()->currentRunMode();
-        _debugger->setDebuggerEnabled(RunInterface::RM_ToEnd != runMode);
+        RunMode runMode = kumirProgram_->runner()->currentRunMode();
+        _debugger->setDebuggerEnabled(RM_ToEnd != runMode);
     }
     kumirProgram_->switchGlobalState(old, state);
     terminal_->changeGlobalState(old, state);
@@ -904,7 +904,7 @@ void Plugin::start()
             restoreSession();
         }
     }
-    PluginManager::instance()->switchGlobalState(PluginInterface::GS_Unlocked);
+    PluginManager::instance()->switchGlobalState(GS_Unlocked);
     mainWindow_->setupMenuBarContextMenu();
     mainWindow_->show();
     if (fileNameToOpenOnReady_.length() > 0) {
@@ -930,6 +930,7 @@ void Plugin::saveSession() const
 
 void Plugin::setStartTabStyle(const QString &tabStyle)
 {
+	Q_UNUSED(tabStyle);
 #if QT_VERSION >= 0x050000
     int styleBeginImplPos = tabStyle.indexOf("{");
     if (-1 == styleBeginImplPos)
@@ -1109,7 +1110,7 @@ void Plugin::setProgramSource(const ProgramSourceText &source)
     }
 }
 
-GuiInterface::ProgramSourceText Plugin::programSource() const
+ProgramSourceText Plugin::programSource() const
 {
     return mainWindow_->courseManagerProgramSource();
 }

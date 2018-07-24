@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "suggestionswindow.h"
 #include "editor.h"
+#include "kumir2/analizerinterface.h"
 #ifdef Q_OS_UNIX
 #include <unistd.h>
 #endif
@@ -1005,7 +1006,7 @@ void EditorPlane::paintEvent(QPaintEvent *e)
     paintText(&p, e->rect().translated(-offset()));
 
     // Paint structure marks
-    if (editor_->analizer() && Shared::AnalizerInterface::PythonIndents == editor_->analizer()->plugin()->indentsBehaviour()) {
+    if (editor_->analizer() && Shared::PythonIndents == editor_->analizer()->plugin()->indentsBehaviour()) {
         paintProgramStructureLines(&p, e->rect().translated(-offset()));
     }
 
@@ -1489,7 +1490,7 @@ void EditorPlane::keyPressEvent(QKeyEvent *e)
         if (!protecteed) {
             tryCorrectKeyboardLayoutForLastLexem();
             bool addIndent = editor_->analizerPlugin_ &&
-                    Shared::AnalizerInterface::HardIndents != editor_->analizerPlugin_->indentsBehaviour();
+                    Shared::HardIndents != editor_->analizerPlugin_->indentsBehaviour();
             if (!addIndent) {
                 editor_->cursor()->evaluateCommand("\n");
             }
@@ -1524,7 +1525,7 @@ void EditorPlane::keyPressEvent(QKeyEvent *e)
                 int proposedIndent = 4 * editor_->document()->indentAt(editor_->cursor()->row()+1);
 
                 if (!hasTextAfterCursor &&
-                        Shared::AnalizerInterface::PythonIndents ==
+                        Shared::PythonIndents ==
                         editor_->analizerPlugin_->indentsBehaviour())
                 {
                     indentSpaces = qMax(indentSpaces, proposedIndent);
@@ -1541,7 +1542,7 @@ void EditorPlane::keyPressEvent(QKeyEvent *e)
     else if (e->key()==Qt::Key_Backspace && e->modifiers()==0) {
         bool checkForIndent = !editor_->cursor()->hasSelection() &&
                 editor_->analizerPlugin_ &&
-                Shared::AnalizerInterface::HardIndents != editor_->analizerPlugin_->indentsBehaviour();
+                Shared::HardIndents != editor_->analizerPlugin_->indentsBehaviour();
         if (!checkForIndent) {
             editor_->cursor()->evaluateCommand(KeyCommand::Backspace);
         }
@@ -1611,7 +1612,7 @@ void EditorPlane::keyPressEvent(QKeyEvent *e)
     }
     else if (e->key()==Qt::Key_Tab) {
         if (editor_->analizerPlugin_ &&
-                Shared::AnalizerInterface::HardIndents!=editor_->analizerPlugin_->indentsBehaviour()) {
+                Shared::HardIndents!=editor_->analizerPlugin_->indentsBehaviour()) {
             editor_->cursor()->evaluateCommand("    ");
         }
         else if (editor_->analizerInstance_ && editor_->analizerInstance_->helper()) {
@@ -2265,7 +2266,7 @@ void EditorPlane::paintSelection(QPainter *p, const QRect &rect)
     int cw = charWidth();
     bool prevLineSelected = false;
     bool hardIndent = editor_->analizer() &&
-            Shared::AnalizerInterface::HardIndents==editor_->analizerPlugin_->indentsBehaviour();
+            Shared::HardIndents==editor_->analizerPlugin_->indentsBehaviour();
     for (int i=startLine; i<endLine+1; i++) {
         if (i<(int)editor_->document()->linesCount()) {
             int indentSpace = hardIndent ? 2 * cw * editor_->document()->indentAt(i) : 0;
@@ -2669,7 +2670,7 @@ void EditorPlane::paintText(QPainter *p, const QRect &rect)
     for (uint i=startLine; i<=endLine; i++)
     {
         bool hardIndents = editor_->analizer() &&
-                Shared::AnalizerInterface::HardIndents==editor_->analizerPlugin_->indentsBehaviour();
+                Shared::HardIndents==editor_->analizerPlugin_->indentsBehaviour();
 
         // Indent count (in logical levels)
         uint indent = hardIndents ? editor_->document()->indentAt(i) : 0u;
@@ -3056,7 +3057,7 @@ QString EditorPlane::tryCorrectKeyboardLayout(const QString &source) const
 {    
     int lineNo = editor_->cursor_->row();
     int colNo = editor_->cursor_->column();
-    if (editor_->analizerPlugin_->indentsBehaviour()==Shared::AnalizerInterface::HardIndents) {
+    if (editor_->analizerPlugin_->indentsBehaviour()==Shared::HardIndents) {
         colNo -= editor_->document()->indentAt(lineNo) * 2;
     }
     QString context = editor_->document()->textAt(lineNo);

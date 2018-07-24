@@ -44,7 +44,7 @@ QString KumirCodeGeneratorPlugin::initialize(const QStringList &/*configurationA
                                              const ExtensionSystem::CommandLine &runtimeArguments)
 {    
     textMode_ = runtimeArguments.hasFlag('s');
-    DebugLevel debugLevel = LinesOnly;
+    DebugLevel debugLevel = Shared::LinesOnly;
     if (runtimeArguments.value('g').isValid()) {
         int level = runtimeArguments.value('g').toInt();
         level = qMax(0, level);
@@ -57,7 +57,8 @@ QString KumirCodeGeneratorPlugin::initialize(const QStringList &/*configurationA
 
 void KumirCodeGeneratorPlugin::setOutputToText(bool flag)
 {
-    textMode_ = false;
+	Q_UNUSED(flag);
+	textMode_ = false;
 }
 
 void KumirCodeGeneratorPlugin::createPluginSpec()
@@ -83,15 +84,14 @@ void KumirCodeGeneratorPlugin::stop()
 }
 
 void KumirCodeGeneratorPlugin::generateExecutable(
-        const AST::DataPtr tree,
-        QByteArray & out,
-        QString & mimeType,
-        QString & fileSuffix
-        )
-{
+	AST::DataPtr tree,
+	QByteArray &out,
+	QString &mimeType,
+	QString &fileSuffix
+) {
     Data data;
 
-    QList<AST::ModulePtr> & modules = tree->modules;
+    QList<AST::ModulePtr> &modules = tree->modules;
 
     d->reset(tree, &data);
     AST::ModulePtr userModule, teacherModule;
@@ -107,7 +107,7 @@ void KumirCodeGeneratorPlugin::generateExecutable(
         else {
             d->addModule(tree->modules[i]);
         }
-    }    
+    }
     linkedModule->impl.globals = userModule->impl.globals;
     linkedModule->impl.initializerBody = userModule->impl.initializerBody;
     linkedModule->impl.algorhitms = userModule->impl.algorhitms;

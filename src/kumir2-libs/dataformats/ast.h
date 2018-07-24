@@ -2,11 +2,10 @@
 #define AST_H
 
 #include "ast_module.h"
+#include "astext.h"
 
 #include <QList>
 #include <QDateTime>
-#include <QSharedPointer>
-#include <QWeakPointer>
 
 #undef ABSTRACTSYNTAXTREE_EXPORT
 #ifdef DATAFORMATS_LIBRARY
@@ -17,19 +16,18 @@
 
 namespace AST {
 
-typedef QSharedPointer<struct Data> DataPtr;
 
 struct ABSTRACTSYNTAXTREE_EXPORT Data
 {
-    QList<ModulePtr> modules;
-    QDateTime lastModified;
+	QList<ModulePtr> modules;
+	QDateTime lastModified;
 
-    explicit Data();
-    explicit Data(const DataPtr src);
+	explicit Data();
+	explicit Data(DataPtr src);
 
-
-    AST::ModulePtr findModuleByType(const ModuleType moduleType) const;
+	AST::ModulePtr findModuleByType(ModuleType moduleType) const;
 };
+
 
 }
 

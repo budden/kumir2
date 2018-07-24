@@ -5,7 +5,7 @@
 
 //Inserts |#%% if needed.
 void KumFile::insertTeacherMark(
-	Shared::Analizer::SourceFileInterface::Data &data
+	Shared::Analizer::Data &data
 ) {
 	static const QRegExp teacherMark("(^|\\n)\\|#%%");
 	static const QRegExp speclAlg(QString::fromUtf8("^|\\s*алг\\s*(\\S\\S\\S)?\\s*@"));
@@ -67,7 +67,7 @@ void KumFile::generateKeyPair(
 }
 
 void KumFile::signHiddenText(
-	Shared::Analizer::SourceFileInterface::Data &data,
+	Shared::Analizer::Data &data,
 	const QString &privateKey,
 	const QString &passPhrase
 ) {
@@ -85,7 +85,7 @@ void KumFile::signHiddenText(
 }
 
 KumFile::VerifyResult KumFile::verifyHiddenText(
-	const Shared::Analizer::SourceFileInterface::Data &data,
+	const Shared::Analizer::Data &data,
 	const QString &publicKey
 ) {
 #ifdef HAS_QCA

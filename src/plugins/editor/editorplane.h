@@ -11,7 +11,7 @@
 #endif
 
 #include <kumir2/lexemtype.h>
-#include <kumir2/analizerinterface.h>
+#include <kumir2/analizer_helperinterface.h>
 
 
 namespace Editor {

@@ -24,7 +24,7 @@ struct Lexem;
 
 namespace KumirCodeGenerator {
 
-typedef Shared::GeneratorInterface::DebugLevel DebugLevel;
+typedef Shared::DebugLevel DebugLevel;
 struct ConstValue {
     QVariant value;
     QList<Bytecode::ValueType> baseType;

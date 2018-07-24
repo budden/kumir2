@@ -34,7 +34,7 @@ Run::Run(QObject *parent) :
     breakHitMutex_ = new QMutex;
     breakHitFlag_ = false;
     ignoreLineChangeFlag_ = false;
-    _runMode = Shared::RunInterface::RM_ToEnd;
+    _runMode = Shared::RM_ToEnd;
     stdInBuffer_ = 0;
     supportBreakpoints_ = true;
 
@@ -75,7 +75,7 @@ void Run::runStepOver()
     stepDoneFlag_ = false;
     stoppingFlag_ = false;
     breakHitFlag_ = false;
-    _runMode = Shared::RunInterface::RM_StepOver;
+    _runMode = Shared::RM_StepOver;
     vm->setNextCallStepOver();
     start();
 }
@@ -84,7 +84,7 @@ void Run::runStepIn()
 {
     stepDoneFlag_ = false;
     breakHitFlag_ = false;
-    _runMode = Shared::RunInterface::RM_StepIn;
+    _runMode = Shared::RM_StepIn;
     vm->setNextCallInto();
     start();
 }
@@ -96,7 +96,7 @@ void Run::runToEnd()
     breakHitFlag_ = false;
     ignoreLineChangeFlag_ = false;
     emit lineChanged(-1, 0u, 0u);
-    _runMode = Shared::RunInterface::RM_StepOut;
+    _runMode = Shared::RM_StepOut;
     vm->setNextCallToEndOfContext();
     start();
 }
@@ -106,7 +106,7 @@ void Run::runBlind()
     stoppingFlag_ = false;
     breakHitFlag_ = false;
     ignoreLineChangeFlag_ = false;
-    _runMode = Shared::RunInterface::RM_ToEnd;
+    _runMode = Shared::RM_ToEnd;
     vm->setDebugOff(true);
     vm->setNextCallToEnd();
     start();
@@ -114,7 +114,7 @@ void Run::runBlind()
 
 void Run::runContinuous()
 {
-    _runMode = Shared::RunInterface::RM_ToEnd;
+    _runMode = Shared::RM_ToEnd;
     stoppingFlag_ = false;
     breakHitFlag_ = false;
     ignoreLineChangeFlag_ = false;
@@ -127,7 +127,7 @@ void Run::runInCurrentThread()
     stoppingFlag_ = false;
     breakHitFlag_ = false;
     ignoreLineChangeFlag_ = false;
-    _runMode = Shared::RunInterface::RM_ToEnd;
+    _runMode = Shared::RM_ToEnd;
     vm->setDebugOff(true);
     vm->setNextCallToEnd();
     run();
@@ -209,7 +209,7 @@ void Run::debuggerNoticeOnBreakpointHit(const String &filename, const quint32 li
     breakHitFlag_ = true;
     ignoreLineChangeFlag_ = true;
     breakHitMutex_->unlock();
-    _runMode = Shared::RunInterface::RM_StepOver;
+    _runMode = Shared::RM_StepOver;
     vm->setNextCallStepOver();
     emit breakpointHit(QString::fromStdWString(filename), lineNo);
 }
@@ -266,32 +266,24 @@ bool Run::clearMargin(int from, int to)
 
 bool Run::mustStop() const
 {
-    QMutexLocker l1(stoppingMutex_);
-    QMutexLocker l2(stepDoneMutex_);
-    QMutexLocker l3(breakHitMutex_);
+	QMutexLocker l1(stoppingMutex_);
+	QMutexLocker l2(stepDoneMutex_);
+	QMutexLocker l3(breakHitMutex_);
 
+	if (vm->error().length() > 0)
+		return true;
 
-    if (vm->error().length()>0) {        
-        return true;
-    }
+	if (stoppingFlag_)
+		return true;
 
-    if (stoppingFlag_) {
-        return true;
-    }
+	if (breakHitFlag_)
+		return true;
 
-    if (breakHitFlag_) {
-        return true;
-    }
-
-    if (_runMode==Shared::RunInterface::RM_StepOut) {
-        return algDoneFlag_;
-    }
-    else if (_runMode!=Shared::RunInterface::RM_ToEnd) {
-        return stepDoneFlag_;
-    }
-    else {
-        return false;
-    }
+	if (_runMode == Shared::RM_StepOut)
+		return algDoneFlag_;
+	if (_runMode != Shared::RM_ToEnd)
+		return stepDoneFlag_;
+	return false;
 }
 
 void Run::handleAlgorhitmDone(int lineNo, quint32 colStart, quint32 colEnd)
@@ -307,7 +299,7 @@ void Run::handleAlgorhitmDone(int lineNo, quint32 colStart, quint32 colEnd)
 
 void Run::handlePauseRequest()
 {
-    _runMode = Shared::RunInterface::RM_StepOver;
+    _runMode = Shared::RM_StepOver;
     vm->setNextCallStepOver();
     vm->setDebugOff(false);
 }
@@ -359,7 +351,7 @@ void Run::run()
     }
 //    bool wasError = vm->error().length()>0;
     // Unclosed files is an error only if program reached end
-    bool unclosedFilesIsNotError = stoppingFlag_ || vm->hasMoreInstructions();
+    // bool unclosedFilesIsNotError = stoppingFlag_ || vm->hasMoreInstructions();
     // Must close all files if program reached end or user terminated
     bool programFinished = stoppingFlag_ || !vm->hasMoreInstructions() || vm->error().length();
 //    __check_for_unclosed_files__st_funct(unclosedFilesIsNotError, closeUnclosedFiles);

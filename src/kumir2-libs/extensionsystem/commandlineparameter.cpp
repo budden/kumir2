@@ -6,20 +6,21 @@ namespace ExtensionSystem {
 
 
 CommandLineParameter::CommandLineParameter(
-        bool allowInGui,
-        const QChar &shortName,
-        const QString &longName,
-        const QString &description,
-        QVariant::Type acceptType,
-        bool required)
-    : allowInGui_(allowInGui)
-    , shortName_(shortName)
-    , longName_(longName)
-    , value_(QVariant::Invalid)
-    , description_(description)
-    , acceptValue_(true)
-    , valueRequired_(required)
-    , acceptType_(acceptType)
+	bool allowInGui,
+	const QChar &shortName,
+	const QString &longName,
+	const QString &description,
+	QVariant::Type acceptType,
+	bool required
+) :
+    allowInGui_(allowInGui),
+	shortName_(shortName),
+	longName_(longName),
+	value_(QVariant::Invalid),
+	description_(description),
+	acceptValue_(true),
+	valueRequired_(required),
+	acceptType_(acceptType)
 {
 }
 
@@ -39,16 +40,17 @@ CommandLineParameter::CommandLineParameter(
 {
 }
 
-CommandLineParameter::CommandLineParameter(const CommandLineParameter &other)
-    : allowInGui_(other.allowInGui_)
-    , shortName_(other.shortName_)
-    , longName_(other.longName_)
-    , value_(other.value_)
-    , shortDescription_(other.shortDescription_)
-    , description_(other.description_)
-    , acceptValue_(other.acceptValue_)
-    , valueRequired_(other.valueRequired_)
-    , acceptType_(other.acceptType_)
+CommandLineParameter::CommandLineParameter(const CommandLineParameter &p) :
+	// QObject(), // Let issues a warning
+	allowInGui_(p.allowInGui_),
+	shortName_(p.shortName_),
+	longName_(p.longName_),
+	value_(p.value_),
+	shortDescription_(p.shortDescription_),
+	description_(p.description_),
+	acceptValue_(p.acceptValue_),
+	valueRequired_(p.valueRequired_),
+	acceptType_(p.acceptType_)
 {
 }
 

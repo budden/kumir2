@@ -1650,7 +1650,7 @@ namespace ActorRobot {
      * 0< - Ошибка в строке
      * 10 - Ошибки основного прогона
      */
-    const int RoboField::loadFromDataStream(QIODevice * l_File)
+    int RoboField::loadFromDataStream(QIODevice *l_File)
     {
         
         //destroyField();
@@ -2166,7 +2166,7 @@ namespace ActorRobot {
      * 0< - Ошибка в строке
      * 10 - Ошибки основного прогона
      */
-    const int RoboField::loadFromFile(const QString& fileName)
+    int RoboField::loadFromFile(const QString &fileName)
     {
         
         //destroyField();
@@ -4327,10 +4327,10 @@ void RobotModule::reset()
 }
 
     void RobotModule::changeGlobalState(ExtensionSystem::GlobalState old, ExtensionSystem::GlobalState current){
-        using Shared::PluginInterface;
+        using namespace Shared;
     qDebug()<<"RobotModuleBase::changeGlobalState";
         view->setViewportUpdateMode (QGraphicsView::SmartViewportUpdate);
-        if(current==PluginInterface::GS_Running)
+        if(current==GS_Running)
           {
               view->setViewportUpdateMode (QGraphicsView::NoViewportUpdate);
               m_actionRobotRevertEnvironment->setEnabled(false);
@@ -4341,7 +4341,7 @@ void RobotModule::reset()
               m_actionRobotEditEnvironment->setEnabled(false);
               m_actionRobotNewEnvironment->setEnabled(false);
           }
-        if(current==PluginInterface::GS_Unlocked || current==PluginInterface::GS_Observe)
+        if(current==GS_Unlocked || current==GS_Observe)
         {
             m_actionRobotRevertEnvironment->setEnabled(true);
             m_actionRobotLoadEnvironment->setEnabled(true);

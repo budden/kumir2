@@ -51,9 +51,11 @@ void KumirAnalizerPlugin::createPluginSpec()
 }
 
 
-QString KumirAnalizerPlugin::initialize(const QStringList &configurationArguments,
-                                        const ExtensionSystem::CommandLine &runtimeArguments)
-{
+QString KumirAnalizerPlugin::initialize(
+	const QStringList &configurationArguments,
+	const ExtensionSystem::CommandLine &runtimeArguments
+) {
+	Q_UNUSED(runtimeArguments);
     QLocale::Language language = QLocale::Russian;
 
 //    Analizer::setModuleAlwaysAvailable(QString::fromUtf8("Стандартные функции"));

@@ -183,8 +183,8 @@ bool Term::eventFilter(QObject *obj, QEvent *evt)
 
 void Term::changeGlobalState(ExtensionSystem::GlobalState , ExtensionSystem::GlobalState current)
 {
-    using Shared::PluginInterface;
-    if (current==PluginInterface::GS_Unlocked || current==PluginInterface::GS_Observe) {
+    using namespace Shared;
+    if (current==GS_Unlocked || current==GS_Observe) {
         a_saveAll->setEnabled(sessions_.size()>0);
         a_saveLast->setEnabled(sessions_.size()>0);
         a_copyAll->setEnabled(sessions_.size()>0);

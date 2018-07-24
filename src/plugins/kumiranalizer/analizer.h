@@ -1,9 +1,7 @@
 #ifndef ANALIZER_H
 #define ANALIZER_H
 
-#include <kumir2-libs/dataformats/lexem.h>
 #include "statement.h"
-#include <kumir2/lexemtype.h>
 #include <kumir2-libs/dataformats/ast.h>
 #include <kumir2/analizerinterface.h>
 #include <kumir2/actorinterface.h>
@@ -82,9 +80,9 @@ public slots:
     QStringList imports() const;
     QString createImportStatementLine(const QString &importName) const;
 
-    const AST::DataPtr abstractSyntaxTree() const;
+    AST::DataPtr abstractSyntaxTree() const;
 
-    const AST::ModulePtr findModuleByLine(int lineNo) const;
+    AST::ModulePtr findModuleByLine(int lineNo) const;
 
     QString suggestFileName() const;
     QRegExp lineCommentStartLexemPattern() const;

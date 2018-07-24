@@ -27,7 +27,7 @@ template <typename T> std::deque<T>& operator<<(std::deque<T> & vec, const T & v
 Generator::Generator(QObject *parent)
     : QObject(parent)
     , byteCode_(nullptr)
-    , debugLevel_(Shared::GeneratorInterface::LinesAndVariables)
+    , debugLevel_(Shared::LinesAndVariables)
 {   
 }
 
@@ -866,7 +866,7 @@ void Generator::addFunction(int id, int moduleId, Bytecode::ElemType type, const
         argHandle << l;
     }
 
-    if (alg->impl.endLexems.size()>0 && debugLevel_==GeneratorInterface::LinesAndVariables) {
+    if (alg->impl.endLexems.size()>0 && debugLevel_==LinesAndVariables) {
 
         Bytecode::Instruction clearmarg;
         clearmarg.type = Bytecode::CLEARMARG;
@@ -880,7 +880,7 @@ void Generator::addFunction(int id, int moduleId, Bytecode::ElemType type, const
     ctlOn.arg = 0x0001;
     ctlOff.arg = 0x0000;
 
-    if (debugLevel_==GeneratorInterface::LinesAndVariables)
+    if (debugLevel_== LinesAndVariables)
         argHandle << ctlOn;
 
     for (int i=alg->header.arguments.size()-1; i>=0; i--) {
@@ -930,7 +930,7 @@ void Generator::addFunction(int id, int moduleId, Bytecode::ElemType type, const
         argHandle << err;
     }
 
-    if (debugLevel_==GeneratorInterface::LinesAndVariables)
+    if (debugLevel_== LinesAndVariables)
         argHandle << ctlOff;
 
     QList<Bytecode::Instruction> pre = instructions(moduleId, id, 0, alg->impl.pre);
@@ -1134,7 +1134,7 @@ void Generator::findFunction(const AST::AlgorithmPtr alg, quint8 &module, quint1
 QList<Bytecode::Instruction> Generator::makeLineInstructions(const QList<AST::LexemPtr> &lexems) const
 {
     QList<Bytecode::Instruction> result;
-    if (debugLevel_ != GeneratorInterface::NoDebug) {
+    if (debugLevel_ != NoDebug) {
         Bytecode::Instruction lineNoInstruction, lineColInstruction;
         lineNoInstruction.type = lineColInstruction.type = Bytecode::LINE;
         lineNoInstruction.lineSpec = Bytecode::LINE_NUMBER;
@@ -1847,7 +1847,7 @@ void Generator::LOOP(int modId, int algId,
     swreg.registerr = level * 5;
 
     Bytecode::Instruction clmarg;
-    if (st->loop.endLexems.size()>0 && debugLevel_==GeneratorInterface::LinesAndVariables) {
+    if (st->loop.endLexems.size()>0 && debugLevel_== LinesAndVariables) {
         clmarg.type = Bytecode::CLEARMARG;
         clmarg.arg = st->loop.endLexems[0]->lineNo;
     }
@@ -1873,7 +1873,7 @@ void Generator::LOOP(int modId, int algId,
             result << a;
 
             if (st->lexems.size() > 0 && st->lexems.first()->lineNo!=-1 &&
-                    debugLevel_==GeneratorInterface::LinesAndVariables)
+                    debugLevel_== LinesAndVariables)
             {
                 if (st->loop.type==AST::LoopWhile) {
                     // Show condition at margin only in case if
@@ -1888,7 +1888,7 @@ void Generator::LOOP(int modId, int algId,
             result << a;
 
             if (st->lexems.size() > 0 && st->lexems.first()->lineNo!=-1 &&
-                    debugLevel_==GeneratorInterface::LinesAndVariables)
+                    debugLevel_== LinesAndVariables)
             {
                 result << clmarg;
                 result << swreg;
@@ -1897,7 +1897,7 @@ void Generator::LOOP(int modId, int algId,
         else {
 
             if (st->lexems.size() > 0 && st->lexems.first()->lineNo!=-1 &&
-                    debugLevel_==GeneratorInterface::LinesAndVariables) {
+                    debugLevel_== LinesAndVariables) {
                 result << clmarg;
             }
         }
@@ -1936,7 +1936,7 @@ void Generator::LOOP(int modId, int algId,
 
         result += makeLineInstructions(st->lexems);
         if (st->lexems.size() > 0 && st->lexems.first()->lineNo!=-1 &&
-                 debugLevel_==GeneratorInterface::LinesAndVariables) {
+                 debugLevel_== LinesAndVariables) {
             result << clmarg;
         }
 
@@ -1975,7 +1975,7 @@ void Generator::LOOP(int modId, int algId,
 
         // Show counter value at margin
         if (st->lexems.size() > 0 && st->lexems.first()->lineNo!=-1 &&
-                 debugLevel_==GeneratorInterface::LinesAndVariables) {
+                 debugLevel_== LinesAndVariables) {
            result << swreg;
         }
     }
@@ -2080,7 +2080,7 @@ void Generator::LOOP(int modId, int algId,
         result += makeLineInstructions(st->lexems);
 
         if (st->lexems.size() > 0 && st->lexems.first()->lineNo!=-1 &&
-                debugLevel_==GeneratorInterface::LinesAndVariables) {
+                debugLevel_== LinesAndVariables) {
             result << clmarg;
         }
 
@@ -2121,7 +2121,7 @@ void Generator::LOOP(int modId, int algId,
         // Show counter value at margin
         swreg.registerr = 0;
         if (st->lexems.size() > 0 && st->lexems.first()->lineNo!=-1 &&
-                debugLevel_==GeneratorInterface::LinesAndVariables) {
+                debugLevel_== LinesAndVariables) {
             result << swreg;
         }
         endJzIp = result.size();
@@ -2129,7 +2129,7 @@ void Generator::LOOP(int modId, int algId,
         e.registerr = 0;
         result << e;
     }    
-    else if (debugLevel_!=GeneratorInterface::NoDebug) {
+    else if (debugLevel_!= NoDebug) {
         result += makeLineInstructions(st->loop.endLexems);
     }
 

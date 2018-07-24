@@ -15,11 +15,9 @@
 
 namespace Editor {
 
-using Shared::AnalizerInterface;
-
 struct TextLine
 {
-    inline explicit TextLine() {
+    explicit TextLine() {
         indentStart = indentEnd = 0;
         lineEndSelected = false;
         changed = false;
@@ -92,13 +90,13 @@ public:
     inline void setHidden(int lineNo, bool v) { data_[lineNo].hidden = v; }
     int hiddenLineStart() const;
     inline uint linesCount() const { return uint(data_.size()); }
-    Shared::Analizer::SourceFileInterface::Data toKumFile() const;
+    Shared::Analizer::Data toKumFile() const;
     QString toHtml(int fromLine = -1, int toLine = -1) const;
     QString lineToHtml(int lineNo) const;
     QByteArray toRtf(uint fromLine, uint toLine) const;
-    void setKumFile(const Shared::Analizer::SourceFileInterface::Data & data_, bool showHiddenLines);
+    void setKumFile(const Shared::Analizer::Data & data_, bool showHiddenLines);
     void setPlainText(const QString & data_);
-    inline const QString& textAt(uint index) const {
+    const QString& textAt(uint index) const {
         if (index < uint(data_.size())) {
             return data_.at(index).text;
         }
@@ -159,7 +157,7 @@ private:
     QList<TextLine> data_;
     QString hiddenText_;
     bool wasHiddenTextFlag_;
-    AnalizerInterface::SyntaxHighlightBehaviour _syntaxHighlightBehaviour;
+    Shared::SyntaxHighlightBehaviour _syntaxHighlightBehaviour;
 };
 
 }

@@ -298,7 +298,7 @@ function(kumir2_add_actor)
 
 endfunction(kumir2_add_actor)
 
-function(kumir2_add_launcher)    
+function(kumir2_add_launcher)
     cmake_parse_arguments(PARSED_ARGS "" "NAME;SPLASHSCREEN;CONFIGURATION;WINDOW_ICON;APP_ICON_NAME;X_ICONS_DIR;WIN_ICONS_DIR;X_NAME;X_NAME_ru;X_CATEGORIES;APP_NAME;APP_NAME_ru;VENDOR_NAME;VENDOR_NAME_ru;APP_VERSION;APP_LICENSE;APP_LICENSE_ru;APP_ABOUT;APP_ABOUT_ru" "" ${ARGN})
     if(EXISTS "${CMAKE_SOURCE_DIR}/src/app/kumir2-launcher.cpp")
         set(LAUNCHER_SOURCES "${CMAKE_SOURCE_DIR}/src/app/kumir2-launcher.cpp")

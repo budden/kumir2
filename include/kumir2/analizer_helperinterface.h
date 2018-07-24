@@ -1,8 +1,7 @@
 #ifndef ANALIZER_HELPERINTERFACE_H
 #define ANALIZER_HELPERINTERFACE_H
 
-#include <kumir2-libs/dataformats/lexem.h>
-#include <kumir2-libs/dataformats/ast.h>
+#include "kumir2/lexemtype.h"
 
 #include <QString>
 #include <QList>
@@ -91,7 +90,9 @@ public:
 } }
 
 
-Q_DECLARE_INTERFACE(Shared::Analizer::HelperInterface,
-                    "kumir2.Analizer.HelperInterface")
+Q_DECLARE_INTERFACE(
+	Shared::Analizer::HelperInterface,
+	"kumir2.Analizer.HelperInterface"
+)
 
 #endif // ANALIZER_HELPERINTERFACE_H

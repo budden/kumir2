@@ -1,6 +1,8 @@
 #include "editcommands.h"
 #include "textdocument.h"
 #include "textcursor.h"
+#include "kumir2/analizerinterface.h"
+#include "kumir2/analizer_instanceinterface.h"
 
 namespace Editor {
 
@@ -30,7 +32,7 @@ void InsertCommand::redo()
     cursorRow = cursor->row();
     cursorCol = cursor->column();
     bool hardIndents = analizer &&
-            Shared::AnalizerInterface::HardIndents==analizer->plugin()->indentsBehaviour();
+            Shared::HardIndents==analizer->plugin()->indentsBehaviour();
     doc->insertText(text, analizer, line, pos, blankLines, blankChars);
     QStringList lines = text.split("\n", QString::KeepEmptyParts);
     if (lines.size()>1) {

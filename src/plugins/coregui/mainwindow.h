@@ -2,6 +2,7 @@
 #define COREGUI_MAINWINDOW_H
 
 #include "plugin.h"
+#include "kumir2/analizerinterface.h"
 #include <kumir2-libs/widgets/dockwindowplace.h>
 #include <kumir2-libs/widgets/secondarywindow.h>
 #include <kumir2-libs/widgets/multipagedialog.h>
@@ -16,7 +17,7 @@
 #endif
 
 namespace ExtensionSystem {
-    class VisualComponent;
+	class VisualComponent;
 }
 
 namespace CoreGUI {
@@ -91,9 +92,9 @@ public slots:
     inline void loadFromUrl(const QString &s) { loadFromUrl(QUrl::fromLocalFile(s), true); }
     class TabWidgetElement * loadFromUrl(const QUrl & url, bool addToRecentFiles);
     class TabWidgetElement * loadFromCourseManager(
-            const Shared::GuiInterface::ProgramSourceText &data
+            const Shared::ProgramSourceText &data
             );
-    Shared::GuiInterface::ProgramSourceText courseManagerProgramSource() const;
+    Shared::ProgramSourceText courseManagerProgramSource() const;
     bool saveCurrentFile();
     bool saveCurrentFileAs();
     bool saveCurrentFileTo(const QString & fileName);

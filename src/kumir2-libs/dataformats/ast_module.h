@@ -30,8 +30,6 @@ typedef QSharedPointer<struct Variable> VariablePtr;
 
 typedef QSharedPointer<struct Statement> StatementPtr;
 
-typedef QSharedPointer<struct Data> DataPtr;
-
 enum ModuleType {
 
     /** User module */

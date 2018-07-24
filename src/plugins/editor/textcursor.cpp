@@ -5,6 +5,7 @@
 #include "editcommands.h"
 #include <kumir2-libs/extensionsystem/pluginmanager.h>
 #include "settingspage.h"
+#include "kumir2/analizerinterface.h"
 
 namespace Editor {
 
@@ -406,7 +407,7 @@ void TextCursor::evaluateCommand(const KeyCommand &command)
                 QString textToInsert = data.text;
                 bool removeLeadingSpaces = false;
                 if (editor_->analizer() &&
-                        Shared::AnalizerInterface::HardIndents==editor_->analizerPlugin_->indentsBehaviour())
+                        Shared::HardIndents==editor_->analizerPlugin_->indentsBehaviour())
                 {
                     if (editor_->analizer()) {
                         normalizePlainText(textToInsert);
@@ -546,16 +547,16 @@ void TextCursor::evaluateCommand(const KeyCommand &command)
             }
         }
     }
-    if (ExtensionSystem::PluginManager::instance()->currentGlobalState()==PluginInterface::GS_Observe
+    if (ExtensionSystem::PluginManager::instance()->currentGlobalState()==GS_Observe
             && command.type & KeyCommand::CommandModifiesTextMask
             )
-        ExtensionSystem::PluginManager::instance()->switchGlobalState(PluginInterface::GS_Unlocked);
+        ExtensionSystem::PluginManager::instance()->switchGlobalState(GS_Unlocked);
 }
 
 void TextCursor::moveTo(int row, int col)
 {
     bool hardIndents = editor_->analizer() &&
-            Shared::AnalizerInterface::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
+            Shared::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
     visibleFlag_ = false;
     updateRequest();
     row_ = qMax(0, row);
@@ -575,7 +576,7 @@ void TextCursor::moveTo(int row, int col)
 void TextCursor::selectRangeText(int fromRow, int fromCol, int toRow, int toCol)
 {
     bool hardIndents = editor_->analizer() &&
-            Shared::AnalizerInterface::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
+            Shared::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
     visibleFlag_ = false;
     updateRequest();
 
@@ -721,7 +722,7 @@ void TextCursor::movePosition(QTextCursor::MoveOperation op, MoveMode m, int n)
 {
     visibleFlag_ = false;
     bool hardIndents = editor_->analizer() &&
-            Shared::AnalizerInterface::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
+            Shared::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
     updateRequest();
     bool wasRectSelection = hasRectSelection();
     if (m==MM_Move) {
@@ -1550,7 +1551,7 @@ void TextCursor::insertText(const QString &text)
     bool sel = hasSelection();
     bool bsel = hasRectSelection();
     bool hardIndents = editor_->analizer() &&
-            Shared::AnalizerInterface::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
+            Shared::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
 
     if (sel) {
         editor_->document()->undoStack()->beginMacro("replaceSelectedText");
@@ -1614,7 +1615,7 @@ int TextCursor::justifyLeft(const QString &text) const
     if (!editor_->analizerInstance_ || text.trimmed().isEmpty())
         return column_;
     bool hardIndents = editor_->analizer() &&
-            Shared::AnalizerInterface::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
+            Shared::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
 
     // Emulate text change and get line property
 
@@ -1671,7 +1672,7 @@ void TextCursor::removePreviousChar()
     int toLineUpdate = -1;
 
     bool hardIndents = editor_->analizer() &&
-            Shared::AnalizerInterface::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
+            Shared::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
 
     const int indent = hardIndents ? editor_->document()->indentAt(row_) : 0;
     int textPos = column_ - indent * 2;
@@ -1847,7 +1848,7 @@ void TextCursor::removeSelectedText()
     }
 
     bool hardIndents = editor_->analizer() &&
-            Shared::AnalizerInterface::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
+            Shared::HardIndents==editor_->analizer()->plugin()->indentsBehaviour();
 
     // Find where to place cursor after deletion
 

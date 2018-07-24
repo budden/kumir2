@@ -1,6 +1,9 @@
 #include "kumirprogram.h"
 #include <kumir2-libs/extensionsystem/pluginmanager.h>
 #include <kumir2/actorinterface.h>
+#include <kumir2/analizer_instanceinterface.h>
+#include <kumir2/editor_instanceinterface.h>
+#include <kumir2/analizerinterface.h>
 #include <kumir2-libs/dataformats/ast_algorhitm.h>
 #include <kumir2/coursesinterface.h>
 #include <kumir2-libs/widgets/iconprovider.h>
@@ -250,8 +253,9 @@ void KumirProgram::handleMarginClearRequest(int fromLine, int toLine)
     editor_->clearMarginText(fromLine, toLine);
 }
 
-void KumirProgram::setTerminal(Term *t, QDockWidget * w)
+void KumirProgram::setTerminal(Term *t, QDockWidget *w)
 {
+	Q_UNUSED(w);
     using namespace ExtensionSystem;
     using namespace Shared;
     terminal_ = t;
@@ -278,10 +282,10 @@ void KumirProgram::blindRun()
     endStatus_ = Running;
     if (state_==Idle) {
         emit giveMeAProgram();
-        prepareRunner(GeneratorInterface::LinesOnly);
+        prepareRunner(LinesOnly);
     }
     state_ = BlindRun;
-    PluginManager::instance()->switchGlobalState(PluginInterface::GS_Running);
+    PluginManager::instance()->switchGlobalState(GS_Running);
     setAllActorsAnimationFlag(false);
     runner()->runBlind();
 }
@@ -293,7 +297,7 @@ void KumirProgram::testingRun()
     endStatus_ = Running;
     if (state_==Idle) {
         emit giveMeAProgram();
-        if (!prepareRunner(GeneratorInterface::LinesOnly)) {
+        if (!prepareRunner(LinesOnly)) {
             QMessageBox::information(mainWidget_, tr("No program loaded"),
                                   tr("You must open program first")
                                   );
@@ -309,7 +313,7 @@ void KumirProgram::testingRun()
         }
     }
     state_ = TestingRun;
-    PluginManager::instance()->switchGlobalState(PluginInterface::GS_Running);
+    PluginManager::instance()->switchGlobalState(GS_Running);
     setAllActorsAnimationFlag(false);
     runner()->runTesting();
 }
@@ -321,19 +325,18 @@ void KumirProgram::regularRun()
     endStatus_ = Running;
     if (state_==Idle) {
         emit giveMeAProgram();
-        prepareRunner(GeneratorInterface::LinesAndVariables);
+        prepareRunner(LinesAndVariables);
     }
     state_ = RegularRun;
-    PluginManager::instance()->switchGlobalState(PluginInterface::GS_Running);
+    PluginManager::instance()->switchGlobalState(GS_Running);
     setAllActorsAnimationFlag(true);
     runner()->runContinuous();
 }
 
-bool KumirProgram::prepareRunner(Shared::GeneratorInterface::DebugLevel debugLevel)
+bool KumirProgram::prepareRunner(Shared::DebugLevel debugLevel)
 {
     using namespace Shared;
 
-    bool ok = false;
     if (!editor_) {
         return false;
     }
@@ -346,7 +349,7 @@ bool KumirProgram::prepareRunner(Shared::GeneratorInterface::DebugLevel debugLev
     else if ("course" == sourceProgramUrl.scheme().toLower()) {
         sourceProgramPath = QDir::cleanPath(sourceProgramUrl.path());
     }
-    RunInterface::RunnableProgram program;
+    RunnableProgram program;
     program.sourceFileName = sourceProgramPath;
     program.sourceData = editor_->analizer()->plugin()->sourceFileHandler()->toString(editor_->documentContents());
 
@@ -360,7 +363,7 @@ bool KumirProgram::prepareRunner(Shared::GeneratorInterface::DebugLevel debugLev
         // Use AST to generate executable (only Kumir language)
 
         editor_->ensureAnalized();
-        const AST::DataPtr ast = editor_->analizer()->compiler()->abstractSyntaxTree();
+        AST::DataPtr ast = editor_->analizer()->compiler()->abstractSyntaxTree();
         QByteArray bufArray;
 
         kumirCodeGenerator()->setOutputToText(false);
@@ -384,7 +387,7 @@ bool KumirProgram::prepareRunner(Shared::GeneratorInterface::DebugLevel debugLev
         program.executableData =editor_->analizer()->plugin()->sourceFileHandler()->toBytes(editor_->documentContents());
         program.executableFileName = program.sourceFileName;
 
-        ok = runner()->loadProgram(program);
+        runner()->loadProgram(program);
     }    
     if (program.sourceFileName.length() > 0) {
         const QString newCwd = QFileInfo(sourceProgramPath).absoluteDir().absolutePath();
@@ -416,11 +419,11 @@ void KumirProgram::stepRun()
     endStatus_ = Running;
     if (state_==Idle) {
         emit giveMeAProgram();
-        prepareRunner(GeneratorInterface::LinesAndVariables);
+        prepareRunner(LinesAndVariables);
     }
     state_ = StepRun;
 //    stepRunAction_->setIcon(QIcon::fromTheme("debug-step-over",  QIcon(QApplication::instance()->property("sharePath").toString()+"/icons/debug-step-over.png")));
-    PluginManager::instance()->switchGlobalState(PluginInterface::GS_Running);
+    PluginManager::instance()->switchGlobalState(GS_Running);
     setAllActorsAnimationFlag(false);
     runner()->runStepOver();
 }
@@ -449,7 +452,7 @@ void KumirProgram::runToCursor()
     using namespace Shared;
     if (state_==Idle) {
         emit giveMeAProgram();
-        prepareRunner(GeneratorInterface::LinesAndVariables);
+        prepareRunner(LinesAndVariables);
         state_ = RegularRun;
     }
     const quint32 currentLineNumber = editorInstance()->currentLineNumber();
@@ -482,39 +485,38 @@ void KumirProgram::setAllActorsAnimationFlag(bool animationEnabled)
 void KumirProgram::handleRunnerStopped(int rr)
 {
     using namespace Shared;
-    const State previousState = state_;
-    RunInterface::StopReason reason = RunInterface::StopReason (rr);
-    if (reason==RunInterface::SR_InputRequest) {
-        PluginManager::instance()->switchGlobalState(PluginInterface::GS_Input);
+    StopReason reason = StopReason(rr);
+    if (reason==SR_InputRequest) {
+        PluginManager::instance()->switchGlobalState(GS_Input);
     }
-    else if (reason==RunInterface::SR_UserInteraction) {
-        PluginManager::instance()->switchGlobalState(PluginInterface::GS_Pause);
+    else if (reason==SR_UserInteraction) {
+        PluginManager::instance()->switchGlobalState(GS_Pause);
 //        a_stepIn->setEnabled(plugin_bytecodeRun->canStepInto());
 //        a_stepOut->setEnabled(plugin_bytecodeRun->canStepOut());
     }
-    else if (reason==RunInterface::SR_UserTerminated) {
+    else if (reason==SR_UserTerminated) {
         endStatusText_ = tr("Evaluation terminated");
         endStatus_ = Terminated;
         terminal_->finish();
-        PluginManager::instance()->switchGlobalState(PluginInterface::GS_Observe);
+        PluginManager::instance()->switchGlobalState(GS_Observe);
         state_ = Idle;
         terminal_->clearFocus();
         editor_->unhighlightLine();
     }
-    else if (reason==RunInterface::SR_Error) {
+    else if (reason==SR_Error) {
         endStatusText_ = tr("Evaluation error");
         endStatus_ = Exception;
         terminal_->error(runner()->error());
         editor_->highlightLineRed(runner()->currentLineNo(), runner()->currentColumn().first, runner()->currentColumn().second);
-        PluginManager::instance()->switchGlobalState(PluginInterface::GS_Observe);
+        PluginManager::instance()->switchGlobalState(GS_Observe);
         state_ = Idle;
         terminal_->clearFocus();
     }
-    else if (reason==RunInterface::SR_Done) {
+    else if (reason==SR_Done) {
         endStatusText_ = tr("Evaluation finished");
         endStatus_ = Finished;
         terminal_->finish();
-        PluginManager::instance()->switchGlobalState(PluginInterface::GS_Observe);
+        PluginManager::instance()->switchGlobalState(GS_Observe);
         state_ = Idle;
         terminal_->clearFocus();
         editor_->unhighlightLine();
@@ -527,14 +529,14 @@ void KumirProgram::handleRunnerStopped(int rr)
     RI * runner =
             ExtensionSystem::PluginManager::instance()->findPlugin<RI>();
     if (courseManager && /*runner->isTestingRun() &&*/ courseManagerRequest_) {
-        if (reason == Shared::RunInterface::SR_UserTerminated) {
+        if (reason == Shared::SR_UserTerminated) {
             courseManager->setTestingResult(CI::UserTerminated, 0);
         }
-        else if (reason == Shared::RunInterface::SR_Done) {
+        else if (reason == Shared::SR_Done) {
             courseManager->setTestingResult(CI::SuccessfullyFinished,
                                             runner->valueStackTopItem().toInt());
         }
-        else if (reason == Shared::RunInterface::SR_Error) {
+        else if (reason == Shared::SR_Error) {
             courseManager->setTestingResult(CI::AbortedOnError, 0);
         }
     }
@@ -557,8 +559,9 @@ void KumirProgram::handleLineChanged(int lineNo, quint32 colStart, quint32 colEn
 
 void KumirProgram::switchGlobalState(GlobalState prev, GlobalState cur)
 {
-    using Shared::PluginInterface;
-    if (cur==PluginInterface::GS_Unlocked || cur==PluginInterface::GS_Observe) {
+	Q_UNUSED(prev);
+    using namespace Shared;
+    if (cur==GS_Unlocked || cur==GS_Observe) {
 
         blindRunAction_->setEnabled(true);
         regularRunAction_->setEnabled(true);
@@ -571,7 +574,7 @@ void KumirProgram::switchGlobalState(GlobalState prev, GlobalState cur)
         stopAction_->setEnabled(false);
 
     }
-    if (cur==PluginInterface::GS_Running || cur==PluginInterface::GS_Input) {
+    if (cur==GS_Running || cur==GS_Input) {
 
         blindRunAction_->setEnabled(false);
         regularRunAction_->setEnabled(false);
@@ -581,7 +584,7 @@ void KumirProgram::switchGlobalState(GlobalState prev, GlobalState cur)
         stepOutAction_->setEnabled(false);
         stopAction_->setEnabled(true);
     }
-    if (cur==PluginInterface::GS_Pause) {
+    if (cur==GS_Pause) {
 
         blindRunAction_->setEnabled(true);
         regularRunAction_->setEnabled(true);

@@ -1,4 +1,8 @@
 #include "debuggerview.h"
+#include <QPainter>
+#include <QPaintEvent>
+#include <QPen>
+#include <QTextOption>
 
 namespace CoreGUI {
 
@@ -13,13 +17,10 @@ DebuggerView::DebuggerView(Shared::RunInterface * runner, QWidget *parent)
 
 QSize DebuggerView::minimumSizeHint() const
 {
-    const int PreferredMinWidth = 150;
-    const int PreferredMinHeight = 70;
-    const QSize currentSize = sizeHint();
-//    const QSize minimumSizeHint(qMax(PreferredMinWidth, currentSize.width()),
-//                                qMax(PreferredMinHeight, currentSize.height()));
-    const QSize minimumSizeHint(PreferredMinWidth, PreferredMinHeight);
-    return minimumSizeHint;
+	int PreferredMinWidth = 150;
+	int PreferredMinHeight = 70;
+	QSize minimumSizeHint(PreferredMinWidth, PreferredMinHeight);
+	return minimumSizeHint;
 }
 
 QSize DebuggerView::sizeHint() const
@@ -94,9 +95,13 @@ void DebuggerView::handleRowsInserted(const QModelIndex &index, int start, int e
     }
 }
 
-void DebuggerView::handleRowsRemoved(const QModelIndex &index, int start, int end)
-{
-
+void DebuggerView::handleRowsRemoved(
+	const QModelIndex &index,
+	int start, int end
+) {
+	Q_UNUSED(index);
+	Q_UNUSED(start);
+	Q_UNUSED(end);
 }
 
 } // namespace CoreGUI

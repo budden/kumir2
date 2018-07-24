@@ -24,8 +24,6 @@ namespace AST {
 
 typedef QSharedPointer<struct Variable> VariablePtr;
 
-typedef QSharedPointer<struct Data> DataPtr;
-
 /** Variable element of (locals|globals) table */
 struct ABSTRACTSYNTAXTREE_EXPORT Variable {
 

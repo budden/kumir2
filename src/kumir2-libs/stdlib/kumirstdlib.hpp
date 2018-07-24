@@ -106,14 +106,16 @@ struct FileType {
 
 class AbstractInputBuffer {
 public:
-    virtual bool readRawChar(Char & ch) = 0;
-    virtual void pushLastCharBack() = 0;
-    virtual void clear() = 0;    
+	virtual ~AbstractInputBuffer() {}
+	virtual bool readRawChar(Char &ch) = 0;
+	virtual void pushLastCharBack() = 0;
+	virtual void clear() = 0;
 };
 
 class AbstractOutputBuffer {
 public:
-    virtual void writeRawString(const String & ) = 0;
+	virtual ~AbstractOutputBuffer() {}
+	virtual void writeRawString(const String &) = 0;
 };
 
 class StringList:

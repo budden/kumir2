@@ -18,7 +18,7 @@ class QIcon;
 
 namespace ExtensionSystem {
 
-typedef Shared::PluginInterface::GlobalState GlobalState;
+typedef Shared::GlobalState GlobalState;
 
 class EXTENSIONSYSTEM_EXPORT KPlugin
         : public QObject

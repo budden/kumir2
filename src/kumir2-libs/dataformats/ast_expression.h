@@ -32,8 +32,6 @@ typedef QWeakPointer<struct Expression> ExpressionWPtr;
 
 typedef QSharedPointer<struct Statement> StatementPtr;
 
-typedef QSharedPointer<struct Data> DataPtr;
-
 /** Type of expression structure */
 enum ExpressionType {
 

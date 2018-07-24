@@ -1,4 +1,7 @@
 #include "mainwindow.h"
+#include "kumir2/browser_instanceinterface.h"
+#include "kumir2/editor_instanceinterface.h"
+#include "kumir2/analizer_instanceinterface.h"
 #include "side.h"
 #include "ui_mainwindow.h"
 #include "tabwidgetelement.h"
@@ -735,8 +738,8 @@ void MainWindow::checkCounterValue()
 {
     using namespace ExtensionSystem;
     using namespace Shared;
-    PluginInterface::GlobalState state = PluginManager::instance()->currentGlobalState();
-    if (state==PluginInterface::GS_Unlocked) {
+    GlobalState state = PluginManager::instance()->currentGlobalState();
+    if (state==GS_Unlocked) {
         TabWidgetElement * twe = currentTab();
         if (!twe)
             return;
@@ -755,7 +758,7 @@ void MainWindow::checkCounterValue()
         if (runner) {
             ulong stepsCounted = runner->stepsCounted();
             ulong stepsDone =
-                    state==PluginInterface::GS_Observe && runner->error().length()==0
+                    state==GS_Observe && runner->error().length()==0
                     ? stepsCounted  // all steps successfully finished
                     : stepsCounted - 1; // all but last unfinished step
             if (stepsCounted == 0) {
@@ -1061,10 +1064,9 @@ void MainWindow::prepareInsertMenu()
 
 void MakeNativeExecutableWorker::run()
 {
-    const AST::DataPtr ast = analizer->compiler()->abstractSyntaxTree();
+    AST::DataPtr ast = analizer->compiler()->abstractSyntaxTree();
     QString mimeType;
     generator->generateExecutable(ast, buffer, mimeType, fileSuffix);
-//    sleep(5);
 }
 
 void MakeNativeExecutableWorker::cancel()
@@ -1314,6 +1316,7 @@ bool MainWindow::saveCurrentFileTo(const QString &fileName)
 
 void MainWindow::handleDocumentCleanChanged(bool v)
 {
+	Q_UNUSED(v);
 //    TabWidgetElement * twe = qobject_cast<TabWidgetElement*>(sender());
 //    int index = tabWidget_->indexOf(twe);
 //    QString text = tabWidget_->tabText(index);
@@ -1529,7 +1532,7 @@ void MainWindow::newText(const QString &fileName, const QString & text)
     Shared::Editor::InstanceInterface * editor =
             m_plugin->plugin_editor->newDocument("", QDir::currentPath());
 
-    Shared::Analizer::SourceFileInterface::Data data;
+    Shared::Analizer::Data data;
     data.canonicalSourceLanguageName = "";
     data.sourceUrl = fileName.isEmpty()
             ? QUrl() : QUrl::fromLocalFile(fileName);
@@ -2380,15 +2383,14 @@ TabWidgetElement * MainWindow::loadFromUrl(const QUrl & url, bool addToRecentFil
         tabWidget_->currentWidget()->setFocus();
     }
     setTitleForTab(tabWidget_->currentIndex());
-    ExtensionSystem::PluginManager::instance()->switchGlobalState(PluginInterface::GS_Unlocked);
+    ExtensionSystem::PluginManager::instance()->switchGlobalState(GS_Unlocked);
     return result;
 }
 
 TabWidgetElement* MainWindow::loadFromCourseManager(
-        const GuiInterface::ProgramSourceText &data
+        const ProgramSourceText &data
         )
 {
-    typedef GuiInterface::ProgramSourceText ST;
     TabWidgetElement * courseManagerTab = nullptr;
     for (int i=0; i<tabWidget_->count(); i++) {
         TabWidgetElement * courseTab =
@@ -2405,7 +2407,7 @@ TabWidgetElement* MainWindow::loadFromCourseManager(
         courseManagerTab->setCourseTitle(data.title);
     }
 
-        Shared::Analizer::SourceFileInterface::Data src = data.content;
+        Shared::Analizer::Data src = data.content;
         src.canonicalSourceLanguageName =
                 ExtensionSystem::PluginManager::instance()
                 ->findPlugin<Shared::AnalizerInterface>()
@@ -2445,10 +2447,10 @@ TabWidgetElement* MainWindow::loadFromCourseManager(
     return courseManagerTab;
 }
 
-Shared::GuiInterface::ProgramSourceText
+Shared::ProgramSourceText
 MainWindow::courseManagerProgramSource() const
 {
-    typedef GuiInterface::ProgramSourceText ST;
+    typedef ProgramSourceText ST;
     ST result;
     result.language = ST::Kumir; // TODO implement for other languages
     TabWidgetElement * courseManagerTab = nullptr;

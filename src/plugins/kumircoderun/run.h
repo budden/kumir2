@@ -74,7 +74,7 @@ public:
     void reset();
     void evaluateNextInstruction();
     bool canStepOut() const;
-    inline Shared::RunInterface::RunMode currentRunMode() const { return _runMode ; }
+    Shared::RunMode currentRunMode() const { return _runMode ; }
     QVariant valueStackTopItem() const;
     inline QAbstractItemModel* variablesModel() const {
         return _variablesModel;
@@ -141,7 +141,7 @@ signals:
 protected :
     void run();
 
-    Shared::RunInterface::RunMode _runMode;
+    Shared::RunMode _runMode;
 
     bool stoppingFlag_;
     QMutex* stoppingMutex_;

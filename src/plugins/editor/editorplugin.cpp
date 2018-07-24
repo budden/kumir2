@@ -75,12 +75,12 @@ EditorInstance::InstanceInterface * EditorPlugin::newDocument(
         if (f.open(QIODevice::ReadOnly|QIODevice::Text)) {
             const QByteArray bytes = f.readAll();
             f.close();
-            const Shared::Analizer::SourceFileInterface::Data data =
+            const Shared::Analizer::Data data =
                     analizerPlugin->sourceFileHandler()->fromBytes(bytes);
             editor->setKumFile(data);
         }
         else {
-            Shared::Analizer::SourceFileInterface::Data empty;
+            Shared::Analizer::Data empty;
             editor->setKumFile(empty);
         }
     }
@@ -89,7 +89,7 @@ EditorInstance::InstanceInterface * EditorPlugin::newDocument(
     return editor;
 }
 
-Shared::Editor::InstanceInterface * EditorPlugin::loadDocument(const Shared::Analizer::SourceFileInterface::Data &data, QString * error)
+Shared::Editor::InstanceInterface * EditorPlugin::loadDocument(const Shared::Analizer::Data &data, QString * error)
 {
     EditorInstance * editor = new EditorInstance(this, true, nullptr, nullptr);
     connectGlobalSignalsToEditor(editor);

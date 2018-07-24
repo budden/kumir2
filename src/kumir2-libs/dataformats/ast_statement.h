@@ -26,8 +26,6 @@ typedef QSharedPointer<struct Statement> StatementPtr;
 
 typedef QWeakPointer<struct Statement> StatementWPtr;
 
-typedef QSharedPointer<struct Data> DataPtr;
-
 /** Defines statement (in terminology of Kumir 1.x: ProgaValue) type */
 enum StatementType {
 

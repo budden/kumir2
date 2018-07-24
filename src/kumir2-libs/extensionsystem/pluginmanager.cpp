@@ -19,7 +19,7 @@ PluginManager::PluginManager()
     : QObject()
     , pImpl_(new PluginManagerImpl)
 {
-    pImpl_->globalState = Shared::PluginInterface::GS_Unlocked;
+    pImpl_->globalState = Shared::GS_Unlocked;
     pImpl_->mySettings = SettingsPtr(new Settings("ExtensionSystem"));
 
     int unnamedArgumentsIndexBegin = 1;
@@ -146,14 +146,7 @@ QString PluginManager::loadPluginsByTemplate(const QByteArray &templ)
     QString error = "";
     error = pImpl_->parsePluginsRequest(templ, requests);
     if (!error.isEmpty())
-        return error;    
-    if (!error.isEmpty())
         return error;
-
-    bool console = false;
-#ifdef Q_OS_UNIX
-    console = getenv("DISPLAY")==0;
-#endif
 
     Q_FOREACH(PluginSpec spec, requests) {
         error = pImpl_->loadPlugin(spec, requests);
@@ -161,12 +154,13 @@ QString PluginManager::loadPluginsByTemplate(const QByteArray &templ)
             return error;
         }
     }
-    return "";
+    return error;
 }
 
 QString PluginManager::loadExtraModule(const std::string &canonicalFileName)
 {
-    return "Not implemented yet";
+	Q_UNUSED(canonicalFileName);
+	return "Not implemented yet";
 //    QString moduleName = QString::fromStdString(canonicalFileName);
 //    if ( moduleName.length()>0 )
 //        moduleName[0] = moduleName[0].toUpper();
@@ -464,10 +458,12 @@ QString PluginManager::start()
 }
 
 
-KPlugin * PluginManager::dependentPlugin(const QByteArray &name, const KPlugin *p) const
-{
-    Q_FOREACH(KPlugin * anotherPlugin, pImpl_->objects) {
-        const PluginSpec & anotherSpec = anotherPlugin->pluginSpec();
+KPlugin *PluginManager::dependentPlugin(
+	const QByteArray &name, const KPlugin *p
+) const {
+    Q_UNUSED(p);
+    Q_FOREACH(KPlugin *anotherPlugin, pImpl_->objects) {
+        const PluginSpec &anotherSpec = anotherPlugin->pluginSpec();
         if (anotherSpec.name == name || anotherSpec.provides.contains(name)) {
             return anotherPlugin;
         }

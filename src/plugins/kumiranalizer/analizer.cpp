@@ -247,6 +247,8 @@ QStringList Analizer::moduleNames() const
 
 void Analizer::setHiddenText(const QString &text, int baseLineNo)
 {
+	Q_UNUSED(text);
+	Q_UNUSED(baseLineNo);
 //    teacherText = text;
 //    hiddenBaseLine = baseLineNo;
 
@@ -1060,13 +1062,13 @@ void Analizer::doCompilation(QList<TextStatementPtr> & allStatements, Analizer::
     }
 }
 
-const AST::DataPtr Analizer::abstractSyntaxTree() const
+AST::DataPtr Analizer::abstractSyntaxTree() const
 {
     return _ast;
 }
 
 
-const AST::ModulePtr Analizer::findModuleByLine(int lineNo) const
+AST::ModulePtr Analizer::findModuleByLine(int lineNo) const
 {
     if (lineNo==-1)
         return AST::ModulePtr();

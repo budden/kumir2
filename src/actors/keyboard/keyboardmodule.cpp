@@ -36,8 +36,8 @@ KeyboardModule::KeyboardModule(ExtensionSystem::KPlugin * parent)
 {
     // Called when changed kumir state. The states are defined as enum ExtensionSystem::GlobalState:
 
-    if (Shared::PluginInterface::GS_Running == old) {
-        if (Shared::PluginInterface::GS_Observe == current || Shared::PluginInterface::GS_Unlocked == current) {
+    if (Shared::GS_Running == old) {
+        if (Shared::GS_Observe == current || Shared::GS_Unlocked == current) {
             finalizeRun();
         }
     }

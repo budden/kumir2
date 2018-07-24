@@ -1,4 +1,5 @@
 #include "kumfilehandler.h"
+#include <QStringList>
 
 namespace KumirAnalizer {
 
@@ -36,7 +37,7 @@ QString KumFileHandler::toString(const Data &data) const
     return result;
 }
 
-SourceFileInterface::Data KumFileHandler::fromString(const QString &s) const
+Data KumFileHandler::fromString(const QString &s) const
 {
     const QStringList lines = s.split("\n", QString::KeepEmptyParts);
     Data data;

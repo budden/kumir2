@@ -15,8 +15,6 @@
 using namespace KumirCompilerTool;
 using namespace KumirAnalizer;
 
-typedef Shared::GeneratorInterface::DebugLevel DebugLevel;
-
 KumirCompilerToolPlugin::KumirCompilerToolPlugin()
     : KPlugin()
     , analizer_(nullptr)
@@ -105,7 +103,7 @@ void KumirCompilerToolPlugin::start()
         QByteArray fileData = f.readAll();
         f.close();
 
-        Shared::Analizer::SourceFileInterface::Data kumFile;
+        Shared::Analizer::Data kumFile;
         kumFile = analizer_->sourceFileHandler()->fromBytes(fileData, sourceFileEncoding_);
         kumFile.sourceUrl = QUrl::fromLocalFile(sourceFileName_);
 

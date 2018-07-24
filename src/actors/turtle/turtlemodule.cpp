@@ -57,12 +57,11 @@ static const qreal MAX_ZOOM = 1000000;
         
         for(int i=0;i<lines.count();i++)
         {
-            qreal deb=0;
             if(lines.at(i)->line().dx()>=0)
             {
                 if(lines.at(i)->line().p1().x()<boundRect.left() || (i==0))
                 {
-                    deb=lines.at(i)->line().p1().x();
+                    lines.at(i)->line().p1().x();
                     boundRect.setLeft(lines.at(i)->line().p1().x());
                     
                 }
@@ -91,7 +90,7 @@ static const qreal MAX_ZOOM = 1000000;
                 qDebug()<<"Bott"<<boundRect.bottom()<<"Top:"<<boundRect.top()<<"line p1y:"<<lines.at(i)->line().p1().y()<<"line p2y:"<<lines.at(i)->line().p2().y();
                 if(-lines.at(i)->line().p1().y()>boundRect.bottom() || (i==0))
                 {
-                    deb=-lines.at(i)->line().p1().y();
+                    lines.at(i)->line().p1().y();
                     boundRect.setBottom(-lines.at(i)->line().p1().y());
                 }
                 if(lines.at(i)->line().p2().x()>boundRect.top() || (i==0))
@@ -152,17 +151,17 @@ static const qreal MAX_ZOOM = 1000000;
         
     };
     
-    qreal TurtleScene::drawText(const QString &Text,qreal widthChar,QPointF from,QColor color)
-    {
+    qreal TurtleScene::drawText(
+		const QString &Text,
+		qreal widthChar,
+		QPointF from,
+		QColor color
+	) {
         QFont font ( "Courier", 12);
         font.setPointSizeF(KumMulti);
         QFontMetricsF fontMetric(font);
         qreal bs=fontMetric.boundingRect(Text).width();
-        qreal ch=bs/Text.length();
         qreal psizeF=widthChar/bs;
-       
-        
-        
         
         //  font.setPointSizeF(psizeF*inc);
         bs=fontMetric.boundingRect("OOOXX").width()/5;
@@ -309,9 +308,8 @@ static const qreal MAX_ZOOM = 1000000;
         QFileInfo fi(p_FileName);
         QString name = fi.fileName();                        
         QString Title = QString::fromUtf8("Чертежник - ") + name;
-        double CurX,CurY;
       //  MV->setWindowTitle ( Title);
-        qreal CurrentScale;
+        qreal CurrentScale = 1.0;
         
         QString tmp = "";
         char ctmp[200];
@@ -320,8 +318,7 @@ static const qreal MAX_ZOOM = 1000000;
         QColor CurColor;
         
         
-        int NStrok;
-        NStrok = 0;
+        int NStrok = 0;
         
         //	long l_Err;
         //int CurX,CurY;
@@ -430,7 +427,7 @@ static const qreal MAX_ZOOM = 1000000;
                 int l = tmp.length();
                 tmp.chop(2);
                 tmp = tmp.right(l-3);
-                drawText(tmp,CurrentScale,QPoint(0,0),CurColor);
+                drawText(tmp, CurrentScale, QPoint(0,0), CurColor);
                 continue;
             }
             
@@ -449,8 +446,6 @@ static const qreal MAX_ZOOM = 1000000;
             {
                 x1 = l_List[0].toFloat();
                 y1 = -l_List[1].toFloat();
-                CurX = x1;
-                CurY = -y1;
                 continue;
             }
             
@@ -462,8 +457,6 @@ static const qreal MAX_ZOOM = 1000000;
                 lines.last()->setZValue(10);
                 lines.last()->setPen(QPen(CurColor));
                 // CurZ += 0.01;
-                CurX = x2;
-                CurY = -y2;
                 continue;
             }
             
@@ -628,50 +621,51 @@ static const qreal MAX_ZOOM = 1000000;
         
         
     };
-void TurtleView::paintEvent(QPaintEvent *event)
-    {
-        //dr_mutex->lock();
-     
-            QGraphicsView::paintEvent(event);
-            event->accept();
-         //   dr_mutex->unlock();
 
-    }
- void TurtleView::resizeEvent ( QResizeEvent * event )
-    {
-        if(firstResize)
-        {
-            qDebug()<<"FirstresizeEvent";
-            QPointF maxRight=mapToScene(geometry().bottomRight());
-            
-            centerOn(maxRight.x()/2-maxRight.x()/5,-maxRight.y()/2+maxRight.y()/4);
-        }
-        firstResize=false;
-        qDebug()<<"resizeEvent";
-        // setViewportUpdateMode (QGraphicsView::NoViewportUpdate);
-        if(!pressed)  DRAW->drawNet();
-        update();
-        // setViewportUpdateMode (QGraphicsView::SmartViewportUpdate);
-    };
+void TurtleView::paintEvent(QPaintEvent *event)
+{
+    QGraphicsView::paintEvent(event);
+    event->accept();
+
+}
+
+void TurtleView::resizeEvent(QResizeEvent * /*event*/)
+{
+	if (firstResize) {
+		qDebug() << "FirstresizeEvent";
+		QPointF maxRight = mapToScene(geometry().bottomRight());
+
+		centerOn(
+			maxRight.x() / 2 - maxRight.x() / 5,
+			-maxRight.y() / 2 + maxRight.y() / 4
+		);
+		firstResize = false;
+	}
+
+	qDebug() << "resizeEvent";
+	if (!pressed)
+		DRAW->drawNet();
+	update();
+};
     
     
     void TurtleView::mousePressEvent ( QMouseEvent * event )
     {
-        pressed=true;
-        press_pos=event->pos();
-        qDebug()<<"Mouse press"<<mapToScene(press_pos);
+        pressed = true;
+        press_pos = event->pos();
+        qDebug() << "Mouse press" << mapToScene(press_pos);
         
     };
-    void TurtleView::mouseReleaseEvent ( QMouseEvent * event )
+
+    void TurtleView::mouseReleaseEvent ( QMouseEvent * /*event*/)
     {
-        pressed=false;
-       
+        pressed = false;
         DRAW->drawNet();
     };
-    void TurtleView::mouseMoveEvent ( QMouseEvent * event )
+
+    void TurtleView::mouseMoveEvent (QMouseEvent *event)
     {
-        if(pressed)
-        {
+        if (pressed) {
           //  dr_mutex->lock();
          //   setViewportUpdateMode (QGraphicsView::SmartViewportUpdate);
             QPointF delta=mapToScene(press_pos)-mapToScene(event->pos());
@@ -909,7 +903,7 @@ QString TurtleModule::initialize(const QStringList &configurationParameters, con
 {
     if (!configurationParameters.contains("tablesOnly")) {
         createGui();
-        currentState=Shared::PluginInterface::GS_Unlocked;
+        currentState=Shared::GS_Unlocked;
         redrawTimer = new QTimer(this);
         connect(redrawTimer,SIGNAL(timeout()), this, SLOT(redraw()));
         redrawTimer->start(AnimTime);
@@ -1054,16 +1048,15 @@ mutex.unlock();
 
 /* public slot */ void TurtleModule::runForward(const qreal dist)
 {
-   // if(animation)msleep(50);
-     mutex.lock();
+    mutex.lock();
     qreal oldX=mPen->penPos().x();
     qreal oldY=mPen->penPos().y();
     qreal moveX=dist*sin(curAngle*(Pi/180));
     qreal moveY=-dist*cos(curAngle*(Pi/180));
     
-    qreal curX,curY;
-    curX=mPen->penPos().x()+dist*sin(curAngle*(Pi/180));
-    curY=mPen->penPos().y()-dist*cos(curAngle*(Pi/180));
+    //qreal curX,curY;
+    //curX=mPen->penPos().x()+dist*sin(curAngle*(Pi/180));
+    //curY=mPen->penPos().y()-dist*cos(curAngle*(Pi/180));
     
    // mPen->moveBy(moveX,moveY);
     mPen->movePen(moveX, moveY);
@@ -1094,9 +1087,9 @@ mutex.unlock();
     qreal moveX=-dist*sin(curAngle*(Pi/180));
     qreal moveY=dist*cos(curAngle*(Pi/180));
     
-    qreal curX,curY;
-    curX=mPen->penPos().x()-dist*sin(curAngle*(Pi/180));
-    curY=mPen->penPos().y()+dist*cos(curAngle*(Pi/180));
+    //qreal curX,curY;
+    //curX=mPen->penPos().x()-dist*sin(curAngle*(Pi/180));
+    //curY=mPen->penPos().y()+dist*cos(curAngle*(Pi/180));
     
     mPen->movePen(moveX,moveY);
     //t2->moveBy(moveX,moveY);
@@ -1297,7 +1290,6 @@ mutex.unlock();
         
         QPointF cnt=sceneInfoRect.center();
         cnt.setY(-cnt.y());
-        qreal width2=sceneInfoRect.width();
         qreal size2=qMax(sceneInfoRect.height(),sceneInfoRect.width());
         qreal oldZoom=CurView->zoom();
         qreal newZoom=(CurView->zoom()*(size/size2))*0.43;//Some magic
@@ -1355,7 +1347,7 @@ mutex.unlock();
     void TurtleModule::redraw()
     {
        
-        if (currentState!=Shared::PluginInterface::GS_Running)return;
+        if (currentState!=Shared::GS_Running)return;
         redrawTimer->stop();
         mutex.lock();
   

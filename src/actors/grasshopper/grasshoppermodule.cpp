@@ -87,7 +87,7 @@ QVariantList GrasshopperModule::templateParameters() const{
     */
     // TODO implement me
     using namespace ExtensionSystem;  // not to write "ExtensionSystem::" each time in this method scope
-    if(old==Shared::PluginInterface::GS_Running && current==Shared::PluginInterface::GS_Observe)kuznec->FindKuznec();
+    if(old==Shared::GS_Running && current==Shared::GS_Observe)kuznec->FindKuznec();
         
     Q_UNUSED(old);  // Remove this line on implementation
     Q_UNUSED(current);  // Remove this line on implementation

@@ -26,8 +26,6 @@ typedef QSharedPointer<struct Variable> VariablePtr;
 
 typedef QSharedPointer<struct Statement> StatementPtr;
 
-typedef QSharedPointer<struct Data> DataPtr;
-
 /** Specific algorhitm types */
 enum AlgorhitmType {
 

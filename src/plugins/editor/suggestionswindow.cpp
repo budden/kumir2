@@ -1,6 +1,7 @@
 #include "suggestionswindow.h"
 #include "ui_suggestionswindow.h"
 #include "settingspage.h"
+#include "kumir2/analizer_helperinterface.h"
 
 namespace Editor {
 

@@ -19,6 +19,7 @@
 #include <kumir2-libs/extensionsystem/pluginmanager.h>
 #include <kumir2/runinterface.h>
 #include <kumir2/editor_instanceinterface.h>
+#include <kumir2/analizerinterface.h>
 
 namespace Editor {
 
@@ -103,7 +104,7 @@ void EditorInstance::loadDocument(QIODevice *device, const QString &fileNameSuff
 {
     const QByteArray bytes = device->readAll();
 
-    Shared::Analizer::SourceFileInterface::Data data;
+    Shared::Analizer::Data data;
 
     if (analizerPlugin_) {
         data = analizerPlugin_->sourceFileHandler()->fromBytes(bytes, sourceEncoding);
@@ -141,8 +142,11 @@ void EditorInstance::loadDocument(const QString &fileName, QString * error)
     }
 }
 
-void EditorInstance::loadDocument(const Shared::Analizer::SourceFileInterface::Data &data, QString * error)
-{
+void EditorInstance::loadDocument(
+	const Shared::Analizer::Data &data,
+	QString *error
+) {
+	Q_UNUSED(error);
     Shared::AnalizerInterface * analizerPlugin = nullptr;
     Shared::Analizer::InstanceInterface * analizerInstance = nullptr;
 
@@ -536,11 +540,11 @@ void EditorInstance::focusInEvent(QFocusEvent *e)
 
 
 void EditorInstance::handleCompleteCompilationRequiest(
-    const QStringList & visibleText,
-    const QStringList & hiddenText,
-    int hiddenBaseLine
-    )
-{
+	const QStringList &visibleText,
+	const QStringList &hiddenText,
+	int hiddenBaseLine
+) {
+	Q_UNUSED(hiddenBaseLine);
     if (!analizerPlugin_) {
         return;
     }
@@ -583,10 +587,10 @@ void EditorInstance::updateFromAnalizer()
         }
         doc_->at(i).multipleStatementsInLine = analizerInstance_->multipleStatementsInLine(i);
         doc_->marginAt(i).errors.clear();
-        if (Shared::AnalizerInterface::HardIndents == analizerPlugin_->indentsBehaviour()) {
+        if (Shared::HardIndents == analizerPlugin_->indentsBehaviour()) {
             int newIndent = doc_->indentAt(i);
             int diffIndent = newIndent - oldIndent;
-            if (cursor_->row()==i) {                
+            if (cursor_->row()==(uint)i) {
                 int newCursorColumn = 0;
                 if (doc_->at(i).text.isEmpty()) {
                     newCursorColumn = 2 * newIndent;
@@ -793,7 +797,7 @@ Shared::Analizer::ApiHelpItem EditorInstance::contextHelpItem() const
         int row = cursor()->row();
         int col = cursor()->column();
         const QString & text = document()->textAt(row);
-        if (Shared::AnalizerInterface::HardIndents==analizerPlugin_->indentsBehaviour()) {
+        if (Shared::HardIndents==analizerPlugin_->indentsBehaviour()) {
             col -= document()->indentAt(row) * 2;
         }
         result = analizerInstance_->helper()->itemUnderCursor(text, row, col, true);
@@ -1145,7 +1149,7 @@ QList<QMenu*> EditorInstance::menus() const
 
 
 
-void EditorInstance::setKumFile(const Shared::Analizer::SourceFileInterface::Data &data)
+void EditorInstance::setKumFile(const Shared::Analizer::Data &data)
 {
     notSaved_ = true;
     doc_->setKumFile(data, plugin_->teacherMode_);
@@ -1183,9 +1187,9 @@ void  EditorInstance::setPlainText(const QString & data)
     checkForClean();
 }
 
-Shared::Analizer::SourceFileInterface::Data EditorInstance::documentContents() const
+Shared::Analizer::Data EditorInstance::documentContents() const
 {
-    Shared::Analizer::SourceFileInterface::Data data = doc_->toKumFile();
+    Shared::Analizer::Data data = doc_->toKumFile();
     data.sourceUrl = documentUrl_;
     return data;
 }
@@ -1197,7 +1201,7 @@ bool EditorInstance::hasBreakpointSupport() const
     return nullptr!=analizerInstance_ && nullptr!=runner && runner->hasBreakpointsSupport();
 }
 
-void EditorInstance::saveDocument(const QString &fileName, QString * error)
+void EditorInstance::saveDocument(const QString &fileName, QString *error)
 {
     QFile f(fileName);
     if (f.open(QIODevice::WriteOnly)) {
@@ -1211,8 +1215,9 @@ void EditorInstance::saveDocument(const QString &fileName, QString * error)
     }
 }
 
-void EditorInstance::saveDocument(QIODevice *device, QString * error)
+void EditorInstance::saveDocument(QIODevice *device, QString *error)
 {
+	Q_UNUSED(error);
     if (analizerPlugin_) {
         QByteArray bytes = analizerPlugin_->sourceFileHandler()->toBytes(documentContents());
         device->write(bytes);
@@ -1313,13 +1318,13 @@ void EditorInstance::changeGlobalState(quint32 prevv, quint32 currentt)
 
     using Shared::PluginInterface;
 
-    if (current==PluginInterface::GS_Unlocked || current==PluginInterface::GS_Running) {
+    if (current==GS_Unlocked || current==GS_Running) {
         unhighlightLine();
     }
-    if (prev==PluginInterface::GS_Observe && current!=PluginInterface::GS_Observe) {
+    if (prev==GS_Observe && current!=GS_Observe) {
         clearMarginText();
     }
-    if (current==PluginInterface::GS_Unlocked || current==PluginInterface::GS_Observe) {
+    if (current==GS_Unlocked || current==GS_Observe) {
         unlock();
     }
     else {

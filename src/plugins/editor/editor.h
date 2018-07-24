@@ -7,6 +7,7 @@
 #include <kumir2-libs/extensionsystem/settings.h>
 #include <kumir2-libs/docbookviewer/docbookview.h>
 #include <kumir2/analizerinterface.h>
+#include <kumir2/analizer_instanceinterface.h>
 #include "editorplugin.h"
 
 #include <kumir2/editor_instanceinterface.h>
@@ -47,7 +48,7 @@ public:
     QSize minimumSizeHint() const;
     QList<QMenu*> menus() const;
 
-    Shared::Analizer::SourceFileInterface::Data documentContents() const;
+    Shared::Analizer::Data documentContents() const;
 
     bool hasBreakpointSupport() const;
 
@@ -57,12 +58,12 @@ public:
                               const QUrl & sourceUrl, QString * error
             ) override;
     void loadDocument(const QString & fileName, QString * error) override;
-    void loadDocument(const Shared::Analizer::SourceFileInterface::Data &data, QString * error) override;
+    void loadDocument(const Shared::Analizer::Data &data, QString * error) override;
 
     void saveDocument(const QString &fileName, QString * error) override;
     void saveDocument(QIODevice * device, QString * error) override;
     uint32_t currentLineNumber() const;
-    void setKumFile(const Shared::Analizer::SourceFileInterface::Data & data);
+    void setKumFile(const Shared::Analizer::Data & data);
     void setPlainText(const QString & data);
     void setDocumentId(int id);
 

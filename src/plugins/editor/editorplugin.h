@@ -3,6 +3,7 @@
 
 #include <kumir2-libs/extensionsystem/kplugin.h>
 #include <kumir2/editorinterface.h>
+#include <kumir2/analizerinterface.h>
 #include <kumir2-libs/dataformats/kumfile.h>
 #include <kumir2-libs/extensionsystem/pluginspec.h>
 #include "macro.h"
@@ -40,7 +41,7 @@ public:
             const QString & fileName, QString * error) override;
 
     Shared::Editor::InstanceInterface * loadDocument(
-            const Shared::Analizer::SourceFileInterface::Data &data, QString * error) override;
+            const Shared::Analizer::Data &data, QString * error) override;
 
     int analizerDocumentId(int editorDocumentId) const;
     void closeDocument(int documentId);
@@ -48,9 +49,9 @@ public:
     bool hasUnsavedChanges(int documentId) const;
     void setDocumentChangesSaved(int documentId);
     QString loadDocument(int documentId, const QString & fileName, bool keepIndents, QString * error);
-    QString loadDocument(int documentId, const Shared::Analizer::SourceFileInterface::Data &data, QString * error);
+    QString loadDocument(int documentId, const Shared::Analizer::Data &data, QString * error);
     QString saveDocument(int documentId, const QString & fileName, QString * error);
-    Shared::Analizer::SourceFileInterface::Data documentContent(int documentId) const;
+    Shared::Analizer::Data documentContent(int documentId) const;
     Shared::AnalizerInterface * analizer(int documentId);
     quint32 errorsLinesCount(int documentId) const;
     void highlightLineGreen(int documentId, int lineNo, quint32 colStart, quint32 colEnd);
