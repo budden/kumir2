@@ -81,7 +81,7 @@ template <typename T> void valueFromDataStream(std::list<char> &stream, T &value
 	static const bool le = isLittleEndian();
 	char buf[sizeof(T)];
 	if (le) {
-		for (size_t i = sizeof(value); i --> 0; i--) {
+		for (size_t i = sizeof(value); i --> 0; ) {
 			buf[i] = stream.front();
 			stream.pop_front();
 		}
