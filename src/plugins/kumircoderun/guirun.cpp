@@ -10,14 +10,17 @@
 #include <kumir2-libs/vm/variant.hpp>
 
 namespace KumirCodeRun {
-
 namespace Gui {
 
 
 VM::ExternalModuleLoadFunctor::NamesList
-ExternalModuleLoadFunctor::operator ()(const std::string & moduleAsciiName,
-                                       const Kumir::String & moduleName , Kumir::String * error)
-{
+ExternalModuleLoadFunctor::operator ()(
+	const std::string &moduleAsciiName,
+	const Kumir::String &moduleName,
+	Kumir::String *error
+) {
+	Q_UNUSED(moduleName);
+	Q_UNUSED(error);
     NamesList result;
     Shared::ActorInterface * actor = Util::findActor(moduleAsciiName);
     if (actor) {
@@ -62,8 +65,11 @@ InputFunctor::~InputFunctor()
     delete finishedMutex_;
 }
 
-bool InputFunctor::operator ()(VariableReferencesList references, Kumir::String * error)
-{
+bool InputFunctor::operator ()(
+	VariableReferencesList references,
+	Kumir::String *error
+) {
+	Q_UNUSED(error);
     // Clear state
     finishedFlag_ = false;
     inputValues_.clear();
@@ -333,8 +339,11 @@ GetMainArgumentFunctor::~GetMainArgumentFunctor()
     delete finishedMutex_;
 }
 
-void GetMainArgumentFunctor::operator ()(Variable & reference, Kumir::String * error)
-{
+void GetMainArgumentFunctor::operator ()(
+	Variable &reference,
+	Kumir::String *error
+) {
+	Q_UNUSED(error);
     QString format;
     if (reference.baseType()==VT_int)
         format.push_back('i');
@@ -546,8 +555,11 @@ bool GetMainArgumentFunctor::inputScalarArgument(
     return true;
 }
 
-void ReturnMainValueFunctor::operator()(const Variable & reference, Kumir::String * error)
-{
+void ReturnMainValueFunctor::operator()(
+	const Variable &reference,
+	Kumir::String *error
+) {
+	Q_UNUSED(error);
     if (!reference.isValid())
         return;
     QString repr;
@@ -733,5 +745,4 @@ void ExternalModuleResetFunctor::operator ()(const std::string & moduleName, con
 }
 
 }
-
 }
