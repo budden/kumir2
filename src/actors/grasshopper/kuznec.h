@@ -43,8 +43,6 @@ class KuznSled : public QGraphicsItem
 {
 public:
 	KuznSled(int start, int fin);
-
-
 	~KuznSled() {}
 
 	QRectF boundingRect() const {

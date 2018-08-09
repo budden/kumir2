@@ -319,7 +319,7 @@ void DocBookViewImpl::clearNavigationFilters()
 
 void DocBookViewImpl::removeDocument(const Document &existingDocument)
 {
-
+	Q_UNUSED(existingDocument);
 }
 
 void DocBookViewImpl::showAnItem(ModelPtr model)

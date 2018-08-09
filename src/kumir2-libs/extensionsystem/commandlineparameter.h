@@ -52,7 +52,6 @@ public:
 	// Copy constructors
 	explicit CommandLineParameter(const CommandLineParameter &other);
 	CommandLineParameter &operator=(const CommandLineParameter &other);
-
 	friend class PluginManager;
 	friend struct PluginManagerImpl;
 	friend class CommandLine;

@@ -140,9 +140,9 @@ void IsometricRobotModule::loadActorData(QIODevice *source)
 
 void IsometricRobotModule::setAnimationEnabled(bool enabled)
 {
-	if (_robotView) {
+	Q_UNUSED(enabled);
+	if (_robotView)
 		_robotView->setAnimated(false); // TODO improve me, then fix
-	}
 }
 
 

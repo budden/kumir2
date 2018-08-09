@@ -112,6 +112,7 @@ TextFileInfo KumFileDialog::getSaveFileName(
 
 void KumFileDialog::setEncodingVisible(bool flag)
 {
+	Q_UNUSED(flag);
 }
 
 void KumFileDialog::setEncodingEnabled(QList<bool> filtersEnabled)
@@ -125,6 +126,7 @@ void KumFileDialog::setEncodingEnabled(QList<bool> filtersEnabled)
 
 void KumFileDialog::checkFilter(const QString &filter)
 {
+	Q_UNUSED(filter);
 	/*int debug = filtersEnabled.count();
 	if ( encodings->isVisible() )
 	{

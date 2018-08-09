@@ -87,12 +87,10 @@ loggerButton::loggerButton(QDir dir, QWidget *parent): QWidget(parent)
 	downArrow.append(QLine(mid, 15, mid + 11, 10));
 
 };
+
 void loggerButton::loadButtons(QDir dir)
 {
-
-	//    qDebug()<<"Dir"<<dir.absoluteFilePath("butt.png");
-	//    //  buttonImageUp.load("/Volumes/Untitled 1/Users/mordol/Kumir2.0/SshGitRep/BuildSecSt12/Debug/Kumir.app/Contents/Resources/actors/turtle/butt.png");
-	//  buttonImageDown.load(dir.absoluteFilePath("buttd.png"));
+	Q_UNUSED(dir);
 }
 
 void loggerButton::paintEvent(QPaintEvent *event)
@@ -120,8 +118,7 @@ void loggerButton::paintEvent(QPaintEvent *event)
 		} else {
 			painter.drawLines(downArrow);
 		}
-	};
-
+	}
 }
 
 void loggerButton::mousePressEvent(QMouseEvent *event)
@@ -219,10 +216,10 @@ void pultLogger::setSizes(uint w, uint h)
 
 void pultLogger::upBtnPressed()
 {
-
 	if (lines.count() == 0) {
 		return;
 	}
+
 	if (lines.first().pos() > 2) {
 		return;
 	}

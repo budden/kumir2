@@ -62,6 +62,8 @@ static VM::AnyValue makeAnyValue(
 	const QString &moduleName,
 	const QString &className
 ) {
+	Q_UNUSED(moduleName);
+	Q_UNUSED(className);
 	VM::AnyValue result;
 	if (val == QVariant::Invalid) {
 		return result;
@@ -235,6 +237,7 @@ void Generator::generateConstantTable()
 	}
 }
 
+#if 0
 static const Shared::ActorInterface::Function &functionByInternalId(
 	const Shared::ActorInterface *actor, uint32_t id
 ) {
@@ -247,6 +250,7 @@ static const Shared::ActorInterface::Function &functionByInternalId(
 	}
 	return dummy;
 }
+#endif
 
 static QString typeToSignature(const AST::Type &t)
 {
@@ -1042,16 +1046,26 @@ QList<Bytecode::Instruction> Generator::instructions(
 	return result;
 }
 
-quint16 Generator::constantValue(Bytecode::ValueType type, quint8 dimension, const QVariant &value,
-	const QString &moduleName, const QString &className)
-{
+quint16 Generator::constantValue(
+	Bytecode::ValueType type,
+	quint8 dimension,
+	const QVariant &value,
+	const QString &moduleName,
+	const QString &className
+) {
+	Q_UNUSED(moduleName);
+	Q_UNUSED(className);
 	QList<Bytecode::ValueType> vt;
 	vt.push_back(type);
 	return constantValue(vt, dimension, value, QString(), QString());
 }
 
-quint16 Generator::constantValue(const QList<Bytecode::ValueType> &type, quint8 dimension, const QVariant &value,
-	const QString &moduleName, const QString &className
+quint16 Generator::constantValue(
+	const QList<Bytecode::ValueType> &type,
+	quint8 dimension,
+	const QVariant &value,
+	const QString &moduleName,
+	const QString &className
 )
 {
 	ConstValue c;
@@ -1497,12 +1511,14 @@ void Generator::INIT(int modId, int algId, int level, const AST::StatementPtr  s
 	}
 }
 
-void Generator::CALL_SPECIAL(int modId, int algId, int level, const AST::StatementPtr  st, QList<Bytecode::Instruction> &result)
-{
+void Generator::CALL_SPECIAL(
+	int modId, int algId, int level,
+	const AST::StatementPtr  st,
+	QList<Bytecode::Instruction> &result
+) {
 	result += makeLineInstructions(st->lexems);
 
-	quint16 argsCount;
-
+	quint16 argsCount = 0;
 
 	if (st->type == AST::StOutput) {
 		int varsCount = st->expressions.size() / 3;
@@ -1804,20 +1820,22 @@ void Generator::BREAK(int, int, int level,
 	result << jump;
 }
 
-void Generator::LOOP(int modId, int algId,
-	int level,
+void Generator::LOOP(
+	int modId, int algId, int level,
 	const AST::StatementPtr st,
-	QList<Bytecode::Instruction> &result)
-{
+	QList<Bytecode::Instruction> &result
+) {
+#if 0
 	Bytecode::Instruction ctlOn;
 	ctlOn.module = 0x00;
 	ctlOn.arg = 0x0001;
+	ctlOn.type = Bytecode::CTL;
 
 	Bytecode::Instruction ctlOff;
 	ctlOff.module = 0x00;
 	ctlOff.arg = 0x0000;
-
-	ctlOn.type = ctlOff.type = Bytecode::CTL;
+	ctlOff.type = Bytecode::CTL;
+#endif
 
 	if (st->beginBlockError.size() > 0) {
 		const QString error = ErrorMessages::message("KumirAnalizer", QLocale::Russian, st->beginBlockError);

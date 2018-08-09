@@ -10,6 +10,7 @@ void ControlInterface::start(QString csName)
 
 void ControlInterface::setCSmode(int mode)
 {
+	Q_UNUSED(mode);
 	qDebug() << "DUMMY call ControlInterface::setCSmode";
 }
 

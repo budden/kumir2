@@ -106,8 +106,11 @@ QVariant courseModel::data(const QModelIndex &index, int role) const
 }
 
 QVariant courseModel::headerData(
-int section, Qt::Orientation orientation, int role
+	int section, Qt::Orientation orientation, int role
 ) const {
+	Q_UNUSED(section);
+	Q_UNUSED(orientation);
+	Q_UNUSED(role);
 	//qDebug()<<"Get Header";
 	return QVariant(courseFileName);
 };
@@ -154,8 +157,9 @@ QModelIndex courseModel::parent(const QModelIndex &child) const
 	return createIndex(domRow(par), 0, idByNode(par));
 }
 
-int courseModel::columnCount(const QModelIndex &parent)const
+int courseModel::columnCount(const QModelIndex &parent) const
 {
+	Q_UNUSED(parent);
 	return 1;
 }
 
@@ -163,6 +167,7 @@ int courseModel::columnCount(const QModelIndex &parent)const
 QDomNode courseModel::nodeByRowColumn(
 	int row, int column, QDomNode *parent
 ) const {
+	Q_UNUSED(column);
 	if (!parent) {
 		return root;
 	}
@@ -182,21 +187,17 @@ QDomNode courseModel::nodeById(int id, QDomNode parent) const
 		return QDomNode();
 	}
 	QDomNode val = cash.value(id);
-	if (!val.isNull()) {
+	if (!val.isNull())
 		return val;
-	}
 
 	QDomNodeList childs = parent.childNodes();
-	for (int i = 0; i < childs.length(); i++) {
+	for (uint i = 0; i < childs.length(); i++) {
 		if (childs.at(i).toElement().attribute("id", "") == QString::number(id)) {
-			// if(cash.contains(id)<1)
-			//cash.insert(id,childs.at(i));
 			return childs.at(i);
 		}
 	}
 
-	for (int i = 0; i < childs.length(); i++) {
-		// if(childs.at(i).toElement().attribute("id","")==QString::number(id))return childs.at(i);
+	for (uint i = 0; i < childs.length(); i++) {
 		if (childs.at(i).hasChildNodes()) {
 
 			QDomNode toret = nodeById(id, childs.at(i));

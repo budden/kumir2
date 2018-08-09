@@ -334,6 +334,7 @@ int KumVariablesModel::rowCount(const QModelIndex &parent) const
 
 int KumVariablesModel::columnCount(const QModelIndex &parent) const
 {
+	Q_UNUSED(parent);
 	return 1;
 }
 

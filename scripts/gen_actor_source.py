@@ -1502,23 +1502,24 @@ private:
         """
         return """
 %s::%s()
-    : ExtensionSystem::KPlugin()
-    , module_(nullptr)
-    , asyncRunThread_(nullptr)
-    , settingsPage_(nullptr)
+    :
+    ExtensionSystem::KPlugin(),
+    module_(nullptr),
+    asyncRunThread_(nullptr),
+    settingsPage_(nullptr)
 {
+#ifdef Q_OS_LINUX_NO
     bool hasGuiThread = true;
-#ifdef Q_OS_LINUX
     hasGuiThread = getenv("DISPLAY") != 0;
+        //hasGuiThread? Qt::QueuedConnection :
 #endif
     QObject::connect(
-        this, SIGNAL(asyncRun(quint32,QVariantList)),
-        this, SLOT(asyncEvaluate(quint32,QVariantList)),
-        //hasGuiThread? Qt::QueuedConnection :
+        this, SIGNAL(asyncRun(quint32, QVariantList)),
+        this, SLOT(asyncEvaluate(quint32, QVariantList)),
         Qt::DirectConnection
     );
 }
-        """ % (self.class_name, self.class_name)
+""" % (self.class_name, self.class_name)
 
     # noinspection PyPep8Naming
     def createPluginSpecCppImplementation(self):
@@ -2107,8 +2108,9 @@ private:
                 switch_body += "}\n\n"
 
         return """
-/* private slot */ void %s::asyncEvaluate(quint32 index, const QVariantList & args)
+/* private slot */ void %s::asyncEvaluate(quint32 index, const QVariantList &args)
 {
+    Q_UNUSED(args);
     using namespace Shared;
     errorText_.clear();
     result_ = QVariant::Invalid;
@@ -2422,7 +2424,7 @@ class AsyncThreadCppClass(CppClassBase):
     , module_(module)
 {
 }
-        """ % (self.class_name, self.class_name, self._module.get_plugin_cpp_class_name(),
+""" % (self.class_name, self.class_name, self._module.get_plugin_cpp_class_name(),
                self._module.get_base_cpp_class_name())
 
     # noinspection PyPep8Naming
@@ -2730,7 +2732,7 @@ class ModuleBaseCppClass(CppClassBase):
 {
     Q_UNUSED(enabled);
 }
-        """ % self.class_name
+""" % self.class_name
 
     # noinspection PyPep8Naming
     def mainWidgetCppImplementation(self):
@@ -3691,89 +3693,89 @@ def create_docbook_file(module, target_dir):
 
 
 def main_update(args):
-    """
-    Script entry point for update mode workflow
+	"""
+	Script entry point for update mode workflow
 
-    :type   args:   list
-    :param  args:   script arguments
-    :rtype:         int
-    :return:        exit status
-    """
-    file_name = ""
-    for arg in args[1:]:
-        if not arg.startswith("-"):
-            file_name = arg
-    if not file_name:
-        return main_help(args)
-    module = Module.read(file_name)
-    for customType in module.types:
-        create_module_type_header_file(module, customType)
-    create_plugin_header_file(module)
-    create_plugin_source_file(module)
-    create_module_base_header_file(module)
-    create_module_base_source_file(module)
-    return 0
+	:type   args:   list
+	:param  args:   script arguments
+	:rtype:         int
+	:return:        exit status
+	"""
+	file_name = ""
+	for arg in args[1:]:
+		if not arg.startswith("-"):
+			file_name = arg
+	if not file_name:
+		return main_help(args)
+	module = Module.read(file_name)
+	for customType in module.types:
+		create_module_type_header_file(module, customType)
+	create_plugin_header_file(module)
+	create_plugin_source_file(module)
+	create_module_base_header_file(module)
+	create_module_base_source_file(module)
+	return 0
 
 
 def main_project(args):
-    """
-    Script entry point for create project mode workflow
+	"""
+	Script entry point for create project mode workflow
 
-    :type   args:   list
-    :param  args:   script arguments
-    :rtype:         int
-    :return:        exit status
-    """
-    file_name = ""
-    for arg in args[1:]:
-        if not arg.startswith("-"):
-            file_name = arg
-    if not file_name:
-        return main_help(args)
-    module = Module.read(file_name)
-    create_module_header_file(module)
-    create_module_source_file(module)
-    create_cmakelists_txt(module, file_name)
-    create_docbook_file(module, "../../../userdocs")
-    return 0
+	:type   args:   list
+	:param  args:   script arguments
+	:rtype:         int
+	:return:        exit status
+	"""
+	file_name = ""
+	for arg in args[1:]:
+		if not arg.startswith("-"):
+			file_name = arg
+	if not file_name:
+		return main_help(args)
+	module = Module.read(file_name)
+	create_module_header_file(module)
+	create_module_source_file(module)
+	create_cmakelists_txt(module, file_name)
+	create_docbook_file(module, "../../../userdocs")
+	return 0
 
 
 def main_help(args):
-    """
-    Script entry point for show help mode workflow
+	"""
+	Script entry point for show help mode workflow
 
-    :type   args:   list
-    :param  args:   script arguments
-    :rtype:         int
-    :return:        exit status
-    """
-    message = __doc__[:__doc__.index("===")].strip() + "\n"
-    if "--help" in args:
-        sys.stdout.write(message.encode("utf-8"))
-        return 0
-    else:
-        sys.stderr.write(message.encode("utf-8"))
-        return 127
+	:type   args:   list
+	:param  args:   script arguments
+	:rtype:         int
+	:return:        exit status
+	"""
+	message = __doc__[:__doc__.index("===")].strip() + "\n"
+	if "--help" in args:
+		sys.stdout.write(message.encode("utf-8"))
+		return 0
+	else:
+		sys.stderr.write(message.encode("utf-8"))
+		return 127
 
 
 def main(args):
-    """
-    Script entry point
+	"""
+	Script entry point
 
-    :type   args:   list
-    :param  args:   script arguments
-    :rtype:         int
-    :return:        exit status
-    """
-    if "--help" in args or len(args) < 3:
-        return main_help(args)
-    elif "--update" in args:
-        return main_update(args)
-    elif "--project" in args:
-        return main_project(args)
-    else:
-        return main_help(args)
+	:type   args:   list
+	:param  args:   script arguments
+	:rtype:         int
+	:return:        exit status
+	"""
+	if "--help" in args or len(args) < 3:
+		return main_help(args)
+	elif "--update" in args:
+		return main_update(args)
+	elif "--project" in args:
+		return main_project(args)
+	else:
+		return main_help(args)
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+	sys.exit(main(sys.argv))

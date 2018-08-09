@@ -408,8 +408,9 @@ int main(int argc, char **argv)
 	qApp->setApplicationVersion(gitTag.length() > 0 && gitTag != "unknown"
 		? gitTag : gitBranch + "/" + gitHash);
 	qApp->setProperty("gitTimeStamp", gitTimeStamp);
-	QSplashScreen *splashScreen = 0;
 
+#ifdef SPLASHSCREEN
+	QSplashScreen *splashScreen = 0;
 	const QString sharePath = resolvePath(KUMIR2_RESOURCES_DIR);
 
 	const QStringList arguments = QCoreApplication::instance()->arguments();
@@ -429,9 +430,7 @@ int main(int argc, char **argv)
 	}
 
 	const bool customAppAndVendorInformation = setup_custom_vendor_information(qobject_cast<QCoreApplication *>(qApp));
-	Q_UNUSED(customAppAndVendorInformation);
 
-#ifdef SPLASHSCREEN
 	if (gui && !mustShowHelpAndExit && !mustShowVersionAndExit) {
 		QString imgPath = ":/kumir2-launcher/" + QString::fromLatin1(SPLASHSCREEN);
 		splashScreen = new QSplashScreen();

@@ -10,6 +10,7 @@
 
 DrawNavigator::DrawNavigator(QWidget *parent)
 {
+	Q_UNUSED(parent);
 	myScene = new QGraphicsScene(this);
 	this->setScene(myScene);
 	zoomText = myScene->addText("Test");
@@ -97,6 +98,7 @@ void DrawNavigator::YvalueChange(double value)
 
 void DrawNavigator::autoNet(int state)
 {
+	Q_UNUSED(state);
 	if (isAutonet->isChecked()) {
 		netStepXS->setEnabled(false);
 	} else {
