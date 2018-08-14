@@ -102,7 +102,6 @@ enum LexemType {
 	LxOperRightBrace        = 0x2800000,
 	LxOperBoolEqual         = 0x3000000,
 	LxOperBoolNotEqual      = 0x3200000
-
 };
 }
 

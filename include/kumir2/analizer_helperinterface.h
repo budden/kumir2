@@ -1,10 +1,12 @@
 #ifndef ANALIZER_HELPERINTERFACE_H
 #define ANALIZER_HELPERINTERFACE_H
 
-#include "kumir2/lexemtype.h"
+#include "kumir2-libs/dataformats/lexemtype.h"
 
+#include <QtGlobal>
 #include <QString>
 #include <QList>
+#include <QPair>
 
 namespace Shared { namespace Analizer {
 

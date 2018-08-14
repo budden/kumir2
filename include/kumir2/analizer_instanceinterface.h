@@ -1,11 +1,8 @@
 #ifndef ANALIZER_COMMONINTERFACE_H
 #define ANALIZER_COMMONINTERFACE_H
 
-
 #include "analizer_compilerinterface.h"
 #include "analizer_helperinterface.h"
-
-#include "kumir2/lexemtype.h"
 
 class QObject;
 #include <QString>

@@ -7,7 +7,6 @@
 #else
 #include <QtGui>
 #endif
-#include <kumir2/lexemtype.h>
 #include <kumir2/analizerinterface.h>
 #include <kumir2/editor_instanceinterface.h>
 #include <kumir2-libs/dataformats/kumfile.h>
