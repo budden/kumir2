@@ -1,0 +1,111 @@
+commit 4ed090d2fa4bd8024051cd1252420e7f1493517d
+Author: Alexander A. Maly <a.a.maly@gmail.com>
+Date:   Mon Aug 27 16:08:52 2018 +0300
+
+    Fix to build with debian mingw-w64 5.0.1-1
+    
+    Fix to build with debian mingw-w64 5.0.1-1 gcc version 6.3.0 20170516 (GCC)
+    
+    From tag v4.8.7 after
+    
+    commit 445d29dbb8135944ff3a9283b7622de75d68e747
+    Author: Kalle Viironen <kalle.viironen@theqtcompany.com>
+    Date:   Tue May 5 13:54:07 2015 +0300
+    
+        Add Missing Debug Operator Declaration for QTouchEvent::TouchPoint
+    
+        Debug operator for QTouchEvent::TouchPoint was added in
+        fa81aa6d027049e855b76f5408586a288f160575
+        but that commit was missing the declaration.
+    
+        Change-Id: I1bce5f131c5995e0696babe3172cbba95704ac5d
+        Reviewed-by: Friedemann Kleint <Friedemann.Kleint@theqtcompany.com>
+
+diff --git a/mkspecs/win32-g++/qmake.conf b/mkspecs/win32-g++/qmake.conf
+index 6909b3b8a0..c0eedf6cd5 100644
+--- a/mkspecs/win32-g++/qmake.conf
++++ b/mkspecs/win32-g++/qmake.conf
+@@ -60,7 +60,7 @@ QMAKE_RUN_CXX_IMP	= $(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
+ 
+ QMAKE_LINK		= $${CROSS_COMPILE}g++
+ QMAKE_LINK_C		= $${CROSS_COMPILE}gcc
+-QMAKE_LFLAGS		=
++QMAKE_LFLAGS		= -static-libgcc -static-libstdc++
+ QMAKE_LFLAGS_EXCEPTIONS_ON = -mthreads
+ QMAKE_LFLAGS_EXCEPTIONS_OFF =
+ QMAKE_LFLAGS_RELEASE	= -Wl,-s
+diff --git a/src/3rdparty/javascriptcore/JavaScriptCore/runtime/Structure.h b/src/3rdparty/javascriptcore/JavaScriptCore/runtime/Structure.h
+index 7571efc1e9..eb294d1ed5 100644
+--- a/src/3rdparty/javascriptcore/JavaScriptCore/runtime/Structure.h
++++ b/src/3rdparty/javascriptcore/JavaScriptCore/runtime/Structure.h
+@@ -210,7 +210,7 @@ namespace JSC {
+         bool m_isPinnedPropertyTable : 1;
+         bool m_hasGetterSetterProperties : 1;
+         bool m_hasNonEnumerableProperties : 1;
+-#if COMPILER(WINSCW)
++#if 1 || COMPILER(WINSCW)
+         // Workaround for Symbian WINSCW compiler that cannot resolve unsigned type of the declared 
+         // bitfield, when used as argument in make_pair() function calls in structure.ccp.
+         // This bitfield optimization is insignificant for the Symbian emulator target.
+diff --git a/src/3rdparty/javascriptcore/JavaScriptCore/wtf/HashTable.h b/src/3rdparty/javascriptcore/JavaScriptCore/wtf/HashTable.h
+index 42a9233000..0ef13c324e 100644
+--- a/src/3rdparty/javascriptcore/JavaScriptCore/wtf/HashTable.h
++++ b/src/3rdparty/javascriptcore/JavaScriptCore/wtf/HashTable.h
+@@ -257,7 +257,7 @@ namespace WTF {
+ 
+     using std::swap;
+ 
+-#if !COMPILER(MSVC) && !OS(QNX) && !defined(_LIBCPP_VERSION)
++#if 0 && !COMPILER(MSVC) && !OS(QNX) && !defined(_LIBCPP_VERSION)
+     // The Dinkumware C++ library (used by MSVC and QNX) and clang's libc++ have a swap for pairs defined.
+ 
+     // swap pairs by component, in case of pair members that specialize swap
+diff --git a/src/3rdparty/javascriptcore/JavaScriptCore/wtf/TypeTraits.h b/src/3rdparty/javascriptcore/JavaScriptCore/wtf/TypeTraits.h
+index 7ba487fcb3..66f4b77429 100644
+--- a/src/3rdparty/javascriptcore/JavaScriptCore/wtf/TypeTraits.h
++++ b/src/3rdparty/javascriptcore/JavaScriptCore/wtf/TypeTraits.h
+@@ -170,8 +170,13 @@ namespace WTF {
+ 
+     // GCC's libstdc++ 20070724 and later supports C++ TR1 type_traits in the std namespace.
+     // VC10 (VS2010) and later support C++ TR1 type_traits in the std::tr1 namespace.
++#if 0
+     template<typename T> struct HasTrivialConstructor : public std::tr1::has_trivial_constructor<T> { };
+     template<typename T> struct HasTrivialDestructor : public std::tr1::has_trivial_destructor<T> { };
++#else
++    template<typename T> struct HasTrivialConstructor : public std::is_trivially_constructible<T> { };
++    template<typename T> struct HasTrivialDestructor : public std::is_trivially_destructible<T> { };
++#endif
+ 
+ #else
+ 
+diff --git a/src/3rdparty/javascriptcore/JavaScriptCore/yarr/RegexCompiler.cpp b/src/3rdparty/javascriptcore/JavaScriptCore/yarr/RegexCompiler.cpp
+index 9cd3d123c1..2d2c83e5c0 100644
+--- a/src/3rdparty/javascriptcore/JavaScriptCore/yarr/RegexCompiler.cpp
++++ b/src/3rdparty/javascriptcore/JavaScriptCore/yarr/RegexCompiler.cpp
+@@ -719,7 +719,7 @@ const char* compileRegex(const UString& patternString, RegexPattern& pattern)
+ 
+     constructor.setupOffsets();
+ 
+-    return false;
++    return 0;
+ };
+ 
+ 
+diff --git a/src/3rdparty/webkit/Source/JavaScriptCore/wtf/TypeTraits.h b/src/3rdparty/webkit/Source/JavaScriptCore/wtf/TypeTraits.h
+index 44103cdd34..5db81bbfcb 100644
+--- a/src/3rdparty/webkit/Source/JavaScriptCore/wtf/TypeTraits.h
++++ b/src/3rdparty/webkit/Source/JavaScriptCore/wtf/TypeTraits.h
+@@ -183,8 +183,13 @@ namespace WTF {
+ 
+     // GCC's libstdc++ 20070724 and later supports C++ TR1 type_traits in the std namespace.
+     // VC10 (VS2010) and later support C++ TR1 type_traits in the std::tr1 namespace.
++#if 0
+     template<typename T> struct HasTrivialConstructor : public std::tr1::has_trivial_constructor<T> { };
+     template<typename T> struct HasTrivialDestructor : public std::tr1::has_trivial_destructor<T> { };
++#else
++    template<typename T> struct HasTrivialConstructor : public std::is_trivially_constructible<T> { };
++    template<typename T> struct HasTrivialDestructor : public std::is_trivially_destructible<T> { };
++#endif
+ 
+ #else
+ 
