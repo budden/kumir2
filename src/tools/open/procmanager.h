@@ -3,7 +3,7 @@
 
 #include <QtGlobal>
 #ifdef Q_OS_WIN32
-#include <Windows.h>
+#include <windows.h>
 typedef DWORD Pid;
 #else
 #include <sys/types.h>

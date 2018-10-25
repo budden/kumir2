@@ -3,11 +3,10 @@
 
 #include "messager.h"
 
-class MessagerShm
-        : public Messager::ImplInterface
+class MessagerShm : public Messager::ImplInterface
 {
 public:
-    void sendMessage(Pid pid, const QString & message);
+	void sendMessage(Pid pid, const QString &message);
 };
 
 #endif

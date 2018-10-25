@@ -24,7 +24,7 @@ set(KUMIR2_SDK_CMAKE_DIR "${KUMIR2_RESOURCES_DIR}/devel/cmake")
 
 # Compile flags
 set(KUMIR2_CXXFLAGS "-fno-exceptions -std=c++0x -fPIC -DAPPLE -Wno-inconsistent-missing-override")
-set(KUMIR2_CXXFLAGS_Release "-O2 -DNDEBUG -DQT_NO_DEBUG")
+#set(KUMIR2_CXXFLAGS_Release "-O2 -DNDEBUG -DQT_NO_DEBUG")
 set(KUMIR2_CXXFLAGS_Debug "-g -O0 -Werror -Wreorder -Wreturn-type -Wno-error=unused-variable -Wno-error=unused-parameter")
 
 # Linkage flags

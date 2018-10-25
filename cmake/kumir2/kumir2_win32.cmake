@@ -1,3 +1,4 @@
+message(STATUS "Entering file kumir2_win32.cmake")
 # NOTE: You should use MSVC 2010+ compiler
 
 # Build filesystem layout, similar to Linux layout
@@ -19,9 +20,10 @@ if(NOT DEFINED KUMIR2_SDK_SRC_DIR)
     set(KUMIR2_SDK_SRC_DIR "src")
 endif(NOT DEFINED KUMIR2_SDK_SRC_DIR)  # sources required to build some components (launchers, etc.)
 
+if (MSVC)
 # Compile flags
 set(KUMIR2_CXXFLAGS " -Zm300 -EHsc -GR -Y- -DWIN32 -D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS")
-set(KUMIR2_CXXFLAGS_Release "-DNDEBUG -DQT_NO_DEBUG -MD")
+#set(KUMIR2_CXXFLAGS_Release "-DNDEBUG -DQT_NO_DEBUG -MD")
 set(KUMIR2_CXXFLAGS_Debug "-MDd -Zi")
 
 if(${USE_QT} GREATER 4)
@@ -32,3 +34,20 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Zc:wchar_t-")
 endif(${USE_QT} GREATER 4)
 
+endif(MSVC)
+
+if (MINGW)
+	message(STATUS "CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}")
+	message(STATUS "CMAKE_CXX_FLAGS_RELEASE = ${CMAKE_CXX_FLAGS_RELEASE}")
+	message(STATUS "CMAKE_CXX_FLAGS_DEBUG = ${CMAKE_CXX_FLAGS_DEBUG}")
+	message(STATUS "CMAKE_CXX_FLAGS_RELWITHDEBINFO = ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+	message(STATUS "CMAKE_EXE_LINKER_FLAGS = ${CMAKE_EXE_LINKER_FLAGS}")
+	message(STATUS "CMAKE_DYNAMIC_LINKER_FLAGS = ${CMAKE_DYNAMIC_LINKER_FLAGS}")
+	message(STATUS "CMAKE_STATIC_LINKER_FLAGS = ${CMAKE_STATIC_LINKER_FLAGS}")
+	message(STATUS "CMAKE_MODULE_LINKER_FLAGS = ${CMAKE_MODULE_LINKER_FLAGS}")
+
+	set(CMAKE_CXX_FLAGS "-Wall -DQT_SHAREDMEMORY -DQT_SYSTEMSEMAPHORE")
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+endif()
+
+message(STATUS "Leaving file kumir2_win32.cmake")

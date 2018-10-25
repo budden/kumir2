@@ -1,3 +1,4 @@
+message(STATUS "Entering file kumir2_linux.cmake")
 # To make LSB-compliant structure all project shared libraries
 # should be placed into 'lib' subdirectory of /usr [/usr/local].
 # Some distributions have distinct lib64 directory for 64-bit libraries.
@@ -70,3 +71,5 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     list(APPEND KUMIR2_LANUCHER_LINKER_FLAGS "-lstdc++ -lm")
     list(APPEND KUMIR2_TOOL_LINKER_FLAGS "-lstdc++ -lm")
 endif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+
+message(STATUS "Leaving file kumir2_linux.cmake")

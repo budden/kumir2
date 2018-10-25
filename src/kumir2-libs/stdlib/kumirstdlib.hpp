@@ -23,7 +23,7 @@
 #include <cmath>
 
 #if defined(WIN32) || defined(_WIN32)
-#   include <Windows.h>
+#   include <windows.h>
 #else
 #   include <sys/time.h>
 #   include <sys/stat.h>
@@ -1629,7 +1629,6 @@ public:
 			Kumir::Core::abort(Kumir::Core::fromUtf8("Ошибка открытия файла: имя содержит недопустимый символ"));
 			return ft;
 		}
-		const char *path = localName.c_str();
 
 #if defined(WIN32) || defined(_WIN32)
 		const wchar_t *fmode = L"";
@@ -1663,6 +1662,7 @@ public:
 			Core::abort(Core::fromUtf8("Неправильный режим доступа"));
 		}
 
+		const char *path = localName.c_str();
 		FILE *res = fopen(path, fmode);
 #endif
 		if (res == 0) {

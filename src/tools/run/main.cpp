@@ -6,7 +6,7 @@
 #include <kumir2-libs/vm/vm.hpp>
 
 #if defined(WIN32) || defined(_WIN32)
-#include <Windows.h>
+#include <windows.h>
 #else
 #include <unistd.h>
 #endif

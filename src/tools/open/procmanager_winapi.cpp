@@ -1,6 +1,6 @@
 #include "procmanager_winapi.h"
 
-#include <Psapi.h>
+#include <psapi.h>
 
 #include <QString>
 #include <QDebug>

@@ -1,20 +1,15 @@
-project(Kumir2)
-cmake_minimum_required(VERSION 3.0)
+project(Kumir2 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.2)
 find_package(PythonInterp 3.2.0 REQUIRED)
+message(STATUS "Entering file CMakeLists.txt")
 message(STATUS "Cmake prefix path: ${CMAKE_PREFIX_PATH}")
 
 # Query for version info and pass it as compile definitions
 if(EXISTS "${CMAKE_SOURCE_DIR}/version_info.cmake")
     include(${CMAKE_SOURCE_DIR}/version_info.cmake)
-    message(STATUS "File-provided version info: HASH=${GIT_HASH}")
-    message(STATUS "File-provided version info: TIMESTAMP=${GIT_TIMESTAMP}")
-    message(STATUS "File-provided version info: TAG=${GIT_TAG}")
-    message(STATUS "File-provided version info: BRANCH=${GIT_BRANCH}")
+    message(STATUS "File-provided version info: ")
 elseif(PROVIDED_VERSION_INFO)
-    message(STATUS "Variable-provided version info: HASH=${GIT_HASH}")
-    message(STATUS "Variable-provided version info: TIMESTAMP=${GIT_TIMESTAMP}")
-    message(STATUS "Variable-provided version info: TAG=${GIT_TAG}")
-    message(STATUS "Variable-provided version info: BRANCH=${GIT_BRANCH}")
+    message(STATUS "Variable-provided version info: ")
 else()
     execute_process(
         COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_SOURCE_DIR}/scripts/query_version_info.py" "--mode=cmake_version_info_tbht"
@@ -25,11 +20,13 @@ else()
     list(GET VERSION_DEFINITIONS 1 GIT_BRANCH)
     list(GET VERSION_DEFINITIONS 2 GIT_HASH)
     list(GET VERSION_DEFINITIONS 3 GIT_TIMESTAMP)
-    message(STATUS "Queried version info: HASH=${GIT_HASH}")
-    message(STATUS "Queried version info: TIMESTAMP=${GIT_TIMESTAMP}")
-    message(STATUS "Queried version info: TAG=${GIT_TAG}")
-    message(STATUS "Queried version info: BRANCH=${GIT_BRANCH}")
+    message(STATUS "Queried version info: ")
 endif()
+
+message(STATUS "HASH=${GIT_HASH}")
+message(STATUS "TIMESTAMP=${GIT_TIMESTAMP}")
+message(STATUS "TAG=${GIT_TAG}")
+message(STATUS "BRANCH=${GIT_BRANCH}")
 
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/custom_variables.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/custom_variables.cmake")
@@ -42,19 +39,20 @@ find_package(Kumir2 REQUIRED)
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_SOURCE_DIR}/src")
 
-
 add_subdirectory(src)
-
 
 # Copy and create install targets for top-level resources
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${KUMIR2_RESOURCES_DIR}/userdocs")
+
 file(GLOB_RECURSE resfiles RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/userdocs ${CMAKE_CURRENT_SOURCE_DIR}/userdocs/*)
+
 foreach(res IN ITEMS ${resfiles})
     if(NOT ${res} MATCHES ^[.].*)
         get_filename_component(subdir ${res} PATH)
         file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${KUMIR2_RESOURCES_DIR}/userdocs/${subdir}")
         file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/userdocs/${res}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/${KUMIR2_RESOURCES_DIR}/userdocs/${subdir}")
         install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/userdocs/${res}" DESTINATION "${KUMIR2_RESOURCES_DIR}/userdocs/${subdir}")
+        #message(STATUS "Installed ${res}")
     endif()
 endforeach(res)
 
@@ -104,7 +102,7 @@ install(FILES src/app/kumir2-launcher.cpp DESTINATION ${KUMIR2_SDK_SRC_DIR})
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/distribution_build_config.cmake" "# Installed build configuration\n")
 file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/distribution_build_config.cmake"
     "set(USE_QT ${USE_QT})\n"
-#    "set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE})\n"
+    "set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE})\n"
     "set(KUMIR2_ROOT ${CMAKE_INSTALL_PREFIX})\n"
     "set(KUMIR2_SDK_SCRIPTS_DIR ${KUMIR2_SDK_SCRIPTS_DIR})\n"
     "set(KUMIR2_SDK_SRC_DIR ${KUMIR2_SDK_SRC_DIR})\n"
@@ -113,6 +111,7 @@ file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/distribution_build_config.cmake"
     "set(GIT_BRANCH ${GIT_BRANCH})\n"
     "set(GIT_TIMESTAMP ${GIT_TIMESTAMP})\n"
 )
+
 install(
     FILES "${CMAKE_CURRENT_BINARY_DIR}/distribution_build_config.cmake"
     DESTINATION "${KUMIR2_SDK_CMAKE_DIR}/kumir2"
@@ -129,3 +128,5 @@ if(NOT WIN32 AND NOT APPLE)
     endforeach(icon)
     install(FILES "${CMAKE_SOURCE_DIR}/share/mime/packages/kumir2-mimetypes.xml" DESTINATION ${KUMIR2_XDG_MIME_PACKAGES_DIR})
 endif(NOT WIN32 AND NOT APPLE)
+
+message(STATUS "Leaving file CMakeLists.txt")

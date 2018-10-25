@@ -1,3 +1,4 @@
+message(STATUS "Entering file kumir2_common.cmake")
 find_package(PythonInterp 3.2.0 REQUIRED)
 include(CMakeParseArguments)
 
@@ -9,7 +10,7 @@ set(MINIMUM_QT5_VERSION 5.3.0)
 set(MINIMUM_QT4_VERSION 4.7.0)
 
 if(DEFINED KUMIR2_DISABLED_SUBDIRS)
-#    message(STATUS "Explicitly disabled subdirs: ${KUMIR2_DISABLED_SUBDIRS}")
+    message(STATUS "Explicitly disabled subdirs: ${KUMIR2_DISABLED_SUBDIRS}")
 else()
     # The script exists only if build from main sources tree, but not using SDK
     if(EXISTS "${CMAKE_SOURCE_DIR}/scripts/query_version_info.py")
@@ -53,6 +54,7 @@ else()
     # Find Qt4
     find_package(Qt4 ${MINIMUM_QT4_VERSION} COMPONENTS QtCore REQUIRED)
     include(${QT_USE_FILE})
+
 endif()
 
 
@@ -83,6 +85,8 @@ function(kumir2_use_qt)
         set(QT_USE_QTMAIN 1)
         find_package(Qt4 ${MINIMUM_QT4_VERSION} QUIET COMPONENTS ${_QT_COMPONENTS} REQUIRED)
         include(${QT_USE_FILE})
+		message(STATUS "QT_INCLUDE_DIR=${QT_INCLUDE_DIR}")
+		message(STATUS "QT_LIBRARIES=${QT_LIBRARIES}")
         include_directories(${QT_INCLUDE_DIR})
         include_directories("${QT_INCLUDE_DIR}/Qt")
         list(APPEND _QT_INCLUDES ${QT_INCLUDE_DIR})
@@ -160,9 +164,12 @@ macro(kumir2_add_resources)
 endmacro(kumir2_add_resources)
 
 function(kumir2_run_lrelease NAME FROM TO)
+    if (MINGW)
+        message(STATUS "NAME = ${NAME}, FROM = ${FROM} TO = ${TO}")
+    endif()
     add_custom_command(
         TARGET ${NAME} POST_BUILD
-        COMMAND ${QT_LRELEASE_EXECUTABLE} -qm ${TO} ${FROM}
+        COMMAND "${QT_LRELEASE_EXECUTABLE}" -qm ${TO} ${FROM}
     )
     install(
         FILES ${TO}
@@ -372,7 +379,8 @@ function(kumir2_add_launcher)
         set_source_files_properties(${WIN_RC_FILE} PROPERTIES GENERATED ON)
         set(ICON_PATH "${ICONS_DIR}/${PARSED_ARGS_APP_ICON_NAME}.ico")
         string(REPLACE "/" "\\\\" ICON_NATIVE_PATH ${ICON_PATH})
-        file(WRITE ${WIN_RC_FILE} "IDI_ICON1 ICON DISCARDABLE \"${ICON_NATIVE_PATH}\"\r\n")
+        #file(WRITE ${WIN_RC_FILE} "IDI_ICON1 ICON DISCARDABLE \"${ICON_NATIVE_PATH}\"\r\n")
+        file(WRITE ${WIN_RC_FILE} "IDI_ICON1 ICON DISCARDABLE \"${ICON_PATH}\"\r\n")
         list(APPEND LAUNCHER_SOURCES ${WIN_RC_FILE})
         add_executable(${PARSED_ARGS_NAME} WIN32 ${LAUNCHER_SOURCES} ${QRC_SRC})
         if(${USE_QT} GREATER 4)
@@ -498,3 +506,4 @@ function(kumir2_add_tool)
     kumir2_copy_resources(${PARSED_ARGS_NAME})
     install(TARGETS ${PARSED_ARGS_NAME} DESTINATION ${KUMIR2_LIBEXECS_DIR})
 endfunction(kumir2_add_tool)
+message(STATUS "Leaving file kumir2_common.cmake")
