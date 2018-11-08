@@ -13,9 +13,14 @@ class RobotModule;
 class RobotModule : public RobotModuleBase
 {
 	Q_OBJECT
+
 public:
+	static const RobotModule *self;
+	static ExtensionSystem::SettingsPtr robotSettings() {
+		return RobotModule::self->mySettings();
+	}
+
 	RobotModule(ExtensionSystem::KPlugin *parent);
-	static RobotModule *self;
 
 	QSize minimumSize() const;
 
@@ -62,10 +67,9 @@ private:
 	bool isSafeToQuit();
 
 public:
-	// GUI access methods
 	QWidget *mainWidget() const;
 	QWidget *pultWidget() const;
-	static ExtensionSystem::SettingsPtr robotSettings();
+
 public slots:
 	void reloadSettings(ExtensionSystem::SettingsPtr settings, const QStringList &keys);
 	void changeGlobalState(ExtensionSystem::GlobalState old, ExtensionSystem::GlobalState current);
@@ -83,14 +87,17 @@ public slots:
 	void copyFromPult(QString log);
 	void getTimer();
 
+signals:
+	void sendToPultLog(const QVariant&);
+
 private:
 	void createGui();
 	void updateRobot();
 	void createEmptyField(int rows, int cols);
 	int LoadFromFile(QString p_FileName);
 	int SaveToFile(QString p_FileName);
+
 	QWidget *m_mainWidget;
-	// class QDeclarativeView * m_pultWidget;
 	RoboPult *m_pultWidget;
 	RoboField *field;
 	RoboField *startField;
@@ -114,8 +121,6 @@ private:
 	ExtensionSystem::GlobalState currentState;
 	QTimer *redrawTimer;
 
-signals:
-	void sendToPultLog(const QVariant&);
 
 }; // RobotModule
 

@@ -17,64 +17,13 @@ static const int AnimTime = 70;
 
 namespace ActorRobot
 {
-
-//Robot
-//#define FIELD_SIZE 20
-//#define BUTTON_SIZE 20
-
-//#define NOT_LEFT_WALL   14
-//#define NOT_RIGHT_WALL   13
-//#define NOT_DOWN_WALL   11
-//#define NOT_UP_WALL   7
-//#define DEFAULT_X 16
-//#define DEFAULT_Y 9
-//#define MAX_SIZE 256
-//#define MIN_SIZE 3
-// NEW V.K. 05-10
-//#define DPANEL_HIGTH 0
-//#define PANEL_HIGTH 0
-//#define BTNXSDVIG 0
-//#define SEE_MODE 0
-//#define RUN_MODE 1
-//#define EDIT_MODE 2
-//#define ANALYZE_MODE 3
-//#define PAUSE_MODE 4
-//#define DEFAULT_SIZEX 400
-//#define DEFAULT_SIZEY 400
-
-class AAA : public QWidget
-{
-public:
-	explicit AAA(QWidget *pult): QWidget(), pult_(pult)
-	{
-		setLayout(new QVBoxLayout);
-		layout()->setContentsMargins(0, 0, 0, 0);
-		layout()->addWidget(pult);
-	}
-
-	QSize minimumSizeHint() const
-	{
-		return pult_->minimumSizeHint();
-	}
-private:
-	QWidget *pult_;
-};
+const RobotModule *RobotModule::self = 0;
 
 
-ExtensionSystem::SettingsPtr RobotModule::robotSettings()
-{
-	return RobotModule::self->mySettings();
-
-}
-
-RobotModule *RobotModule::self = 0;
-
-
-RobotModule::RobotModule(ExtensionSystem::KPlugin *parent)
-	: RobotModuleBase(parent)
+RobotModule::RobotModule(ExtensionSystem::KPlugin *parent) :
+	RobotModuleBase(parent)
 {
 	self = this;
-
 	inDock = false;
 	animation = true;
 	pressed = false;
@@ -86,7 +35,6 @@ RobotModule::RobotModule(ExtensionSystem::KPlugin *parent)
 void RobotModule::createGui()
 {
 	field = new RoboField(0, this);
-	//field->editField();
 	field->createField(7, 7);
 
 	field->setRoboPos(0, 0);
@@ -95,15 +43,11 @@ void RobotModule::createGui()
 	view-> setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 	view->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
 	m_mainWidget = view;
-	const QUrl rcUrl = QUrl::fromLocalFile(
-			myResourcesDir().absoluteFilePath("rc.qml")
-		);
-	// m_pultWidget = new QDeclarativeView(rcUrl);
-	// m_pultWidget->setRenderHints(QPainter::Antialiasing|QPainter::TextAntialiasing);
-	//QDeclarativeItem * pult = qobject_cast<QDeclarativeItem*>(m_pultWidget->rootObject());
+	QUrl rcUrl = QUrl::fromLocalFile(
+		myResourcesDir().absoluteFilePath("rc.qml")
+	);
 	m_pultWidget = new RoboPult();
-	//  connect(m_pultWidget, SIGNAL(hasLeftWall()), this, SLOT(runGoLeft()));
-	// connect(m_pultWidget, SIGNAL(hasRightWall()), this, SLOT(runGoRight()));
+
 	connect(m_pultWidget, SIGNAL(goUp()), this, SLOT(runGoUp()));
 	connect(m_pultWidget, SIGNAL(goDown()), this, SLOT(runGoDown()));
 	connect(m_pultWidget, SIGNAL(goLeft()), this, SLOT(runGoLeft()));
@@ -143,7 +87,6 @@ void RobotModule::createGui()
 	rescentMenu = new QMenu();
 	m_actionRobotLoadRescent->setMenu(rescentMenu);
 	view->setWindowTitle(trUtf8("Робот - нет файла"));
-	// setWindowSize();
 }
 
 void RobotModule::copyFromPult(QString log)
@@ -305,6 +248,25 @@ QWidget *RobotModule::mainWidget() const
 	return m_mainWidget;
 }
 
+class AAA : public QWidget
+{
+public:
+	explicit AAA(QWidget *pult): QWidget(), pult_(pult)
+	{
+		setLayout(new QVBoxLayout);
+		layout()->setContentsMargins(0, 0, 0, 0);
+		layout()->addWidget(pult);
+	}
+
+	QSize minimumSizeHint() const
+	{
+		return pult_->minimumSizeHint();
+	}
+private:
+	QWidget *pult_;
+};
+
+
 QWidget *RobotModule::pultWidget() const
 {
 	static QWidget *dummy = new AAA(m_pultWidget);
@@ -316,64 +278,76 @@ QList<ExtensionSystem::CommandLineParameter>
 RobotModule::acceptableCommandLineParameters()
 {
 	QList<ExtensionSystem::CommandLineParameter> params;
-	params.append(ExtensionSystem::CommandLineParameter(true, 'f', "field", tr("Robot field file name"), QVariant::String, false));
+	params.append(
+		ExtensionSystem::CommandLineParameter(
+			true, 'f', "field", tr("Robot field file name"),
+			QVariant::String, false
+		)
+	);
 	return params;
-
 }
+
 QString RobotModule::initialize(
 	const QStringList &configurationParameters,
 	const ExtensionSystem::CommandLine &runtimeParameters
 ) {
+	QString fName = "";
+	if (runtimeParameters.value('f').isValid()) {
+		fName = runtimeParameters.value('f').toString();
+		qDebug() << "FIELD: |" << fName << "| ";
+	}
+
 #ifdef Q_OS_LINUX
-	QProcessEnvironment pe;
-	pe = QProcessEnvironment::systemEnvironment();
+	QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
 	qDebug() << "Display" << pe.value("DISPLAY");
-	if (pe.keys().indexOf("DISPLAY") < 0 || pe.value("DISPLAY").isEmpty()) { //NO DISPLAY
+	if (pe.keys().indexOf("DISPLAY") < 0 || pe.value("DISPLAY").isEmpty()) {
 		qDebug() << "Robot:Console mode";
 		curConsoleField = new ConsoleField(10, 15);
 		DISPLAY = false;
-		if (runtimeParameters.value('f').isValid()) {
-			qDebug() << "LOAD FIELD ERR CODE:" << curConsoleField->loadFromFile(runtimeParameters.value('f').toString());
+		if (!fName.isEmpty()) {
+			qDebug() << "LOAD FIELD ERR CODE:" << curConsoleField->loadFromFile(fName);
 		}
 		return "";
 	}
+
 	qDebug() << "Robot:GuiMode";
 #endif
+
 	DISPLAY = true;
+
 	if (!configurationParameters.contains("tablesOnly")) {
 		createGui();
 		redrawTimer = new QTimer();
 		connect(redrawTimer, SIGNAL(timeout()), this, SLOT(getTimer()));
 		redrawTimer->start(30);
-		ExtensionSystem::SettingsPtr sett;
-		sett = robotSettings();
-
-		if (runtimeParameters.value("field").isValid()) {
-			qDebug() << "FIELD:|" << runtimeParameters.value("field").toString() << "|";
-			// std::cout <<"FIELD:" <<runtimeParameters.value("field").toString().toStdString();
-			if (LoadFromFile(runtimeParameters.value("field").toString()) != 0) {
-				return "Error loading:" + runtimeParameters.value("field").toString();
-			}
-			return "";
-		}
-		if (RobotModule::robotSettings()->value("Robot/SFF").isValid()) {
-			if (LoadFromFile(RobotModule::robotSettings()->value("Robot/SFF").toString()) != 0) {
-				createEmptyField(7, 7);
-
-			}
-			//setWindowSize();
-		}
-		if (sett->value("Robot/Dir").isValid()) {
-			curDir = sett->value("Robot/Dir").toString();
-			curPDir = curDir;
-		}
-		// setWindowSize();
 	}
-	if (runtimeParameters.value('f').isValid()) {
-		qDebug() << "LOAD FIELD ERR CODE:" << field->loadFromFile(runtimeParameters.value('f').toString());
+
+	if (!fName.isEmpty()) {
+		int err = LoadFromFile(fName);
+		if (err != 0) {
+			return "Error loading: '" + fName + "', code=" + err;
+		}
+	} else if (RobotModule::robotSettings()->value("Robot/SFF").isValid()) {
+		QString sName = RobotModule::robotSettings()->
+			value("Robot/SFF").toString();
+		int err = LoadFromFile(sName);
+		if (err != 0) {
+			qDebug() << "Error loading: '" + sName + "', code=" + err;
+			createEmptyField(7, 7);
+		}
 	}
-	field->setColorFromSett();
-	reloadSettings(robotSettings(), QStringList());
+
+	ExtensionSystem::SettingsPtr sett = robotSettings();
+	if (sett->value("Robot/Dir").isValid()) {
+		curDir = sett->value("Robot/Dir").toString();
+		curPDir = curDir;
+	}
+
+	if (!configurationParameters.contains("tablesOnly")) {
+		field->setColorFromSett();
+		reloadSettings(robotSettings(), QStringList());
+	}
+
 	return "";
 }
 
@@ -394,9 +368,6 @@ void RobotModule::runGoUp()
 		setError(trUtf8("Робот разбился: сверху стена!"));
 		status = trUtf8("Отказ");
 	}
-//     if (sender() && qobject_cast<QDeclarativeItem*>(sender())) {
-//         emit sendToPultLog(status);
-//     }
 	if (sender() == m_pultWidget) {
 		m_pultWidget->Logger->appendText(trUtf8("вверх"), QString::fromUtf8("вверх     "), status);
 	}
@@ -1282,8 +1253,10 @@ void RobotModule::createRescentMenu()
 
 QSize RobotModule::minimumSize() const
 {
-	return QSize(mySettings()->value("Robot/CellSize").toInt() * 3, mySettings()->value("Robot/CellSize", FIELD_SIZE_SMALL).toInt() * 3);
-
+	return QSize(
+		mySettings()->value("Robot/CellSize").toInt() * 3,
+		mySettings()->value("Robot/CellSize", FIELD_SIZE_SMALL).toInt() * 3
+	);
 }
 
 void RobotModule::setWindowSize()
@@ -1404,7 +1377,7 @@ void RobotModule::getTimer()
 	field->update();
 	view->update();
 	qApp->processEvents();
-	mutex.unlock();;
+	mutex.unlock();
 }
 
 } // namespace ActorRobot
