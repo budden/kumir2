@@ -10,11 +10,10 @@
 #include <QtGui>
 #endif
 
-//#include <kumir2/analizerinterface.h>
 #include <kumir2/editorinterface.h>
 
 namespace Shared { namespace Analizer {
-	class Suggestion;
+	struct Suggestion;
 } }
 
 namespace Editor {

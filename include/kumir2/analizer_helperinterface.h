@@ -25,15 +25,16 @@ struct Suggestion
 		SecondaryKeyword,
 		Other
 	};
+	QString value;
+	QString description;
+	bool showOnlyInFullList;
+	Kind kind;
+
 	Suggestion() {
 		kind = Other;
 		showOnlyInFullList = false;
 	}
 
-	QString value;
-	QString description;
-	bool showOnlyInFullList;
-	Kind kind;
 };
 
 struct ApiHelpItem

@@ -11,7 +11,7 @@ namespace Shared
 {
 namespace Editor { class InstanceInterface; }
 namespace Analizer {
-	class Data;
+	struct Data;
 	class SourceFileInterface;
 }
 
