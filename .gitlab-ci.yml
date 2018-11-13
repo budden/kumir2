@@ -64,7 +64,7 @@ build:mac:
   script:
     - cd build
     - export PATH=$QTDIR_MAC/bin:$PATH
-    - make
+    - make -k -j8
   tags:
     - mac
   cache:
