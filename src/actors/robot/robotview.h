@@ -1,8 +1,14 @@
 #ifndef ROBOTVIEW_H
 #define ROBOTVIEW_H
 
-#include <QtGui>
-#include <kumir2-libs/extensionsystem/kplugin.h>
+#include <QtCore>
+#if QT_VERSION >= 0x050000
+# include <QtWidgets>
+#else
+# include <QtGui>
+#endif
+
+#include <kumir2-libs/extensionsystem/settings.h>
 
 
 namespace ActorRobot
@@ -61,7 +67,6 @@ class  CFieldItem
 public:
 	CFieldItem();
 	void setWalls(int wallByte);
-
 
 	bool IsColored;
 	float radiation;
