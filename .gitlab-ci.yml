@@ -10,14 +10,14 @@ configure:mac:
     - mkdir build
     - cd build
     - export PATH=$QTDIR_MAC/bin:$PATH
-    - cmake -DUSE_QT=5 -DCMAKE_BUILD_TYPE=Release ..
+    - cmake -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DUSE_QT=5 -DCMAKE_BUILD_TYPE=Release ..
   tags:
     - mac
   cache:
     key: $CI_PIPELINE_ID
     untracked: true
     paths:
-      - build/  
+      - build/
 
 configure:win32:
   stage: configure
@@ -30,7 +30,7 @@ configure:win32:
     - call vsvars32.bat
     - call vcvars32.bat
     - cd build
-    - cmake -Wno-dev -DCMAKE_PREFIX_PATH="%QTDIR%\lib\cmake" -DQt5_DIR="%QTDIR%\lib\cmake\Qt5" -DUSE_QT=5 -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=%PYTHON_EXECUTABLE% -G "NMake Makefiles" ..
+    - cmake -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -Wno-dev -DCMAKE_PREFIX_PATH="%QTDIR%\lib\cmake" -DQt5_DIR="%QTDIR%\lib\cmake\Qt5" -DUSE_QT=5 -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=%PYTHON_EXECUTABLE% -G "NMake Makefiles" ..
   tags:
     - windows
   cache:
