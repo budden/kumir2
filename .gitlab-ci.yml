@@ -50,7 +50,9 @@ build:win32:
     - call vsvars32.bat
     - call vcvars32.bat
     - set CL=/MP
+    - echo %date% %time%
     - nmake
+    - echo %date% %time%
   tags:
     - windows
   cache:
@@ -64,7 +66,9 @@ build:mac:
   script:
     - cd build
     - export PATH=$QTDIR_MAC/bin:$PATH
+    - date
     - make -k -j8
+    - date
   tags:
     - mac
   cache:
