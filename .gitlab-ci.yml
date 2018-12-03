@@ -30,7 +30,7 @@ configure:win32:
     - call vsvars32.bat
     - call vcvars32.bat
     - cd build
-    - cmake -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -Wno-dev -DCMAKE_PREFIX_PATH="%QTDIR%\lib\cmake" -DQt5_DIR="%QTDIR%\lib\cmake\Qt5" -DUSE_QT=5 -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=%PYTHON_EXECUTABLE% -G "NMake Makefiles" ..
+    - cmake -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -Wno-dev -DCMAKE_PREFIX_PATH="%QTDIR%\lib\cmake" -DQt5_DIR="%QTDIR%\lib\cmake\Qt5" -DUSE_QT=5 -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=%PYTHON_EXECUTABLE% -G "Ninja" ..
   tags:
     - windows
   cache:
@@ -51,7 +51,7 @@ build:win32:
     - call vcvars32.bat
     - set CL=/MP
     - echo %date% %time%
-    - nmake
+    - ninja -j8
     - echo %date% %time%
   tags:
     - windows
