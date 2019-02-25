@@ -3926,7 +3926,8 @@ QList<AST::VariablePtr> SyntaxAnalizer::parseVariables(int statementIndex, Varia
 	return result;
 }
 
-QVariant SyntaxAnalizer::parseConstant(const std::list<LexemPtr> &constant,
+QVariant SyntaxAnalizer::parseConstant(
+	const std::list<LexemPtr> &constant,
 	const AST::VariableBaseType pt,
 	int &maxDim
 ) const
@@ -4052,7 +4053,7 @@ QVariant SyntaxAnalizer::parseConstant(const std::list<LexemPtr> &constant,
 			bool isHex = false;
 
 			if (pt == AST::TypeInteger) {
-				integerOverflow = !Kumir::Math::isCorrectIntegerConstant(val.toStdWString());
+				integerOverflow = !Kumir::Converter::isCorrectIntegerConstant(val.toStdWString());
 				isHex = val.startsWith("$") || val.startsWith("-$") || val.startsWith("0x") || val.startsWith("-0x");
 				if (!isHex) {
 					// Check for leading zeroes
@@ -4070,7 +4071,6 @@ QVariant SyntaxAnalizer::parseConstant(const std::list<LexemPtr> &constant,
 							return QVariant::Invalid;
 						}
 					}
-
 				}
 			}
 			if (ct == AST::TypeReal ||

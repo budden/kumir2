@@ -26,14 +26,18 @@ struct VisibleLine {
 	size_t to;
 	size_t sourceLineNumber;
 
-	explicit VisibleLine(const QString &tx, const LineProp &lp, bool *es, size_t f, size_t t, size_t n)
-		: text(tx), prop(lp), endSelected(es), from(f), to(t), sourceLineNumber(n) {}
-
+	explicit VisibleLine(
+		const QString &tx, const LineProp &lp,
+		bool *es, size_t f, size_t t, size_t n
+	) : text(tx), prop(lp), endSelected(es), from(f), to(t), sourceLineNumber(n)
+		{}
+#if 0
 	VisibleLine &operator=(const VisibleLine &other)
 	{
 		*this = other;
 		return *this;
 	}
+#endif
 };
 
 class OneSession
@@ -46,22 +50,14 @@ public:
 	QSize visibleSize() const;
 	QString plainText(bool footer_header) const;
 	QString fileName() const;
-	QDateTime startTime() const
-	{
-		return startTime_;
-	}
-	QDateTime endTime() const
-	{
-		return endTime_;
-	}
-	int fixedWidth() const
-	{
-		return fixedWidth_;
-	}
+	QDateTime startTime() const { return startTime_; }
+	QDateTime endTime() const { return endTime_; }
+	int fixedWidth() const { return fixedWidth_; }
 	int flexibleWidth() const;
 	void draw(QPainter &p, const QRect &dirtyRect) const;
 	void drawInputRect(QPainter &p, const uint mainTextY) const;
-	uint drawUtilityText(QPainter &p,
+	uint drawUtilityText(
+		QPainter &p,
 		const QString &text,
 		const LineProp &prop,
 		const QPoint &topLeft
@@ -70,14 +66,8 @@ public:
 	void drawCursor(QPainter &p) const;
 	void triggerTextSelection(const QPoint &fromPos, const QPoint &toPos);
 	void clearSelection();
-	void setFont(const QFont &font)
-	{
-		font_ = font;
-	}
-	QFont font() const
-	{
-		return font_;
-	}
+	void setFont(const QFont &font) { font_ = font; }
+	QFont font() const { return font_; }
 	int widthInChars(int realWidth) const;
 	bool hasSelectedText() const;
 	QString selectedText() const;
@@ -100,6 +90,7 @@ signals:
 	void updateRequest();
 	void message(const QString &txt);
 	void inputDone(const QVariantList &);
+
 private:
 	QPoint cursorPositionByVisiblePosition(const QPoint &pos) const;
 	void updateSelectionFromVisibleToRealLines();
