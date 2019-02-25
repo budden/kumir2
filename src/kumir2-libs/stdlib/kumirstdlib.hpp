@@ -62,18 +62,7 @@ typedef double real;
 		fflush(stderr);
 	}
 #endif
-
-inline String &operator+(String &s, Char c)
-{
-	s.push_back(c);
-	return s;
-}
-
-inline String &operator+(String &s, /*ascii only*/ char c)
-{
-	s.push_back(Char(c));
-	return s;
-}
+#endif
 
 inline String &operator+(String &s, const /*utf8*/ char *cs)
 {
@@ -82,7 +71,6 @@ inline String &operator+(String &s, const /*utf8*/ char *cs)
 	s.append(wcs);
 	return s;
 }
-#endif
 
 struct FileType {
 	enum OpenMode { NotOpen, Read, Write, Append };
@@ -426,7 +414,6 @@ public:
 		return !Inf && !NaN;
 	}
 
-
 	static bool isCorrectReal(real val)
 	{
 		return isCorrectDouble(val);
@@ -459,6 +446,12 @@ public:
 
 	static int iabs(int x)
 	{
+		unsigned int y = (unsigned int) x;
+		if (y != 0 && y + y == 0) {
+			Core::abort(Core::fromUtf8("Целочисленное переполнение"));
+			return 0;
+		}
+
 		return x > 0 ? x : -x;
 	}
 
