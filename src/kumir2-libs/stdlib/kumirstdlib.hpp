@@ -368,50 +368,42 @@ public:
 	static void init() {}
 	static void finalize() {}
 
-	static bool checkSumm(int32_t lhs, int32_t rhs)
+	// Check for integer overflow
+	// CLang completely removes the standard check technique due to optimization.
+	// Use another method: cast to 64 bit
+	static bool checkSumm(int32_t l, int32_t r)
 	{
-		// Check for integer overflow
-		// CLang completely removes the standard check technique due to optimization.
-		// Use another method: cast to 64 bit
-		int64_t l = lhs, r = rhs, res = l + r;
-		const int64_t R = 2147483647LL;
-		const int64_t L = -2147483648LL;
-		bool result = (L <= res && res <= R);
+		int64_t res = (int64_t) l + (int64_t) r;
+		bool result = (INT32_MIN <= res && res <= INT32_MAX);
 		return result;
 	}
 
-	static bool checkDiff(int32_t lhs, int32_t rhs)
+	static bool checkDiff(int32_t l, int32_t r)
 	{
-		int64_t l = lhs, r = rhs, res = l - r;
-		const int64_t R = 2147483647LL;
-		const int64_t L = -2147483648LL;
-		bool result = (L <= res && res <= R);
+		int64_t res = (int64_t) l - (int64_t) r;
+		bool result = (INT32_MIN <= res && res <= INT32_MAX);
 		return result;
 	}
 
-	static bool checkProd(int32_t lhs, int32_t rhs)
+	static bool checkProd(int32_t l, int32_t r)
 	{
-		int64_t l = lhs, r = rhs, res = l * r;
-		const int64_t R = 2147483647LL;
-		const int64_t L = -2147483648LL;
-		bool result = (L <= res && res <= R);
+		int64_t res = (int64_t) l * (int64_t) r;
+		bool result = (INT32_MIN <= res && res <= INT32_MAX);
 		return result;
 	}
 
-	static bool isCorrectDouble(double val)
+	static bool isCorrectDouble(double x)
 	{
 		// !!!!!!!!!!! WARNING !!!!!!!!!!
 		// this works ONLY for IEEE754-compatible representation!
-		double *pval = &val;
-		uint64_t *pbits = reinterpret_cast<uint64_t *>(pval);
-		uint64_t bits = *pbits;
-		uint64_t expMask  = 0x7FF0000000000000;
-		uint64_t fracMask = 0x000FFFFFFFFFFFFF;
-		uint64_t exponent = (bits & expMask) >> 52;
-		uint64_t fraction = bits & fracMask;
-		bool Inf = (exponent == uint64_t(0x7FF)) && (fraction == uint64_t(0));
-		bool NaN = (exponent == uint64_t(0x7FF)) && (fraction > uint64_t(0));
-		return !Inf && !NaN;
+		union DoubleU64 {
+			double d;
+			uint64_t u;
+		} v;
+		v.d = x;
+		uint32_t expMask  = 0x7FF;
+		uint32_t exponent = (v.u >> 52) & expMask;
+		return exponent != expMask;
 	}
 
 	static bool isCorrectReal(real val)
@@ -452,7 +444,7 @@ public:
 			return 0;
 		}
 
-		return x > 0 ? x : -x;
+		return x >= 0 ? x : -x;
 	}
 
 	static int intt(real x)
@@ -570,7 +562,7 @@ public:
 			return 0;
 		}
 		real absval = fabs(rresult);
-		real mxintval = fabs(real(maxint()));
+		real mxintval = real(INT32_MAX);
 		if (absval > mxintval) {
 			Core::abort(Core::fromUtf8("Ошибка возведения в степень: результат - слишком большое число"));
 			return 0;
@@ -593,15 +585,7 @@ public:
 #endif
 	}
 
-	static int maxint()
-	{
-		return int(0x7FFFFFFF);
-	}
-
-	static real maxreal()
-	{
-		return 1.797693e+308;
-	}
+	static real maxreal() { return 1.7976931348623157e+308; }
 
 	static int div(int a, int b)
 	{
@@ -848,6 +832,11 @@ public:
 			}
 		}
 		assert (base);
+
+		if (pos == l) {
+			error = EmptyWord;
+			return 0;
+		}
 
 		unsigned int maxabs = (1U << 31) - (negative ? 0 : 1);
 		unsigned int maxabsb = maxabs / base;
