@@ -23,6 +23,7 @@
 #include <string>
 
 #include <cmath>
+#include <cfloat>
 
 #if defined(WIN32) || defined(_WIN32)
 #   include <windows.h>
@@ -440,7 +441,7 @@ public:
 	{
 		unsigned int y = (unsigned int) x;
 		if (y != 0 && y + y == 0) {
-			Core::abort(Core::fromUtf8("Целочисленное переполнение"));
+			Core::abort(L"Целочисленное переполнение");
 			return 0;
 		}
 
@@ -449,7 +450,12 @@ public:
 
 	static int intt(real x)
 	{
-		return static_cast<int>(::floor(x));
+		double y = ::floor((double) x);
+		if (!(INT32_MIN <= y && y <= INT32_MAX)) {
+			Core::abort(L"Целочисленное переполнение");
+			return 0;
+		}
+		return (int) y;
 	}
 
 	static real arccos(real x)
@@ -520,7 +526,7 @@ public:
 		}
 	}
 
-	inline static real ln(real x)
+	static real ln(real x)
 	{
 		if (x > 0.0) {
 			return ::log(x);
@@ -1059,28 +1065,37 @@ public:
 	)
 	{
 		(void) dot;
-		std::stringstream stream;
-		if (0 > decimals && !expform) {
+
+		int sdecimals = decimals;
+		if (sdecimals < 0) {
 			double absVal = fabs(double(value));
-			if (0.0 != value && (absVal < 0.0001 || absVal > 999999.)) {
-				expform = true;
+			sdecimals = 13;
+			if (0 < absVal && absVal <= DBL_MAX) {
+				if (absVal < 1e-4 || absVal >= 1e6) {
+					expform = true;
+				}
+				if (!expform) {
+					sdecimals -= ::floor(::log(absVal) / ::log(10.0));
+				}
 			}
 		}
+
+		std::stringstream stream;
 		if (expform) {
 			stream << std::scientific;
-			stream.precision(0 > decimals ? 6 : decimals);
 		} else {
 			stream << std::fixed;
-			stream.precision(0 > decimals ? 6 : decimals);
 		}
-
+		stream.precision(sdecimals < 0 ? 6 : sdecimals);
 		stream << value;
+
 		std::string rpart = stream.str();
 		std::string expPart;
 
+		const size_t npos = std::string::npos;
 		if (expform) {
 			size_t ePos = rpart.find('e');
-			if (std::string::npos == ePos) {
+			if (ePos == npos) {
 				ePos = rpart.find('E');
 			}
 			expPart = rpart.substr(ePos);
@@ -1088,12 +1103,12 @@ public:
 		}
 
 		// Replace ',' with '.' (for some locales like Russian)
-		const size_t dotPos = rpart.find(',');
-		if (std::string::npos != dotPos) {
-			rpart.replace(dotPos, 1, ".");
+		size_t dotPos = rpart.find(',');
+		if (dotPos != npos) {
+			rpart.at(dotPos) = '.';
 		}
-		if ((expform || 0 > decimals) && std::string::npos != rpart.find('.')) {
-			while (rpart.size() > 1 && '0' == rpart.at(rpart.size() - 1)) {
+		if ((expform || decimals < 0) && rpart.find('.') != npos) {
+			while (rpart.size() > 1 && rpart.at(rpart.size() - 1) == '0') {
 				rpart.resize(rpart.length() - 1);
 			}
 			if ('.' == rpart.at(rpart.length() - 1)) {
