@@ -563,32 +563,64 @@ public:
 
 	static int ipow(int a, int b)
 	{
-		real rresult = ::floor(pow(real(a), real(b)));
-		if (Core::error.length() > 0) {
-			return 0;
-		}
-		real absval = fabs(rresult);
-		real mxintval = real(INT32_MAX);
-		if (absval > mxintval) {
-			Core::abort(Core::fromUtf8("Ошибка возведения в степень: результат - слишком большое число"));
-			return 0;
-		}
-		int iresult = static_cast<int>(rresult);
-		return iresult;
-	}
+		static const String e_unwhole = L"Результат - не целое число";
+		static const String e_ovfl = L"Целочисленное переполнение";
+		static const String e_divz = L"Деление на ноль";
 
-	template <typename A, typename B> inline static real safediv(A a, B b)
-	{
-#ifdef NO_ZERODIV_CHECK
-		return static_cast<real>(a) / static_cast<real>(b);
-#else
-		if (b != 0) {
-			return static_cast<real>(a) / static_cast<real>(b);
-		} else {
-			Core::abort(Core::fromUtf8("Деление на 0"));
-			return 0.0;
+		if (b <= 1) {
+			if (b == 1)
+				return a;
+			if (b == 0)
+				return 1;
+			if (a != 1 && a != -1) {
+				Core::abort(a == 0 ? e_divz : e_unwhole);
+				return 0;
+			}
 		}
-#endif
+
+		if (a == 0 || a == 1)
+			return a;
+
+		if (a == -1)
+			return (b & 1) ? -1 : 1;
+
+		if (a == 2) {
+			if (31 <= b) {
+				Core::abort(e_ovfl);
+				return 0;
+			}
+			return 1 << b;
+		}
+
+		if (a == -2) {
+			if (31 < b) {
+				Core::abort(e_ovfl);
+				return 0;
+			}
+			unsigned int res = 1U << b;
+			return (b & 1) ? -res : res;
+		}
+
+		int64_t y = a, res = 1;
+		bool ok = true;
+		while (0 < b && ok) {
+			if (b & 1) {
+				res *= y;
+				ok = ok && (INT32_MIN <= res && res <= INT32_MAX);
+			}
+			b /= 2;
+			if (b == 0)
+				break;
+			y *= y;
+			ok = ok && (INT32_MIN <= y && y <= INT32_MAX);
+		}
+
+		if (!ok) {
+			Core::abort(e_ovfl);
+			return 0;
+		}
+
+		return (int) res;
 	}
 
 	static real maxreal() { return 1.7976931348623157e+308; }
