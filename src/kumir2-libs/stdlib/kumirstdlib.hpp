@@ -628,33 +628,28 @@ public:
 	static int div(int a, int b)
 	{
 		if (b <= 0) {
-			Core::abort(Core::fromUtf8("Деление на не натуральное число"));
+			Core::abort(L"Деление на ненатуральное число");
 			return 0;
-		} else {
-			int aa = a;
-			if (aa < 0) {
-				unsigned int absolunta = -1 * (aa);
-				unsigned int quoti = absolunta / b + 1;
-				aa += quoti * b;
-			}
-			int m = aa % b;
-			return (a - m) / b;
 		}
+
+		int q = a / b, r = a % b;
+		if (r < 0)
+			q--;
+		return q;
+
 	}
 
 	static int mod(int a, int b)
 	{
 		if (b <= 0) {
-			Core::abort(Core::fromUtf8("Деление на не натуральное число"));
+			Core::abort(L"Деление на ненатуральное число");
 			return 0;
-		} else {
-			if (a < 0) {
-				unsigned int absolunta = -1 * (a);
-				unsigned int quoti = absolunta / b + 1;
-				a += quoti * b;
-			}
-			return a % b;
 		}
+
+		int r = a % b;
+		if (r < 0)
+			r += b;
+		return r;
 	}
 
 	template <typename T> static int sign(T x)
