@@ -5,12 +5,19 @@ find_package(Kumir2 REQUIRED)
 kumir2_use_qt(Core Gui)
 
 set(SOURCES
+	srobot.cpp
+	editline.cpp
+	cfield.cpp
+	rfield.cpp
 	robotmodule.cpp
 	robotview.cpp
 	pult.cpp
 )
 
 set(MOC_HEADERS
+	srobot.h
+	editline.h
+	rfield.h
 	robotmodule.h
 	robotview.h
 	pult.h

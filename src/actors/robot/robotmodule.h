@@ -2,13 +2,14 @@
 #define ROBOTMODULE_H
 
 #include "robotmodulebase.h"
-#include "robotview.h"
 class RoboPult;
 
 namespace ActorRobot
 {
-class EditLine;
 class RobotModule;
+class RobotView;
+class RoboField;
+class ConsoleField;
 
 class RobotModule : public RobotModuleBase
 {
@@ -120,7 +121,6 @@ private:
 	QMutex mutex;
 	ExtensionSystem::GlobalState currentState;
 	QTimer *redrawTimer;
-
 
 }; // RobotModule
 
