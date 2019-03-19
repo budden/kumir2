@@ -233,54 +233,54 @@
 			"default": "#6496ff",
 			"title": {"ascii": "Background color (edit mode)", "ru_RU": "Цвет поля (редактирование)"}
 		},
-		"LettShift": {
+		"FillColor": {
 			"order": 7,
+			"type": "color",
+			"default": "#9370db",
+			"title": {"ascii": "FillColor", "ru_RU": "Цвет закрашивания"}
+		},
+		"LettShift": {
+			"order": 8,
 			"type": "int",
 			"default": "2",
 			"title": {"ascii": "Letters Shift", "ru_RU": "Сдвиг символов вверх/вниз"}
 		},
 		"MarkShift": {
-			"order": 8,
+			"order": 9,
 			"type": "int",
 			"default": "3",
 			"title": {"ascii": "Marks Shift", "ru_RU": "Сдвиг точки вверх/вниз"}
 		},
 		"MarkShiftLeft": {
-			"order": 9,
+			"order": 10,
 			"type": "int",
 			"default": "6",
 			"title": {"ascii": "Letters Shift", "ru_RU": "Сдвиг точки право/лево"}
 		},
-			"ImageSize": {
-			"order": 10,
+		"ImageSize": {
+			"order": 11,
 			"type": "double",
 			"default": "100",
 			"maximum": "5000",
 			"title": {"ascii": "ImageSize", "ru_RU": "Пикселей/клетку при сохранении картинки"}
 		},
 		"BortW": {
-			"order": 11,
+			"order": 12,
 			"type": "int",
 			"default": "6",
 			"title": {"ascii": "BortW", "ru_RU": "Толщина борта"}
 		},
 		"StW": {
-			"order": 12,
-			"type": "int",
-			"default": "1",
-			"title": {"ascii": "BortW", "ru_RU": "Толщина линий"}
-		},
-		"WallW": {
 			"order": 13,
 			"type": "int",
-			"default": "4",
-			"title": {"ascii": "BortW", "ru_RU": "Толщина стен"}
+			"default": "1",
+			"title": {"ascii": "GridW", "ru_RU": "Толщина линий"}
 		},
-		"FillColor": {
-			"order": 6,
-			"type": "color",
-			"default": "gray",
-			"title": {"ascii": "FillColor", "ru_RU": "Цвет закрашивания"}
+		"WallW": {
+			"order": 14,
+			"type": "int",
+			"default": "4",
+			"title": {"ascii": "WallW", "ru_RU": "Толщина стен"}
 		}
 	}
 }

@@ -15,9 +15,8 @@ SimpleRobot::SimpleRobot(QGraphicsItem *parent): QGraphicsObject(parent)
 	QPolygon polygon;
 	polygon.setPoints(4, points);
 	QPolygonF polygonf = QPolygonF(polygon);
-	Robot = new QGraphicsPolygonItem();
-	Robot->setPolygon(polygonf);
-	Robot->setZValue(100);
+	Robot.setPolygon(polygonf);
+	Robot.setZValue(100);
 	setZValue(100);
 	crash = NO_CRASH;
 	moving = false;
@@ -55,7 +54,7 @@ void SimpleRobot::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 QRectF SimpleRobot::boundingRect() const
 {
-	return Robot->boundingRect();
+	return Robot.boundingRect();
 }
 
 
@@ -81,8 +80,7 @@ void SimpleRobot::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 	painter->drawPolygon(polygonf);
 	if (crash != NO_CRASH) {
 		qDebug("crash!");
-		QPen noPen(Qt::NoPen);
-		painter->setPen(noPen);
+		painter->setPen(Qt::NoPen);
 		painter->setBrush(QColor("red"));
 		if (crash == UP_CRASH) {
 			painter->drawPolygon(QPolygonF(up_crash));

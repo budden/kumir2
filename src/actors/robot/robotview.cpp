@@ -125,25 +125,22 @@ void RobotView::mouseMoveEvent(QMouseEvent *event)
 void RobotView::wheelEvent(QWheelEvent *event)
 {
 	float numDegrees = event->delta() / 8;
-	qDebug() << "whell:" << numDegrees;
-	qDebug() << "Scale" << c_scale;
+	qDebug() << "whell: " << numDegrees;
+	qDebug() << "Scale: " << c_scale;
+
+	double n_scale = c_scale;
 
 	if (numDegrees > 0) {
-		c_scale = c_scale * 1.2;
-		if (c_scale > 10) {
-			c_scale = 10;
-		} else {
-			this->scale(1.2, 1.2);
-		}
+		n_scale *= 1.25;
 	} else {
-		c_scale = c_scale * 0.8;
-		if (c_scale < 0.1) {
-			c_scale = 0.1;
-		} else {
-			this->scale(0.8, 0.8);
-		}
+		n_scale *= 0.8;
 	}
 
+	if (0.1 <= n_scale && n_scale <= 10 && n_scale != c_scale) {
+		double r = n_scale / c_scale;
+		this->scale(r, r);
+		c_scale = n_scale;
+	}
 }
 
 void RobotView::showEvent(QShowEvent *event)

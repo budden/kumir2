@@ -4,6 +4,7 @@
 #include <QGraphicsWidget>
 #include <QGraphicsScene>
 #include <QPen>
+#include <QIcon>
 class QToolButton;
 class QSpinBox;
 class QDoubleSpinBox;
@@ -169,12 +170,12 @@ public:
 	void createField(int shirina, int visota);
 	FieldItm *getFieldItem(int str, int stlb) const;
 	void debug() const;
-	void setColorFromSett();
+	void reloadSettings();
 	int loadFromFile(const QString &fileName);
 	int loadFromDataStream(QIODevice *l_File);
 	int saveToFile(QString fileName);
 	void createRobot();
-	void UpdateColors();
+//	void UpdateColors();
 	void showCursorUp(int row, int col);
 	void showCursorDown(int row, int col);
 
@@ -222,10 +223,7 @@ public:
 	void editField();
 
 	void setMode(int Mode); //swich mode (show/hide controls etc.)
-	void setModeFlag(int Mode)
-	{
-		mode = Mode;
-	}
+	void setModeFlag(int Mode) { mode = Mode; }
 
 	FieldItm *currentCell() const
 	{
@@ -237,10 +235,7 @@ public:
 		return getFieldItem(x, y);
 	}
 
-	void setMarkMode(bool isColor)
-	{
-		markMode = isColor;
-	}
+	void setMarkMode(bool isColor) { markMode = isColor; }
 
 	bool WasEdit() const { return wasEdit; }
 	void setRoboPos(int roboX, int roboY);
@@ -249,18 +244,16 @@ public:
 	int robotY() const { return robo_y; }
 
 
-	void dropWasEdit()
-	{
-		wasEdit = false;
-	}
-
+	void dropWasEdit() { wasEdit = false; }
+#if 0
 	void wbMode();
 	void colorMode();
+#endif
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
 
 public slots:
 	void roboMoved(QPointF pos);
-	void cellDialogOk();
+//	void cellDialogOk();
 	void timerTic();
 	void addRow();
 	void remRow();
@@ -282,11 +275,15 @@ private:
 	QList<QList<FieldItm * > > Items;
 	QList<QGraphicsLineItem *> setka;
 	bool markMode, wasEdit;
-	QColor LineColor, EditLineColor, WallColor, EditColor, NormalColor, Color;
+	QColor LineColor, EditLineColor, NormalColor, EditColor;
+	QColor WallColor, FillColor, TextColor;
 	uint fieldSize;
 	uint robo_x, robo_y;
 	QWidget *Parent;
-	QPen BortLine, StLine, showLine, WallLine;
+	QPen BortLine, WallLine, ShowLine;
+	QIcon PlusIcon, MinusIcon;
+	int LetterShift, MarkShift, MarkShiftLeft;
+	int BortWidth, WallWidth, GridWidth;
 	bool WasEditFlag;
 
 	//TOOLS

@@ -216,7 +216,7 @@ void RobotModule::reloadSettings(
 ) {
 	Q_UNUSED(keys);
 	qDebug() << "reload settings";
-	field->setColorFromSett();
+	field->reloadSettings();
 	CurCellSize = settings->value("Robot/CellSize", FIELD_SIZE_SMALL).toInt();
 	view->reloadSett(settings);
 	if (RobotModule::robotSettings()->value("Robot/SFF").isValid()) {
@@ -336,7 +336,7 @@ QString RobotModule::initialize(
 	}
 
 	if (!configurationParameters.contains("tablesOnly")) {
-		field->setColorFromSett();
+		field->reloadSettings();
 		reloadSettings(robotSettings(), QStringList());
 	}
 

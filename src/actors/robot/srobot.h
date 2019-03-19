@@ -27,14 +27,11 @@ public:
 		QWidget *widget
 	);
 
-	void setCrash(uint dirct);
+	void setCrash(uint dir);
 	void move(QPoint point);
 
 	bool isMoving() const { return moving; }
-	void  setMoving(bool flag)
-	{
-		moving = flag;
-	}
+	void setMoving(bool flag) { moving = flag; }
 
 signals:
 	void moved(QPointF point);
@@ -47,8 +44,8 @@ protected:
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-	QGraphicsPolygonItem *Robot;
-	bool ready, moving;
+	QGraphicsPolygonItem Robot;
+	bool moving;
 	uint crash;
 };
 
