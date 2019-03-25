@@ -16,24 +16,23 @@ RobotView::RobotView(RoboField *roboField)
 	setMouseTracking(true);
 	setCursor(Qt::OpenHandCursor);
 	robotField = roboField;
+	QDir resDir = RobotModule::self->myResourcesDir();
+
 	textEditBtn = new QToolButton(this);
 	textEditBtn->hide();
 	textEditBtn->setCheckable(true);
-	textEditBtn->setIcon(QIcon(RobotModule::self->myResourcesDir()
-		.absoluteFilePath("text.png")));
+	textEditBtn->setIcon(QIcon(resDir.absoluteFilePath("text.png")));
 
 	radEditBtn = new QToolButton(this);
-	radEditBtn->setIcon(QIcon(RobotModule::self->myResourcesDir()
-		.absoluteFilePath("btn_radiation.png")));
-
+	radEditBtn->setIcon(QIcon(resDir.absoluteFilePath("btn_radiation.png")));
 	radEditBtn->hide();
 	radEditBtn->setCheckable(true);
 	radEditBtn->move(textEditBtn->height(), 0);
+
 	tmpEditBtn = new QToolButton(this);
 	tmpEditBtn->hide();
 	tmpEditBtn->setCheckable(true);
-	tmpEditBtn->setIcon(QIcon(RobotModule::self->myResourcesDir()
-		.absoluteFilePath("btn_temperature.png")));
+	tmpEditBtn->setIcon(QIcon(resDir.absoluteFilePath("btn_temperature.png")));
 	tmpEditBtn->move(textEditBtn->height() * 2 + 2, 0);
 
 	connect(textEditBtn, SIGNAL(toggled(bool)), this, SLOT(changeEditMode(bool)));
@@ -57,15 +56,13 @@ void RobotView::mousePressEvent(QMouseEvent *event)
 		qDebug() << "Edit mode;";
 		QGraphicsView::mousePressEvent(event);
 		update();
-		repaint();
-		qApp->processEvents();
 		return;
 	}
 
 	if (
 		robotField->sceneRect().height() * c_scale > this->height() ||
 		robotField->sceneRect().width() * c_scale > this->width()
-	) { //field > view
+	) {
 		pressed = true;
 		setCursor(Qt::ClosedHandCursor);
 	}
@@ -96,7 +93,10 @@ void RobotView::mouseMoveEvent(QMouseEvent *event)
 	}
 
 	setCursor(Qt::ArrowCursor);
-	if (robotField->sceneRect().height() > this->height()  || robotField->sceneRect().width() > this->width()) { //field size more then view size
+	if (
+		robotField->sceneRect().height() > this->height()  ||
+		robotField->sceneRect().width() > this->width()
+	) { //field size more then view size
 		setCursor(Qt::OpenHandCursor);
 	}
 
@@ -194,7 +194,7 @@ void RobotView::setWindowSize(const QSize newGeometry)
 		return;
 	}
 
-	emit  resizeRequest(newGeometry);
+	emit resizeRequest(newGeometry);
 	if (newGeometry != oldSize) {
 		centerOn(
 			newGeometry.width() / 2 - (CurCellSize / 2),
@@ -237,6 +237,7 @@ void RobotView::setDock(bool docked)
 void RobotView::changeEditMode(bool state)
 {
 	QToolButton *clicked = qobject_cast<QToolButton *>(sender());
+	qDebug() << "changeEditMode " << clicked << " " << state;
 
 	if (radEditBtn != clicked && radEditBtn->isChecked()) {
 		radEditBtn->setChecked(false);
@@ -254,28 +255,18 @@ void RobotView::changeEditMode(bool state)
 		clicked->setChecked(state);
 	}
 
-	if (!textEditBtn->isChecked() && !radEditBtn->isChecked()) {
+	if (textEditBtn->isChecked()) {
+		robotField->setMode(TEXT_MODE);
+	} else if (radEditBtn->isChecked()) {
+		robotField->setMode(RAD_MODE);
+	} else if (tmpEditBtn->isChecked()) {
+		robotField->setMode(TEMP_MODE);
+	} else {
 		robotField->setMode(NEDIT_MODE);
 	}
 
-	if (textEditBtn->isChecked()) {
-		robotField->setMode(TEXT_MODE);
-		update();
-	}
-
-	if (radEditBtn->isChecked()) {
-		robotField->setMode(RAD_MODE);
-		repaint();
-		update();
-	}
-
-	if (tmpEditBtn->isChecked()) {
-		robotField->setMode(TEMP_MODE);
-		repaint();
-		update();
-	}
-
 	setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+	update();
 }
 
 } // namespace ActorRobot

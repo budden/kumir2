@@ -86,17 +86,17 @@ public slots:
 	void openRecent();
 	void setWindowSize();
 	void copyFromPult(QString log);
-	void getTimer();
 
 signals:
 	void sendToPultLog(const QVariant&);
 
 private:
 	void createGui();
-	void updateRobot();
 	void createEmptyField(int rows, int cols);
 	int LoadFromFile(QString p_FileName);
 	int SaveToFile(QString p_FileName);
+	void Update();
+	void Sleep();
 
 	QWidget *m_mainWidget;
 	RoboPult *m_pultWidget;
@@ -120,8 +120,6 @@ private:
 	ConsoleField *curConsoleField;
 	QMutex mutex;
 	ExtensionSystem::GlobalState currentState;
-	QTimer *redrawTimer;
-
 }; // RobotModule
 
 } // ActorRobot

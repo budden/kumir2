@@ -243,17 +243,11 @@ public:
 	int robotX() const { return robo_x; }
 	int robotY() const { return robo_y; }
 
-
 	void dropWasEdit() { wasEdit = false; }
-#if 0
-	void wbMode();
-	void colorMode();
-#endif
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
 
 public slots:
 	void roboMoved(QPointF pos);
-//	void cellDialogOk();
 	void timerTic();
 	void addRow();
 	void remRow();

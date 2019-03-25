@@ -939,89 +939,70 @@ void RoboField::showButtons(bool yes)
 
 void RoboField::setMode(int Mode)
 {
+	qDebug() << "setMode from " << mode  << " to " << Mode;
 	mode = Mode;
-	sett = RobotModule::robotSettings();
 	QGraphicsView *view = views().first();
+
 	if (mode == NORMAL_MODE) {
 		if (this->items().indexOf(keyCursor) > -1) {
 			this->removeItem(keyCursor);
 		}
-
 		radSpinBox->hide();
 		tempSpinBox->hide();
-		redrawEditFields();
-		redrawRTFields();
 		view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		showButtons(false);
-		update();
 	}
+
 	if (mode == NEDIT_MODE) {
 		if (this->items().indexOf(keyCursor) > -1) {
 			this->removeItem(keyCursor);
 		}
 		radSpinBox->hide();
 		tempSpinBox->hide();
-		redrawEditFields();
-		redrawRTFields();
 		view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 		view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 		showButtons(true);
-		update();
 	}
 
 	if (mode == RAD_MODE) {
 		if (this->items().indexOf(keyCursor) > -1) {
 			this->removeItem(keyCursor);
 		}
-
 		tempSpinBox->hide();
 		radSpinBox->setParent(view);
 		radSpinBox->move(100, 2);
-
 		radSpinBox->show();
-		clickCell = QPair<int, int>(-1, -1);
-
-
-
-		redrawEditFields();
-		redrawRTFields();
 		showButtons(false);
-		update();
-
 	}
+
 	if (mode == TEMP_MODE) {
 		if (this->items().indexOf(keyCursor) > -1) {
 			this->removeItem(keyCursor);
 		}
-
 		radSpinBox->hide();
 		tempSpinBox->setParent(view);
 		tempSpinBox->move(100, 2);
-
 		tempSpinBox->show();
-		clickCell = QPair<int, int>(-1, -1);
-
-
-
-		redrawEditFields();
-		redrawRTFields();
 		showButtons(false);
-		update();
-
 	}
+
 	if (mode == TEXT_MODE) {
 		tempSpinBox->hide();
 		radSpinBox->hide();
-		redrawRTFields();
 		setTextEditMode(true);
 		showButtons(false);
-		update();
 	}
 
+	clickCell = QPair<int, int>(-1, -1);
+	redrawEditFields();
+	redrawRTFields();
 	update();
 	view->repaint();
+	view->update();
 	update();
+	view->repaint();
+	view->update();
 }
 
 void RoboField::editField()
@@ -1366,11 +1347,11 @@ void RoboField::setTextEditMode(bool flag)
 		if (keyCursor) {
 			keyCursor->hide();
 		}
-	};
+	}
 	radSpinBox->hide();
 	redrawEditFields();
 	redrawRTFields();
-};
+}
 
 
 void RoboField::destroyRobot()
@@ -3298,17 +3279,15 @@ void RoboField::showCursorDown(int row, int col)
 
 void RoboField::timerTic()
 {
-	if (mode != TEXT_MODE) {
+	if (mode != TEXT_MODE || !keyCursor) {
 		if (keyCursor) {
 			keyCursor->hide();
 		}
 		timer->stop();
-	}
-	qDebug() << "TIK!";
-	if (!keyCursor) {
-		timer->stop();
 		return;
 	}
+
+	qDebug() << "TIK!";
 	timer->start(500);
 	if (keyCursor->isVisible()) {
 		keyCursor->hide();
@@ -3359,36 +3338,5 @@ RoboField *RoboField::Clone() const
 
 	return clone;
 }
-
-#if 0
-void RoboField::wbMode()
-{
-
-	this->setBackgroundBrush(QBrush("white"));
-	for (int i = 0; i < rows(); i++) {
-		for (int j = 0; j < columns(); j++) {
-			getFieldItem(i, j)->wbWalls();
-		}
-	}
-}
-
-void RoboField::colorMode()
-{
-	sett = RobotModule::robotSettings();
-	for (int i = 0; i < rows(); i++) {
-		for (int j = 0; j < columns(); j++) {
-			getFieldItem(i, j)->colorWalls();
-			getFieldItem(i, j)->setTextColor();
-		}
-	}
-	QColor bgColor;
-	if (mode == NORMAL_MODE) {
-		bgColor = QColor(40, 150, 40);    //Normal Color
-	} else {
-		bgColor = QColor(0, 0, 140);    //Edit Color
-	}
-	this->setBackgroundBrush(QBrush(bgColor));
-}
-#endif
 
 } // ActorRobot namespace

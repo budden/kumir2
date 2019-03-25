@@ -46,9 +46,6 @@ void RobotModule::createGui()
 	view-> setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 	view->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
 	m_mainWidget = view;
-	QUrl rcUrl = QUrl::fromLocalFile(
-		myResourcesDir().absoluteFilePath("rc.qml")
-	);
 	m_pultWidget = new RoboPult();
 
 	connect(m_pultWidget, SIGNAL(goUp()), this, SLOT(runGoUp()));
@@ -119,23 +116,6 @@ void RobotModule::copyFromPult(QString log)
 	m_mainWidget->setWindowTitle(trUtf8("Робот - ") + source->objectName());
 	startField = field->Clone();
 	field->dropWasEdit();
-	//   ajustWindowSize();//NEW ROBOT
-
-
-
-
-	//  ToDubl();
-
-
-	//  SizeX = m_Size_x * m_FieldSize;
-	// SizeY = m_Size_y * m_FieldSize + MenuHigth;
-
-
-
-	// WasEditFlag=false;
-	//delete btnFind;
-	//CreatebtnFind();
-
 
 	reset();
 	return;
@@ -147,7 +127,6 @@ void RobotModule::reset()
 	/* TODO
 	This method is called when actor resets its state before program starts.
 	*/
-	//delete field;
 	qDebug() << "Reset!!";
 	if (!DISPLAY) { //console mode
 		qDebug() << "Reset::console mode";
@@ -202,13 +181,9 @@ void RobotModule::changeGlobalState(
 	}
 	field->destroyNet();
 	field->drawNet();
-	view->update();
-	field->update();
-	msleep(2 * AnimTime);
-	view->update();
-	field->update();
-	qApp->processEvents();//Redraw event fix
-};
+	Sleep();
+	Sleep();
+}
 
 void RobotModule::reloadSettings(
 	ExtensionSystem::SettingsPtr settings,
@@ -309,9 +284,11 @@ QString RobotModule::initialize(
 
 	if (!configurationParameters.contains("tablesOnly")) {
 		createGui();
+#if 0
 		redrawTimer = new QTimer();
 		connect(redrawTimer, SIGNAL(timeout()), this, SLOT(getTimer()));
 		redrawTimer->start(30);
+#endif
 	}
 
 	if (!fName.isEmpty()) {
@@ -340,20 +317,20 @@ QString RobotModule::initialize(
 		reloadSettings(robotSettings(), QStringList());
 	}
 
+	Update();
 	return "";
 }
 
 void RobotModule::runGoUp()
 {
 	if (!DISPLAY) {
-		qDebug() << "Go up";
 		if (!curConsoleField->goUp()) {
 			setError(trUtf8("Робот разбился: сверху стена!"));
 		}
 		return;
 	}
+
 	mutex.lock();
-	qDebug() << "Robot up";
 	QString status = "OK";
 	if (!field->stepUp()) {
 		field->setCrash(UP_CRASH);
@@ -361,29 +338,26 @@ void RobotModule::runGoUp()
 		status = trUtf8("Отказ");
 	}
 	if (sender() == m_pultWidget) {
-		m_pultWidget->Logger->appendText(trUtf8("вверх"), QString::fromUtf8("вверх     "), status);
+		m_pultWidget->Logger->appendText(
+			trUtf8("вверх"),
+			QString::fromUtf8("вверх     "),
+			status
+		);
 	}
-	if (animation) {
-		msleep(AnimTime);
-	}
-	msleep(qrand() % 10);
 	mutex.unlock();
-	// view->update();
-	return;
+	Sleep();
 }
-
 
 void RobotModule::runGoDown()
 {
 	if (!DISPLAY) {
-		qDebug() << "Go down";
 		if (!curConsoleField->goDown()) {
 			setError(trUtf8("Робот разбился: снизу стена!"));
 		}
 		return;
 	}
+
 	mutex.lock();
-	qDebug() << "Robot down";
 	QString status = "OK";
 	if (!field->stepDown()) {
 		setError(trUtf8("Робот разбился: снизу стена!"));
@@ -391,46 +365,42 @@ void RobotModule::runGoDown()
 		status = trUtf8("Отказ");
 	}
 	if (sender() == m_pultWidget) {
-		m_pultWidget->Logger->appendText(trUtf8("вниз"), QString::fromUtf8("вниз     "), status);
+		m_pultWidget->Logger->appendText(
+			trUtf8("вниз"),
+			QString::fromUtf8("вниз     "),
+			status
+		);
 	}
-	if (animation) {
-		msleep(AnimTime);
-	}
-	msleep(qrand() % 10);
 	mutex.unlock();
-	return;
+	Sleep();
 }
-
 
 void RobotModule::runGoLeft()
 {
-
-	qDebug() << "Robot left";
-
 	if (!DISPLAY) {
 		if (!curConsoleField->goLeft()) {
 			setError(trUtf8("Робот разбился: слева стена!"));
 		}
 		return;
 	}
+
 	mutex.lock();
 	QString status = "OK";
 	if (!field->stepLeft()) {
 		field->setCrash(LEFT_CRASH);
 		setError(trUtf8("Робот разбился: слева стена!"));
 		status = trUtf8("Отказ");
-	};
+	}
 	if (sender() == m_pultWidget) {
-		m_pultWidget->Logger->appendText(trUtf8("влево"), QString::fromUtf8("влево     "), status);
+		m_pultWidget->Logger->appendText(
+			trUtf8("влево"),
+			QString::fromUtf8("влево     "),
+			status
+		);
 	}
-	if (animation) {
-		msleep(AnimTime);
-	}
-	msleep(qrand() % 10);
 	mutex.unlock();
-	return;
+	Sleep();
 }
-
 
 void RobotModule::runGoRight()
 {
@@ -440,7 +410,7 @@ void RobotModule::runGoRight()
 		}
 		return;
 	}
-	//  qDebug() << "Robot right";
+
 	mutex.lock();
 	QString status = "OK";
 	if (!field->stepRight()) {
@@ -453,58 +423,51 @@ void RobotModule::runGoRight()
 	if (sender() == m_pultWidget) {
 		m_pultWidget->Logger->appendText(trUtf8("вправо"), QString::fromUtf8("вправо     "), status);
 	}
-	if (animation) {
-		msleep(AnimTime);
-	}
-	msleep(qrand() % 10);
 	mutex.unlock();
-
-	return;
+	Sleep();
 }
 
 
 void RobotModule::runDoPaint()
 {
-
 	if (!DISPLAY) {
 		curConsoleField->getCurItem()->isColored = true;
 		return;
 	}
 
+	mutex.lock();
 	if (!field->currentCell()->IsColored) {
 		field->reverseColorCurrent();
 	}
+
 	QString status = "OK";
-//    if (sender() && qobject_cast<QDeclarativeItem*>(sender())) {
-//        emit sendToPultLog(status);
-//    }
 	if (sender() == m_pultWidget) {
-		m_pultWidget->Logger->appendText(trUtf8("закрасить"), trUtf8("закрасить"), "OK");
+		m_pultWidget->Logger->appendText(
+			trUtf8("закрасить"),
+			trUtf8("закрасить"),
+			"OK"
+		);
 	}
-	//  if(animation)
-//   {
-	view->update();
-	msleep(AnimTime);
-	//  }
-	return;
+	mutex.unlock();
+	Sleep();
 }
 
 
 bool RobotModule::runIsWallAtTop()
 {
-
 	if (!DISPLAY) {
 		return curConsoleField->isUpWall();
 	}
 
 	bool result = !field->currentCell()->canUp();
 	QString status = result ? trUtf8("Да") : trUtf8("Нет");
-//    if (sender() && qobject_cast<QDeclarativeItem*>(sender())) {
-//        emit sendToPultLog(status);
-//    }
-	if (sender() == m_pultWidget)
-		m_pultWidget->Logger->appendText(QString::fromUtf8("вывод \'Сверху стена: \',сверху стена,нс"),
-			trUtf8("сверху стена"), status);
+	if (sender() == m_pultWidget) {
+		m_pultWidget->Logger->appendText(
+			QString::fromUtf8("вывод \'Сверху стена: \',сверху стена,нс"),
+			trUtf8("сверху стена"),
+			status
+		);
+	}
 	return result;
 }
 
@@ -518,13 +481,13 @@ bool RobotModule::runIsWallAtBottom()
 
 	bool result = !field->currentCell()->canDown();
 	QString status = result ? trUtf8("Да") : trUtf8("Нет");
-//    if (sender() && qobject_cast<QDeclarativeItem*>(sender())) {
-//        emit sendToPultLog(status);
-//    }
-	if (sender() == m_pultWidget)
-		m_pultWidget->Logger->appendText(QString::fromUtf8("вывод \'Снизу стена: \',снизу стена,нс"),
-			QString::fromUtf8("снизу стена"), status);
-
+	if (sender() == m_pultWidget) {
+		m_pultWidget->Logger->appendText(
+			QString::fromUtf8("вывод \'Снизу стена: \',снизу стена,нс"),
+			QString::fromUtf8("снизу стена"),
+			status
+		);
+	}
 	return result;
 }
 
@@ -537,35 +500,37 @@ bool RobotModule::runIsWallAtLeft()
 
 	bool result = !field->currentCell()->canLeft();
 	QString status = result ? trUtf8("Да") : trUtf8("Нет");
-//    if (sender() && qobject_cast<QDeclarativeItem*>(sender())) {
-//        emit sendToPultLog(status);
-//    }
-	if (sender() == m_pultWidget)
-		m_pultWidget->Logger->appendText(QString::fromUtf8("вывод \'Слева стена: \',слева стена,нс"),
-			trUtf8("слева стена"), status);
-
+	if (sender() == m_pultWidget) {
+		m_pultWidget->Logger->appendText(
+			QString::fromUtf8("вывод \'Слева стена: \',слева стена,нс"),
+			trUtf8("слева стена"),
+			status
+		);
+	}
 	return result;
 }
 
 
 bool RobotModule::runIsWallAtRight()
 {
-
 	if (!DISPLAY) {
 		return curConsoleField->isRightWall();
 	}
+
 	bool result = !field->currentCell()->canRight();
 	QString status = result ? trUtf8("Да") : trUtf8("Нет");
-//    if (sender() && qobject_cast<QDeclarativeItem*>(sender())) {
-//        emit sendToPultLog(status);
-//    }
 	if (sender() == m_pultWidget) {
 		if (result)
-			m_pultWidget->Logger->appendText(QString::fromUtf8("вывод \'Справа стена: \',справа стена,нс"),
-				trUtf8("справа стена"), trUtf8("Да"));
+			m_pultWidget->Logger->appendText(
+				QString::fromUtf8("вывод \'Справа стена: \',справа стена,нс"),
+				trUtf8("справа стена"),
+				trUtf8("Да")
+			);
 		else
-			m_pultWidget->Logger->appendText(QString::fromUtf8("вывод \'Справа стена: \',справа стена,нс"),
-				trUtf8("справа стена"), trUtf8("Нет"));
+			m_pultWidget->Logger->appendText(
+				QString::fromUtf8("вывод \'Справа стена: \',справа стена,нс"),
+				trUtf8("справа стена"), trUtf8("Нет")
+			);
 	}
 	return result;
 }
@@ -579,16 +544,19 @@ bool RobotModule::runIsFreeAtTop()
 
 	bool result = field->currentCell()->canUp();
 	QString status = result ? trUtf8("Да") : trUtf8("Нет");
-	if (sender() == m_pultWidget)
-		m_pultWidget->Logger->appendText(QString::fromUtf8("вывод \'Сверху свободно: \',сверху свободно,нс"),
-			trUtf8("сверху свободно"), status);
+	if (sender() == m_pultWidget) {
+		m_pultWidget->Logger->appendText(
+			QString::fromUtf8("вывод \'Сверху свободно: \',сверху свободно,нс"),
+			trUtf8("сверху свободно"),
+			status
+		);
+	}
 	return result;
 }
 
 
 bool RobotModule::runIsFreeAtBottom()
 {
-
 	if (!DISPLAY) {
 		qDebug() << "Is free D:" << !curConsoleField->isDownWall();
 		return !curConsoleField->isDownWall();
@@ -596,9 +564,13 @@ bool RobotModule::runIsFreeAtBottom()
 
 	bool result = field->currentCell()->canDown();
 	QString status = result ? trUtf8("Да") : trUtf8("Нет");
-	if (sender() == m_pultWidget)
-		m_pultWidget->Logger->appendText(QString::fromUtf8("вывод \'Снизу свободно: \',снизу свободно,нс"),
-			trUtf8("снизу свободно"), status);
+	if (sender() == m_pultWidget) {
+		m_pultWidget->Logger->appendText(
+			QString::fromUtf8("вывод \'Снизу свободно: \',снизу свободно,нс"),
+			trUtf8("снизу свободно"),
+			status
+		);
+	}
 	return result;
 }
 
@@ -627,6 +599,7 @@ bool RobotModule::runIsFreeAtRight()
 	if (!DISPLAY) {
 		return !curConsoleField->isRightWall();
 	}
+
 	bool result = field->currentCell()->canRight();
 	QString status = result ? trUtf8("Да") : trUtf8("Нет");
 	if (sender() == m_pultWidget) {
@@ -1353,17 +1326,24 @@ void RobotModule::updateLastFiles(const QString newFile)
 	createRescentMenu();
 }
 
-void RobotModule::updateRobot()
+
+void RobotModule::Update()
 {
+//	mutex.lock();
+	if (view)
+		view->update();
+	if (field)
+		field->update();
+
+//	qApp->processEvents();
+//	mutex.unlock();
 }
 
-void RobotModule::getTimer()
+void RobotModule::Sleep()
 {
-	mutex.lock();
-	field->update();
-	view->update();
-	qApp->processEvents();
-	mutex.unlock();
+	Update();
+	if (animation)
+		msleep(AnimTime);
 }
 
 } // namespace ActorRobot

@@ -30,7 +30,7 @@ public:
 	RobotView(RoboField *roboField);
 	void  FindRobot();
 	void showButtons(bool flag);
-	QSize  sizeHint() const;
+	QSize sizeHint() const;
 
 	void setField(RoboField *field)
 	{
