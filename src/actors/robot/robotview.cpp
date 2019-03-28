@@ -2,6 +2,7 @@
 #include "cfield.h"
 #include "robotview.h"
 #include "robotmodule.h"
+#include <QToolButton>
 
 namespace ActorRobot {
 

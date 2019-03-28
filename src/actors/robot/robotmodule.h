@@ -4,6 +4,9 @@
 #include "robotmodulebase.h"
 class RoboPult;
 
+class QPushButton;
+class QSpinBox;
+
 namespace ActorRobot
 {
 class RobotModule;

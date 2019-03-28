@@ -6,6 +6,14 @@
 #include "robotmodule.h"
 #include <assert.h>
 
+#include <QWidget>
+#include <QSpinBox>
+#include <QToolButton>
+#include <QGraphicsProxyWidget>
+#include <QGraphicsSceneEvent>
+#include <QMessageBox>
+
+
 namespace ActorRobot {
 
 static const int MAX_CLICK_DELTA = 6;

@@ -4,6 +4,8 @@
 #include <QPainter>
 #include <QPen>
 #include <QUrl>
+#include <QPushButton>
+#include <QSpinBox>
 
 namespace ActorRobot {
 
