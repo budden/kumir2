@@ -1,7 +1,11 @@
 #include "pluginmanager_impl.h"
 
 #if defined(Q_OS_WIN32)
+#if defined(__MINGW32__)
+static const char *LIB_PREFIX = "lib";
+#else
 static const char *LIB_PREFIX = "";
+#endif
 static const char *LIB_SUFFIX = ".dll";
 #elif defined(Q_OS_MAC)
 static const char *LIB_PREFIX = "lib";
