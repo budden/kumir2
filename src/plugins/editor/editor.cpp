@@ -147,8 +147,6 @@ void EditorInstance::loadDocument(
 	QString *error
 ) {
 	Q_UNUSED(error);
-    Shared::AnalizerInterface * analizerPlugin = nullptr;
-    Shared::Analizer::InstanceInterface * analizerInstance = nullptr;
 
     QList<Shared::AnalizerInterface*> analizers =
             ExtensionSystem::PluginManager::instance()
@@ -156,19 +154,23 @@ void EditorInstance::loadDocument(
 
     for (int i=0; i<analizers.size(); i++) {
         if (analizers[i]->defaultDocumentFileNameSuffix() == data.canonicalSourceLanguageName) {
-            analizerPlugin = analizers[i];
-            analizerInstance = analizerPlugin->createInstance();
+            analizerPlugin_ = analizers[i];
+            delete analizerInstance_;
+            analizerInstance_ = 0;
+            analizerInstance_ = analizerPlugin_->createInstance();
             if (data.sourceUrl.isLocalFile()) {
                 const QString localPath = data.sourceUrl.toLocalFile();
                 const QString dirName = QFileInfo(localPath).absoluteDir().path();
-                analizerInstance->setSourceDirName(dirName);
+                analizerInstance_->setSourceDirName(dirName);
             }
             break;
         }
     }
 
-    analizerPlugin_ = analizerPlugin;
-    analizerInstance_ = analizerInstance;
+    if (plane_) {
+        plane_->updateAnalizer();
+    }
+
     if (analizerInstance_) {
         analizerInstance_->connectUpdateRequest(this, SLOT(updateFromAnalizer()));
     }
@@ -665,6 +667,19 @@ EditorInstance::EditorInstance(
     }
 }
 
+EditorInstance::~EditorInstance()
+{
+    delete doc_;
+    doc_ = 0;
+    delete analizerInstance_;
+    analizerInstance_ = 0;
+
+    if (plane_)
+        plane_->deleteLater();
+    killTimer(timerId_);
+}
+
+
 void EditorInstance::setupUi()
 {
     horizontalScrollBar_ = new QScrollBar(Qt::Horizontal, this);
@@ -1053,14 +1068,6 @@ TextDocument * EditorInstance::document()
 Shared::Analizer::InstanceInterface * EditorInstance::analizer()
 {
     return analizerInstance_;
-}
-
-
-EditorInstance::~EditorInstance()
-{
-    delete doc_;
-    plane_->deleteLater();
-    killTimer(timerId_);
 }
 
 
