@@ -8,21 +8,31 @@
 #include <kumir2-libs/extensionsystem/pluginmanager.h>
 #include <kumir2-libs/extensionsystem/logger.h>
 
-static QString resolvePath(const char *what)
+static bool gui = false;
+
+
+static struct Resolver
 {
-	static QString ExecDir = QString::fromLatin1(KUMIR2_EXEC_DIR);
-	static QString MyDir = QCoreApplication::applicationDirPath();
-	static int RootDistLevelUp = ExecDir.isEmpty()
-		? 0
-		: ExecDir.count("/") + 1;
-	QString result = MyDir;
-	for (int i = 0; i < RootDistLevelUp; ++i) {
-		result += "/../";
+	Resolver() {
+		QString execDir = QString::FromUtf8(KUMIR2_EXEC_DIR);
+		int RootDistLevelUp = execDir.isEmpty() ? 0 : execDir.count("/") + 1;
+		appDir = QCoreApplication::applicationDirPath();
+		baseDir = appDir;
+		for (int i = 0; i < RootDistLevelUp; ++i) {
+			baseDir += "/..";
+		}
+		baseDir = QDir::cleanPath(baseDir);
+		sharePath = baseDir + "/" + QString::FromUtf8(KUMIR2_RESOURCES_DIR);
+		sharePath = QDir::cleanPath(sharePath);
+		libsPath = baseDir + "/" + QString::FromUtf8(KUMIR2_LIBS_DIR);
+		libsPath = QDir::cleanPath(libsPath);
+		pluginsPath = baseDir + "/" + QString::FromUtf8(KUMIR2_PLUGINS_DIR);
+		pluginsPath = QDir::cleanPath(pluginsPath);
 	}
-	result += QString::fromLatin1(what);
-	result = QDir::cleanPath(result);
-	return result;
-}
+
+	QString appDir, baseDir;
+	QString sharePath, libsPath, pluginsPath;
+} resolver;
 
 #if QT_VERSION < 0x050000
 void GuiMessageOutput(QtMsgType type, const char *msg)
@@ -49,6 +59,7 @@ void GuiMessageOutput(QtMsgType type, const QMessageLogContext &, const QString 
 	}
 }
 
+#if 0
 void ConsoleMessageOutput(QtMsgType type, const char *msg)
 {
 	switch (type) {
@@ -68,6 +79,7 @@ void ConsoleMessageOutput(QtMsgType type, const char *msg)
 		break;
 	}
 }
+#endif
 
 void showErrorMessage(const QString &text)
 {
@@ -83,7 +95,7 @@ void showErrorMessage(const QString &text)
 	}
 }
 
-QString getLanguage()
+satic QString getLanguage()
 {
 	return "ru"; // TODO implement sometime in future...
 }
@@ -93,22 +105,18 @@ static QList<QDir> translationsDirs()
 	QList<QDir> result;
 
 	// Translations dir from base distribution
-	const QString sharePath = resolvePath(KUMIR2_RESOURCES_DIR);
-	QDir baseTranslationsDir(sharePath + "/translations");
-	if (baseTranslationsDir.exists()) {
-		result.append(baseTranslationsDir);
+	QDir btsDir(resolver.sharePath + "/translations");
+	if (btsDir.exists()) {
+		result.append(btsDir);
 	}
 
 #ifdef Q_OS_LINUX
 	// Search additional paths
-	const QString homePath = QString::fromLocal8Bit(::getenv("HOME"));
-	const QStringList extraPaths = QStringList()
+	QStringList extraPaths = QStringList()
 		<< "/usr/share/kumir2/translations"
 		<< "/usr/local/share/kumir2/translations"
 		<< "/opt/kumir2/share/translations"
 		<< "/opt/kumir/share/translations"
-		<< homePath + "/.local/share/kumir2/translations"
-		<< QDir::currentPath() + "/translations"
 		;
 
 	Q_FOREACH (const QString &path, extraPaths) {
@@ -119,24 +127,28 @@ static QList<QDir> translationsDirs()
 	}
 #endif
 
+	QDir htsDir(QDir::homePath() + "/translations");
+	if (htsDir.exists()) {
+		result.append(htsDir);
+	}
+
+	QDir ctsDir(QDir::currentPath() + "/translations");
+	if (ctsDir.exists()) {
+		result.append(ctsDir);
+	}
+
 	return result;
 }
 
 class Application : QObject
 {
 public:
-	explicit Application(int &argc, char **argv, bool gui) :
+	explicit Application() :
 		QObject(),
-		_qApp(0),
 		_timerId(-1),
 		_splashScreen(nullptr),
 		_started(false)
 	{
-		if (gui) {
-			_qApp = new QApplication(argc, argv);
-		} else {
-			_qApp = new QCoreApplication(argc, argv);
-		}
 		_qApp->installEventFilter(this);
 	}
 
@@ -147,7 +159,7 @@ public:
 
 	void initialize()
 	{
-		const QStringList arguments = _qApp->arguments();
+		const QStringList arguments = qApp->arguments();
 		qDebug() << "Arguments: " << arguments;
 		bool mustShowHelpAndExit = false;
 		bool mustShowVersionAndExit = false;
@@ -168,31 +180,31 @@ public:
 #ifdef Q_OS_LINUX
 		gui = gui && getenv("DISPLAY") != 0;
 #endif
-		const QList<QDir> tsDirs = translationsDirs();
+		QList<QDir> tsDirs = translationsDirs();
 		Q_FOREACH (const QDir &translationsDir, tsDirs) {
 			QStringList ts_files = translationsDir.entryList(QStringList() << "*_" + getLanguage() + ".qm");
 			foreach (QString tsname, ts_files) {
 				tsname = tsname.mid(0, tsname.length() - 3);
-				QTranslator *tr = new QTranslator(_qApp);
+				QTranslator *tr = new QTranslator(qApp);
 				if (tr->load(tsname, translationsDir.absolutePath())) {
-					_qApp->installTranslator(tr);
+					qApp->installTranslator(tr);
 				}
 			}
 		}
 
-		const QString sharePath = resolvePath(KUMIR2_RESOURCES_DIR);
-		_qApp->setProperty("sharePath", sharePath);
+		QString sharePath = resolvePath(KUMIR2_RESOURCES_DIR);
+		qApp->setProperty("sharePath", sharePath);
 
 		QSettings::setDefaultFormat(QSettings::IniFormat);
-		_qApp->addLibraryPath(resolvePath(KUMIR2_LIBS_DIR));
-		_qApp->addLibraryPath(resolvePath(KUMIR2_PLUGINS_DIR));
+		qApp->addLibraryPath(resolvePath(KUMIR2_LIBS_DIR));
+		qApp->addLibraryPath(resolvePath(KUMIR2_PLUGINS_DIR));
 		ExtensionSystem::PluginManager *manager = ExtensionSystem::PluginManager::instance();
 		manager->setPluginPath(resolvePath(KUMIR2_PLUGINS_DIR));
 		manager->setSharePath(sharePath);
 		QString error;
 		qDebug() << "Initialized plugin manager";
 #ifdef CONFIGURATION_TEMPLATE
-		const QByteArray defaultTemplate = CONFIGURATION_TEMPLATE;
+		QByteArray defaultTemplate = CONFIGURATION_TEMPLATE;
 #else
 #error No default configuration passed to GCC
 #endif
@@ -210,19 +222,15 @@ public:
 				_splashScreen->finish(0);
 			}
 			showErrorMessage("Requires X11 session to run this configuration");
-			_qApp->exit(1);
+			qApp->exit(1);
 		}
-
-//        qInstallMsgHandler(manager->isGuiRequired()
-//                           ? GuiMessageOutput
-//                           : ConsoleMessageOutput);
 
 		if (!error.isEmpty()) {
 			if (_splashScreen) {
 				_splashScreen->finish(0);
 			}
 			showErrorMessage(error);
-			_qApp->exit(1);
+			qApp->exit(1);
 		}
 
 		qDebug() << "Done loading all plugins by template";
@@ -238,13 +246,13 @@ public:
 #else
 			fprintf(stderr, "%s", msg.toLocal8Bit().data());
 #endif
-			_qApp->exit(0);
+			qApp->exit(0);
 			return;
 		}
 
 		if (mustShowVersionAndExit) {
-			fprintf(stderr, "%s\n", qPrintable(_qApp->applicationVersion()));
-			_qApp->exit(0);
+			fprintf(stderr, "%s\n", qPrintable(qApp->applicationVersion()));
+			qApp->exit(0);
 			return;
 		}
 		qDebug() << "Begin plugins initialization";
@@ -254,16 +262,16 @@ public:
 				_splashScreen->finish(0);
 			}
 			showErrorMessage(error);
-			_qApp->exit(_qApp->property("returnCode").isValid()
-				? _qApp->property("returnCode").toInt() : 1);
+			qApp->exit(qApp->property("returnCode").isValid()
+				? qApp->property("returnCode").toInt() : 1);
 		}
 		// GUI requirement may be changed as result of plugins initialization,
 		// so check it again
 		qDebug() << "Plugins initialization done";
 		if (!gui && manager->isGuiRequired()) {
 			showErrorMessage("Requires X11 session to run this configuration");
-			_qApp->exit(_qApp->property("returnCode").isValid()
-				? _qApp->property("returnCode").toInt() : 1);
+			qApp->exit(qApp->property("returnCode").isValid()
+				? qApp->property("returnCode").toInt() : 1);
 		}
 		if (_splashScreen) {
 			_splashScreen->finish(0);
@@ -275,19 +283,19 @@ public:
 				_splashScreen->finish(0);
 			}
 			showErrorMessage(error);
-			_qApp->exit(_qApp->property("returnCode").isValid()
-				? _qApp->property("returnCode").toInt() : 1);
+			qApp->exit(qApp->property("returnCode").isValid()
+				? qApp->property("returnCode").toInt() : 1);
 		}
 		if (!manager->isGuiRequired()) {
-			_qApp->quit();
+			qApp->quit();
 		}
 	}
 
 	bool eventFilter(QObject *obj, QEvent *event)
 	{
-		if (event->type() == QEvent::Timer && obj == _qApp && !_started) {
+		if (event->type() == QEvent::Timer && obj == qApp && !_started) {
 			_started = true;
-			_qApp->killTimer(_timerId);
+			qApp->killTimer(_timerId);
 			qDebug() << "Begin initialization";
 			initialize();
 			qDebug() << "Initialization done";
@@ -299,27 +307,24 @@ public:
 
 	int main()
 	{
-		_timerId = _qApp->startTimer(250);
-		int ret = _qApp->exec();
+		_timerId = qApp->startTimer(50);
+		int ret = qApp->exec();
 		if (ret == 0) {
-			return _qApp->property("returnCode").isValid()
-				? _qApp->property("returnCode").toInt() : 0;
+			return qApp->property("returnCode").isValid()
+				? qApp->property("returnCode").toInt() : 0;
 		} else {
 			return ret;
 		}
 	}
 
 private:
-	QCoreApplication *_qApp;
-	int _timerId;
 	QSplashScreen *_splashScreen;
+	int _timerId;
 	bool _started;
-
 };
 
 
-bool
-setup_custom_vendor_information(QCoreApplication *app)
+static bool setup_custom_vendor_information()
 {
 	QString appName;
 	QString appVendor;
@@ -327,6 +332,7 @@ setup_custom_vendor_information(QCoreApplication *app)
 	QString appLicenseFileName;
 	QString appAboutFileName;
 	bool result = false;
+
 #ifdef APP_NAME
 	appName = QString::fromLatin1(APP_NAME);
 	result = true;
@@ -335,6 +341,7 @@ setup_custom_vendor_information(QCoreApplication *app)
 	appName = QString::fromUtf8(APP_NAME_ru);
 	result = true;
 #endif
+
 #ifdef APP_VENDOR
 	appVendor = QString::fromLatin1(APP_VENDOR);
 #endif
@@ -344,53 +351,118 @@ setup_custom_vendor_information(QCoreApplication *app)
 #ifdef APP_VERSION
 	appVersion = QString::fromLatin1(APP_VERSION);
 #endif
+
 #ifdef APP_LICENSE
 	appLicenseFileName = ":/kumir2-launcher/" + QString::fromLatin1(APP_LICENSE);
 #endif
 #ifdef APP_LICENSE_ru
 	appLicenseFileName = ":/kumir2-launcher/" + QString::fromLatin1(APP_LICENSE_ru);
 #endif
+
 #ifdef APP_ABOUT
 	appAboutFileName = ":/kumir2-launcher/" + QString::fromLatin1(APP_ABOUT);
 #endif
 #ifdef APP_ABOUT_ru
 	appAboutFileName = ":/kumir2-launcher/" + QString::fromLatin1(APP_ABOUT_ru);
 #endif
-	if (appName.length() > 0) {
-		app->setProperty("customAppName", appName);
+
+	fprintf(stderr, "appName='%s'\n", qPrintable(appName));
+	fprintf(stderr, "appVendor='%s'\n", qPrintable(appVendor));
+	fprintf(stderr, "appVersion='%s'\n", qPrintable(appVersion));
+	fprintf(stderr, "appLicenseFileName='%s'\n", qPrintable(appLicenseFileName));
+	fprintf(stderr, "appAboutFileName='%s'\n", qPrintable(appAboutFileName));
+
+	if (appName.length()) {
+		qApp->setProperty("customAppName", appName);
 	}
-	if (appVendor.length() > 0) {
-		app->setProperty("customAppVendor", appVendor);
+	if (appVendor.length()) {
+		qApp->setProperty("customAppVendor", appVendor);
 	}
-	if (appVersion.length() > 0) {
-		app->setProperty("customAppVersion", appVersion);
+	if (appVersion.length()) {
+		qApp->setProperty("customAppVersion", appVersion);
 	}
-	if (appLicenseFileName.length() > 0) {
-		app->setProperty("customAppLicense", appLicenseFileName);
+	if (appLicenseFileName.length()) {
+		qApp->setProperty("customAppLicense", appLicenseFileName);
 	}
-	if (appAboutFileName.length() > 0) {
-		app->setProperty("customAppAbout", appAboutFileName);
+	if (appAboutFileName.length()) {
+		qApp->setProperty("customAppAbout", appAboutFileName);
 	}
+
 	return result;
 }
 
+#ifdef SPLASHSCREEN
+static QSplashScreen* createSplash()
+{
+	bool cavi = setup_custom_vendor_information();
+
+	QString imgPath = ":/kumir2-launcher/" + QString::fromLatin1(SPLASHSCREEN);
+	QImage img(imgPath);
+	QPainter p(&img);
+	p.setPen(QColor(Qt::black));
+	p.setBrush(QColor(Qt::black));
+	QFont f = p.font();
+
+	f.setPixelSize(12);
+	p.setFont(f);
+
+	QString v;
+	if (cavi) {
+		v = qApp->property("customAppVersion").toString() + " ";
+		v += "[based on Kumir ";
+	}
+	v += qApp->applicationVersion();
+	if (qApp->property("gitHash").isValid()) {
+		v += " (GIT " + qApp->property("gitHash").toString() + ")";
+	}
+	if (cavi) {
+		v += "]";
+	}
+	int tw = QFontMetrics(f).width(v);
+	int th = QFontMetrics(f).height() * 5;
+	int x = img.width() - tw - 8;
+	int y = 8;
+	p.drawText(x, y, tw, th, 0, v);
+	p.end();
+	QPixmap px = QPixmap::fromImage(img);
+	splashScreen = new QSplashScreen(px);
+	return splashScreen;
+}
+#endif
+
 int main(int argc, char **argv)
 {
+	int res = 0
+
 #if QT_VERSION < 0x050000
 	qInstallMsgHandler(GuiMessageOutput);
 #else
 	qInstallMessageHandler(GuiMessageOutput);
 #endif
-	QString gitHash = QString::fromLatin1(GIT_HASH);
-	QString gitTag = QString::fromLatin1(GIT_TAG);
-	QString gitBranch = QString::fromLatin1(GIT_BRANCH);
-	QDateTime gitTimeStamp = QDateTime::fromTime_t(QString::fromLatin1(GIT_TIMESTAMP).toUInt());
+	QString gitHash = QString::fromUtf8(GIT_HASH);
+	QString gitTag = QString::fromUtf8(GIT_TAG);
+	QString gitBranch = QString::fromUtf8(GIT_BRANCH);
+	QDateTime gitTimeStamp = QDateTime::fromTime_t(QString::fromUtf8(GIT_TIMESTAMP).toUInt());
 
-	bool gui = true;
+	gui = true;
 #ifdef Q_OS_LINUX
-	gui = gui && getenv("DISPLAY") != 0;
+	const char *dpy = getenv("DISPLAY");
+	gui = dpy && dpy[0];
 #endif
-	Application *app = new Application(argc, argv, gui);
+
+	{
+		QCoreApplication *_qApp = 0;
+		if (gui) {
+			_qApp = new QApplication(argc, argv);
+		} else {
+			_qApp = new QCoreApplication(argc, argv);
+		}
+		if (_qApp == 0) {
+			fprintf(stderr, "Cannot create application in %s mode.\n", gui ? "GUI" : "console");
+			exit(1);
+		}
+	}
+
 #ifdef WINDOW_ICON
 	if (gui) {
 		QApplication *guiApp = qobject_cast<QApplication *>(qApp);
@@ -399,78 +471,98 @@ int main(int argc, char **argv)
 		guiApp->setWindowIcon(icon);
 	}
 #endif
+
 	QLocale russian = QLocale("ru_RU");
 	QLocale::setDefault(russian);
+	QSettings::setDefaultFormat(QSettings::IniFormat);
 
-	qApp->addLibraryPath(resolvePath(KUMIR2_LIBS_DIR));
-	qApp->addLibraryPath(resolvePath(KUMIR2_PLUGINS_DIR));
+	qApp->addLibraryPath(resolver.libsPath);
+	qApp->addLibraryPath(resolver.pluginsPath);
 
 	qApp->setApplicationVersion(gitTag.length() > 0 && gitTag != "unknown"
 		? gitTag : gitBranch + "/" + gitHash);
 	qApp->setProperty("gitTimeStamp", gitTimeStamp);
+	qApp->setProperty("sharePath", resolver.sharePath);
 
-#ifdef SPLASHSCREEN
-	QSplashScreen *splashScreen = 0;
-	const QString sharePath = resolvePath(KUMIR2_RESOURCES_DIR);
+	{
+		QList<QDir> tsDirs = translationsDirs();
+		Q_FOREACH (const QDir &tsDir, tsDirs) {
+			QStringList tsFiles = tsDir.entryList(QStringList() << "*_" + getLanguage() + ".qm");
+			foreach (QString tsName, tsFiles) {
+				tsName = tsName.mid(0, tsName.length() - 3);
+				QTranslator *tr = new QTranslator(qApp);
+				if (tr->load(tsName, translationsDir.absolutePath())) {
+					qApp->installTranslator(tr);
+				}
+			}
+		}
+	}
 
-	const QStringList arguments = QCoreApplication::instance()->arguments();
-	bool mustShowHelpAndExit = false;
-	bool mustShowVersionAndExit = false;
+	ExtensionSystem::PluginManager *manager = ExtensionSystem::PluginManager::instance();
+	manager->setPluginPath(resolver.pluginsPath);
+	manager->setSharePath(resolver.sharePath);
+
+	bool showHelp = false;
+	bool showVersion = false;
+	QStringList arguments = qApp->arguments();
+
 	for (int i = 1; i < arguments.size(); i++) {
-		const QString &argument = arguments[i];
-		if (argument == "--help" || argument == "-h" || argument == "/?") {
-			mustShowHelpAndExit = true;
+		const QString &arg = arguments[i];
+		if (arg == "--help" || arg == "-h" || arg == "/?") {
+			showHelp = true;
 			break;
-		} else if (argument == "--version") {
-			mustShowVersionAndExit = true;
+		} else if (arg == "--version") {
+			showVersion = true;
 			break;
 		} else if (!argument.startsWith("-")) {
 			break;
 		}
 	}
 
-	const bool customAppAndVendorInformation = setup_custom_vendor_information(qobject_cast<QCoreApplication *>(qApp));
+	if (showHelp) {
+		QString msg = manager->commandLineHelp();
 
-	if (gui && !mustShowHelpAndExit && !mustShowVersionAndExit) {
-		QString imgPath = ":/kumir2-launcher/" + QString::fromLatin1(SPLASHSCREEN);
-		splashScreen = new QSplashScreen();
-		QImage img(imgPath);
-		QPainter p(&img);
-		p.setPen(QColor(Qt::black));
-		p.setBrush(QColor(Qt::black));
-		QFont f = p.font();
+#ifdef Q_OS_WIN32
+		QTextCodec *codec = QTextCodec::codecForName("CP866");
+		if (codec)
+			fprintf(stderr, "%s", codec->fromUnicode(msg).constData());
+		else
+			fprintf(stderr, "%s", qPrintable(msg));
+#else
+		fprintf(stderr, "%s", qPrintable(msg));
+#endif
+		goto ret;
+	}
 
-		f.setPixelSize(12);
-		p.setFont(f);
+	if (showVersion) {
+		fprintf(stderr, "%s\n", qPrintable(qApp->applicationVersion()));
+		goto ret;
+	}
 
-		QString v;
-		if (customAppAndVendorInformation) {
-			v = qApp->property("customAppVersion").toString() + " ";
-			v += "[based on Kumir ";
-		}
-		v = qApp->applicationVersion();
-		if (qApp->property("gitHash").isValid()) {
-			v += " (GIT " + qApp->property("gitHash").toString() + ")";
-		}
-		if (customAppAndVendorInformation) {
-			v += "]";
-		}
-		int tw = QFontMetrics(f).width(v);
-		int th = QFontMetrics(f).height() * 5;
-		int x = img.width() - tw - 8;
-		int y = 8;
-		p.drawText(x, y, tw, th, 0, v);
-		p.end();
-		QPixmap px = QPixmap::fromImage(img);
-		splashScreen->setPixmap(px);
+#ifdef SPLASHSCREEN
+	std::unique_ptr<QSplashScreen *> splashScreen = 0;
+	if (gui) {
+		splashScreen = createSplash();
 		splashScreen->show();
 		qApp->processEvents();
-		app->setSplashScreen(splashScreen);
 	}
+
 #endif
-	int ret = app->main();
+
+	res = qApp->exec();
+	if (res == 0) {
+		QVariant v = qApp->property("returnCode");
+		if (v.isValid())
+			res = v.toInt();
+	}
+
+#ifdef SPLASHSCREEN
+	delete splashScreen;
+	splashScreen = 0;
+#endif
+
+ret:;
 	ExtensionSystem::PluginManager::destroy();
-	delete app;
-	return ret;
+	return res;
 }
 
