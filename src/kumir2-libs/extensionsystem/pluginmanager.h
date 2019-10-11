@@ -171,6 +171,7 @@ public:
     bool shutdown();
 
     static void destroy();
+    static void destroy(ExtensionSystem::PluginManager *) { destroy(); }
 
 public /*constants*/:
 

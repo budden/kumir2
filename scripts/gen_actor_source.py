@@ -1184,10 +1184,8 @@ class Settings:
             assert isinstance(entry, SettingsEntry)
             result += entry.get_entry_cpp_implementation("entries")
         result += """
-bool guiAvailable = true;
-#ifdef Q_OS_LINUX
-guiAvailable = 0 != getenv("DISPLAY");
-#endif
+bool guiAvailable = (qobject_cast<QApplication*>(QCoreApplication::instance()) != 0);
+
 if (guiAvailable) {
     %s = new Widgets::DeclarativeSettingsPage(
                             Shared::actorCanonicalName(localizedModuleName(QLocale::Russian)),
@@ -1508,11 +1506,6 @@ private:
     asyncRunThread_(nullptr),
     settingsPage_(nullptr)
 {
-#ifdef Q_OS_LINUX_NO
-    bool hasGuiThread = true;
-    hasGuiThread = getenv("DISPLAY") != 0;
-        //hasGuiThread? Qt::QueuedConnection :
-#endif
     QObject::connect(
         this, SIGNAL(asyncRun(quint32, QVariantList)),
         this, SLOT(asyncEvaluate(quint32, QVariantList)),
@@ -2705,10 +2698,7 @@ class ModuleBaseCppClass(CppClassBase):
 %s::%s(ExtensionSystem::KPlugin* parent)
     : QObject(parent)
 {
-    bool hasGui = true;
-#ifdef Q_OS_LINUX
-    hasGui = getenv("DISPLAY")!=0;
-#endif
+    bool hasGui = (qobject_cast<QApplication*>(QCoreApplication::instance()) != 0);
     if (hasGui) {
 %s
     }

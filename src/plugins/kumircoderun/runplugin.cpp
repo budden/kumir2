@@ -479,7 +479,7 @@ void KumirRunPlugin::terminateAndWaitForStopped()
     }
     pRun_->wait();
 #ifdef Q_OS_LINUX
-    bool gui = getenv("DISPLAY")!=0;
+    bool gui = (qobject_cast<QApplication*>(QCoreApplication::instance()) != 0);
     if (gui) {
         usleep(50000);
     }

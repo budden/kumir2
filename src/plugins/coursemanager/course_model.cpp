@@ -4,6 +4,9 @@
 #include <QBrush>
 #include <QIcon>
 #include <QMessageBox>
+#include <QApplication>
+#include <kumir2-libs/extensionsystem/pluginmanager.h>
+#include <kumir2/coursesinterface.h>
 
 static const int MARK_BLOCK  = 12;
 
@@ -26,6 +29,46 @@ static QString fixWindowPath(QString fileName)
 		fileName.replace(symbolPos, 2, "/" + symbolAfterBackSlash);
 	}
 	return fileName;
+}
+
+courseModel::courseModel() : QAbstractItemModel()
+{
+	itemFont = QFont("Helvetica [Cronyx]");
+	const ExtensionSystem::KPlugin *csmanager =
+		ExtensionSystem::PluginManager::instance()->
+		findKPlugin<Shared::CoursesInterface>();
+	Q_ASSERT(csmanager);
+	QDir resourcesRoot = csmanager->myResourcesDir();
+	Q_ASSERT(resourcesRoot.exists());
+	bool gui = (qobject_cast<QApplication*>(QCoreApplication::instance()) != 0);
+;
+	if (gui) {
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("out_stand.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("1.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("2.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("3.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("4.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("5.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("6.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("7.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("8.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("9.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("10.png")));
+		markIcons.append(QIcon(":/m.png"));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("folder_close.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("folder_1.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("folder_2.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("folder_3.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("folder_4.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("folder_5.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("folder_6.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("folder_7.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("folder_8.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("folder_9.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("folder_10.png")));
+		markIcons.append(QIcon(resourcesRoot.absoluteFilePath("folder_open.png")));
+	}
+	isTeacher = false;
 }
 
 int courseModel::loadCourse(QString file, bool cmode)
@@ -73,10 +116,8 @@ int courseModel::loadCourse(QString file, bool cmode)
 	return count;
 }
 
-
 int courseModel::rowCount(const QModelIndex &parent) const
 {
-	// qDebug()<<"RowCount"<< parent;
 	if (!parent.isValid()) {
 		// qDebug()<<"NOT VALID"<<" count"<<root.childNodes().length();
 		return 1;
@@ -91,7 +132,6 @@ QIcon courseModel::iconByMark(int mark, bool isFolder) const
 	if (isFolder) {
 		mark = mark + MARK_BLOCK;
 	}
-	// qDebug()<<"Mark:"<<mark;
 	if ((mark > -1) && (mark < 2 * MARK_BLOCK)) {
 		return markIcons[mark];
 	}
@@ -101,7 +141,6 @@ QIcon courseModel::iconByMark(int mark, bool isFolder) const
 
 QVariant courseModel::data(const QModelIndex &index, int role) const
 {
-	//qDebug()<<"Get data"<<index<<" role"<<role;
 	if (!index.isValid()) {
 		return QVariant();
 	}
@@ -129,30 +168,17 @@ QVariant courseModel::data(const QModelIndex &index, int role) const
 	if (role == Qt::TextAlignmentRole) {
 		return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
 	}
-	//     if(role==Qt::ForegroundRole)
-	//     {
-	//         if(isTeacher)QVariant(QBrush(QColor(0,0,0)));
-	//        if(!taskAvailable(node))
-	//            return QVariant(QBrush(QColor(150,150,150)));
-	//       return QVariant(QBrush(QColor(0,0,0)));
-	//     }
 	if (role == Qt::CheckStateRole) {
 		return QVariant();
 	}
 	if (role == Qt::DecorationRole) {
 		QDomNode nodeM = nodeById(index.internalId(), root);
-		// qDebug()<<"Draw Mark id"<<index.internalId();
 		if (nodeM.toElement().attribute("root") == "true") {
 			//  qDebug()<<"Folder";
 		}
 		return iconByMark(taskMark(index.internalId()), nodeM.toElement().attribute("root") == "true");
 		//NUZHNO IKONKI ISPOLNITELEY
 	}
-	//     if(role==Qt::BackgroundRole)
-	//     {
-	//        return QBrush(QColor(255,255,255));
-	//     }
-	//   qDebug()<<"No" << role<< "role";
 	return QVariant();
 }
 
@@ -169,11 +195,9 @@ QVariant courseModel::headerData(
 
 QModelIndex courseModel::index(int row, int column, const QModelIndex &parent) const
 {
-	//  qDebug()<<"index"<<" ROW:"<<row<<" column:"<<column;
 	if (!hasIndex(row, column, parent)) {
 		return QModelIndex();
 	}
-	//  qDebug()<<root.attribute("id","");
 	return createMyIndex(row, column, parent);
 }
 
@@ -191,7 +215,6 @@ int courseModel::domRow(QDomNode &child) const //TODO Check
 
 QModelIndex courseModel::parent(const QModelIndex &child) const
 {
-
 	if (!child.isValid()) {
 		return QModelIndex();
 	}
@@ -199,7 +222,6 @@ QModelIndex courseModel::parent(const QModelIndex &child) const
 		return QModelIndex();
 	}
 	QDomNode child_n = nodeById(child.internalId(), root);
-	// if(child_n.isNull())return QModelIndex();
 	QDomNode par = child_n.parentNode();
 	if (par.toElement().attribute("id").toInt() == 0) {
 		return createIndex(0, 0);
@@ -213,22 +235,18 @@ int courseModel::columnCount(const QModelIndex &parent) const
 	return 1;
 }
 
-
 QDomNode courseModel::nodeByRowColumn(int row, int column, QDomNode *parent) const
 {
 	Q_UNUSED(column);
 	if (!parent) {
 		return root;
 	}
-	// qDebug()<<"nodeByRowColumn";
 	return parent->childNodes().at(row);
-
 	return root;
 }
 
 QDomNode courseModel::nodeById(int id, QDomNode parent) const
 {
-
 	if (parent.toElement().attribute("id", "") == QString::number(id)) {
 		return parent;
 	}
@@ -243,15 +261,15 @@ QDomNode courseModel::nodeById(int id, QDomNode parent) const
 
 	QDomNodeList childs = parent.childNodes();
 	for (uint i = 0; i < childs.length(); i++) {
-		if (childs.at(i).toElement().attribute("id", "") == QString::number(id)) {
-			// if(cash.contains(id)<1)
-			//cash.insert(id,childs.at(i));
+		if (
+			childs.at(i).toElement().attribute("id", "") ==
+			QString::number(id)
+		) {
 			return childs.at(i);
-		};
-
+		}
 	}
+
 	for (uint i = 0; i < childs.length(); i++) {
-		// if(childs.at(i).toElement().attribute("id","")==QString::number(id))return childs.at(i);
 		if (childs.at(i).hasChildNodes()) {
 			QDomNode toret = nodeById(id, childs.at(i));
 			if (!toret.isNull()) {
@@ -268,7 +286,6 @@ Qt::ItemFlags courseModel::flags(const QModelIndex &index) const
 	if (!index.isValid()) {
 		return 0;
 	}
-	// qDebug()<<"IS teacher:"<<isTeacher;
 	if (isTeacher) {
 		return  Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
 	}
@@ -276,12 +293,13 @@ Qt::ItemFlags courseModel::flags(const QModelIndex &index) const
 	if (!taskAvailable(index.internalId())) {
 		return Qt::NoItemFlags;
 	}
-	// qDebug()<<"Flags:"<<index.internalId();
 	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-QModelIndex courseModel::createMyIndex(int row, int column, QModelIndex parent) const
-{
+QModelIndex courseModel::createMyIndex(
+	int row, int column,
+	QModelIndex parent
+) const {
 	if (!parent.isValid()) {
 		return createIndex(0, 0);
 	}
@@ -297,10 +315,9 @@ QModelIndex courseModel::createMyIndex(int row, int column, QModelIndex parent) 
 	if (childs.count() <= row) {
 		return QModelIndex();
 	}
-	bool ok;
+	bool ok = false;
 	int new_id = childs.at(row).toElement().attribute("id", "").toInt(&ok);
 	if (!ok) {
-		//   qDebug()<<"Bad ID";
 		return createIndex(-10, -10, -10);
 
 	}
@@ -359,11 +376,8 @@ QString courseModel::progFile(int index)
 
 QStringList courseModel::Modules(int index)
 {
-
 	QDomNode node = nodeById(index, root);
-
 	QDomElement csEl = node.firstChildElement("ISP");
-	// qDebug()<<"csEl isNull:"<<csEl.isNull();
 
 	QStringList modules;
 	while (!csEl.isNull()) {
@@ -399,8 +413,6 @@ void courseModel::setIspEnvs(QModelIndex index, QString isp, QStringList Envs)
 	QDomNode node = nodeById(index.internalId(), root);
 	QDomElement csEl = node.firstChildElement("ISP");
 	while (!csEl.isNull()) {
-		//  qDebug()<<"ISP NAME"<<csEl.attribute("ispname")<<" isp:"<<isp;
-		//modules<<csEl.attribute(ispName);
 		if (csEl.attribute("ispname") == isp) {
 			QDomNodeList childList = csEl.childNodes();
 			for (int j = 0; j < childList.count(); j++) {
@@ -431,22 +443,18 @@ QStringList courseModel::Fields(int index, QString isp)
 	QStringList fields;
 
 	while (!csEl.isNull()) {
-		// qDebug()<<"ISP NAME"<<csEl.attribute("ispname")<<" isp:"<<isp;
-		//modules<<csEl.attribute(ispName);
 		if (csEl.attribute("ispname") == isp) {
 			QDomElement fieldEl = csEl.firstChildElement("ENV");
 			while (!fieldEl.isNull()) {
-				//qDebug()<<"fiield:"<<fieldEl.text();
 				const QString fieldFileName = fixWindowPath(fieldEl.text());
 
 				fields.append(fieldFileName);
 				fieldEl = fieldEl.nextSiblingElement("ENV");
 			}
-			//  qDebug()<<"Return fiield:"<<fields;
 			return fields;
 		}
 		csEl = csEl.nextSiblingElement("ISP");
-	};
+	}
 	return fields;
 }
 

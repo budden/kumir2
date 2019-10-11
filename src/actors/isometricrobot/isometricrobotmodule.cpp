@@ -94,11 +94,8 @@ QString IsometricRobotModule::initialize(
 	if (!configurationParameters.contains("tablesOnly")) {
 		_model = new Robot25D::RobotModel;
 
-		bool hasGui = true;
-#ifdef Q_OS_LINUX
-		hasGui = 0 != getenv("DISPLAY");
-#endif
-		if (hasGui) {
+		bool gui = (qobject_cast<QApplication*>(QCoreApplication::instance()) != 0);
+		if (gui) {
 			createGui();
 		} else {
 			const QString envFileName = cmdLine.value('e').toString();

@@ -5,6 +5,7 @@
 #include "lexer.h"
 
 #include <QtCore>
+#include <QApplication>
 
 #include "kumfilehandler.h"
 #include "quickreferencewidget.h"
@@ -35,7 +36,7 @@ QWidget *KumirAnalizerPlugin::languageQuickReferenceWidget()
 {
     bool hasGui = true;
 #ifdef Q_WS_X11
-    hasGui = getenv("DISPLAY")!=0;
+    hasGui = (qobject_cast<QApplication*>(QCoreApplication::instance()) != 0);
 #endif
     if (!_quickReferenceWidget && hasGui) {
         _quickReferenceWidget = new QuickReferenceWidget(this);

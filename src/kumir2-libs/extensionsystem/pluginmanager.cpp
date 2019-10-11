@@ -46,12 +46,6 @@ PluginManager::PluginManager() : QObject() , pImpl_(new PluginManagerImpl)
 		}
 	}
 
-#ifdef Q_WS_X11
-	bool gui = getenv("DISPLAY") != 0;
-	if (!gui) {
-		return;
-	}
-#endif
 }
 
 
@@ -213,14 +207,14 @@ QString PluginManager::initializePlugins()
 
 QString PluginManager::commandLineHelp() const
 {
-	PluginSpec mainSpec;
+	bool guiMode = false;
 	Q_FOREACH (KPlugin *plugin, pImpl_->objects) {
 		if (plugin->pluginSpec().main) {
-			mainSpec = plugin->pluginSpec();
+			guiMode = plugin->pluginSpec().gui;
 			break;
 		}
 	}
-	bool guiMode = mainSpec.gui;
+
 	QString result = tr("Usage:\n");
 	QString programName = QCoreApplication::applicationFilePath();
 	if (programName.startsWith(QCoreApplication::applicationDirPath())) {
@@ -229,6 +223,7 @@ QString PluginManager::commandLineHelp() const
 	QString shortLine = "  " + programName + " ";
 	QString longLine = "  " + programName + " ";
 	QStringList details;
+
 	foreach (const KPlugin *plugin, pImpl_->objects) {
 		const QList<CommandLineParameter> params = plugin->acceptableCommandLineParameters();
 		foreach (const CommandLineParameter &param, params) {
@@ -267,29 +262,33 @@ QString PluginManager::commandLineHelp() const
 			}
 		}
 	}
-	const QList<CommandLineParameter> params = pImpl_->objects.last()->acceptableCommandLineParameters();
-	foreach (const CommandLineParameter &param, params) {
-		if (param.shortDescription_.length() > 0) {
-			if (param.valueRequired_) {
-				shortLine += param.shortDescription_;
-				longLine += param.shortDescription_;
-			} else {
-				shortLine += "[";
-				longLine += "[";
-				shortLine += param.shortDescription_.arg(1);
-				longLine += param.shortDescription_.arg(1);
-				shortLine += "]...[";
-				longLine += "]...[";
-				shortLine += param.shortDescription_.arg("n");
-				longLine += param.shortDescription_.arg("n");
-				shortLine += "]";
-				longLine += "]";
+
+	if (!pImpl_->objects.empty()) {
+		const QList<CommandLineParameter> params = pImpl_->objects.last()->acceptableCommandLineParameters();
+		foreach (const CommandLineParameter &param, params) {
+			if (param.shortDescription_.length() > 0) {
+				if (param.valueRequired_) {
+					shortLine += param.shortDescription_;
+					longLine += param.shortDescription_;
+				} else {
+					shortLine += "[";
+					longLine += "[";
+					shortLine += param.shortDescription_.arg(1);
+					longLine += param.shortDescription_.arg(1);
+					shortLine += "]...[";
+					longLine += "]...[";
+					shortLine += param.shortDescription_.arg("n");
+					longLine += param.shortDescription_.arg("n");
+					shortLine += "]";
+					longLine += "]";
+				}
+				shortLine += " ";
+				longLine += " ";
+				details.push_back(param.toHelpLine());
 			}
-			shortLine += " ";
-			longLine += " ";
-			details.push_back(param.toHelpLine());
 		}
 	}
+
 	if (longLine == shortLine) {
 		result += shortLine + "\n";
 	} else {

@@ -1,10 +1,13 @@
 #ifndef COURSESINTERFACE_H
 #define COURSESINTERFACE_H
 
+
 class QWidget;
 class QAction;
 class QMenu;
+#include <QObject>
 #include <QList>
+#include <QStringList>
 
 namespace Shared
 {

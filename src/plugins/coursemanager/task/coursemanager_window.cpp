@@ -1,8 +1,17 @@
 #include "coursemanager_window.h"
+#include "../coursemanager_plugin.h"
 #include "ui_coursemanager_window.h"
 
 #include <kumir2/browserinterface.h>
 #include <kumir2/browser_instanceinterface.h>
+#include <kumir2-libs/extensionsystem/pluginmanager.h>
+
+#include <QMessageBox>
+#include <QLineEdit>
+#include <QTextBrowser>
+#include <QFileDialog>
+#include <QAbstractButton>
+#include <QCloseEvent>
 
 
 MainWindowTask::MainWindowTask(QWidget *parent) :
@@ -760,7 +769,6 @@ QString MainWindowTask::getFileName(QString fileName)
 	qDebug() << "GET FILE!";
 
 	QString File = QFileDialog::getOpenFileName(this, QString::fromUtf8("Открыть файл"), curDir,  finf.fileName() + " *.kurs.xml");
-//	QFileInfo fi(File);
 	return File;
 }
 

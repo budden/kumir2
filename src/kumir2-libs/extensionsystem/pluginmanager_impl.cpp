@@ -126,9 +126,10 @@ QString PluginManagerImpl::loadPlugin(
 	const QList<PluginSpec> &allSpecs
 ) {
 	qDebug() << "Trying to load plugin [" << spec.name << "] ";
+#if 0
 	qDebug() << "LIB_PREFIX =  [" << LIB_PREFIX << "] ";
 	qDebug() << "LIB_SUFFIX =  [" << LIB_SUFFIX << "] ";
-
+#endif
 	if (isPluginLoaded(spec.name))
 		return "";
 	QList<QByteArray> blacklist;
@@ -175,13 +176,10 @@ QString PluginManagerImpl::loadPlugin(
 	QString nonStandardPathToUse;
 	for (int i = 0; i < librarySearchPaths.size(); ++i) {
 		const QString &dirName = librarySearchPaths.at(i);
-		const QString candidate = dirName +
-			QString("/") +
-			QString(LIB_PREFIX) +
-			spec.name +
-			QString(LIB_SUFFIX);
+		QString candidate = dirName + "/" +
+			LIB_PREFIX + spec.name + LIB_SUFFIX;
 		qDebug() << "Trying " << candidate;
-		const QFileInfo fi(candidate);
+		QFileInfo fi(candidate);
 		if (fi.exists()) {
 			libraryPath = candidate;
 			if (i > 0) {
@@ -223,6 +221,7 @@ QString PluginManagerImpl::initializePlugin(KPlugin *entryPoint)
 		return "";
 	}
 	const PluginSpec &spec = entryPoint->pluginSpec();
+
 	QList<KPlugin *> deps;
 	Q_FOREACH (const QByteArray &depName, spec.dependencies) {
 		Q_FOREACH (KPlugin *anotherPlugin, objects) {
@@ -253,10 +252,12 @@ QString PluginManagerImpl::initializePlugin(KPlugin *entryPoint)
 		return error;
 	}
 
+	qDebug() << "Init " << spec.name << " itself";
 	error = entryPoint->initialize(spec.arguments, runtimeParameters);
 	if (error.length() == 0) {
 		entryPoint->_state = KPlugin::Initialized;
 	}
+	qDebug() << "Init " << spec.name << " done: " << error;
 	return error;
 }
 

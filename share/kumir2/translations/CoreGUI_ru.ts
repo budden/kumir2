@@ -1256,8 +1256,8 @@ Using Qt version %2</source>
     </message>
     <message>
         <location filename="../../../src/plugins/coregui/plugin.cpp" line="89"/>
-        <source>PROGRAM.kum</source>
-        <translation>ПРОГРАММА.kum</translation>
+        <source>PROGRAM%1.kum</source>
+        <translation>ПРОГРАММА%1.kum</translation>
     </message>
     <message>
         <location filename="../../../src/plugins/coregui/plugin.cpp" line="90"/>

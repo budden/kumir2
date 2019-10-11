@@ -3,6 +3,7 @@
 #include <kumir2/actorinterface.h>
 #include "util.h"
 
+#include <QApplication>
 #include <QWidget>
 #include <QMap>
 
@@ -88,7 +89,7 @@ ExternalModuleLoadFunctor::operator() (
 
     bool gui = true;
 #ifdef Q_OS_LINUX
-    gui = gui && getenv("DISPLAY")!=0;
+    gui = (qobject_cast<QApplication*>(QCoreApplication::instance()) != 0);
 #endif
 
     if (actor && gui && actor->mainWidget()) {

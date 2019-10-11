@@ -18,8 +18,7 @@
 
 namespace Widgets {
 
-class WIDGETS_EXPORT DeclarativeSettingsPage
-        : public QWidget
+class WIDGETS_EXPORT DeclarativeSettingsPage : public QWidget
 {  
     friend class DeclarativeSettingsPageImpl;
     Q_OBJECT

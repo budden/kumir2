@@ -117,8 +117,6 @@ QString Settings::defaultSettingsScope()
 		appName = "kumir2";
 	}
 
-	qDebug() << "AppName: ["  << appName << "]";
-
 	return appName;
 #endif
 }

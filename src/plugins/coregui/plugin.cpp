@@ -93,7 +93,7 @@ QList<CommandLineParameter> Plugin::acceptableCommandLineParameters() const
 	QList<CommandLineParameter> result;
 	result << CommandLineParameter(
 			true,
-			tr("PROGRAM.kum"),
+			tr("PROGRAM%1.kum"),
 			tr("Source file name"),
 			QVariant::String,
 			false

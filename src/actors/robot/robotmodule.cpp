@@ -221,7 +221,7 @@ void RobotModule::reloadSettings(
 	view->reloadSett(settings);
 	if (RobotModule::robotSettings()->value("Robot/SFF").isValid()) {
 		if (LoadFromFile(RobotModule::robotSettings()->value("Robot/SFF").toString()) != 0) {
-			createEmptyField(7, 7);
+			createEmptyField(8, 8);
 
 		}
 		setWindowSize();
@@ -283,61 +283,56 @@ QString RobotModule::initialize(
 	const QStringList &configurationParameters,
 	const ExtensionSystem::CommandLine &runtimeParameters
 ) {
-	QString fName = "";
-	if (runtimeParameters.value('f').isValid()) {
-		fName = runtimeParameters.value('f').toString();
-		qDebug() << "FIELD: |" << fName << "| ";
+	ExtensionSystem::SettingsPtr sett = robotSettings();
+
+	QString fName;
+	QVariant fnv = runtimeParameters.value('f');
+	if (fnv.isValid()) {
+		fName = fnv.toString();
 	}
 
-#ifdef Q_OS_LINUX
-	QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-	qDebug() << "Display" << pe.value("DISPLAY");
-	if (pe.keys().indexOf("DISPLAY") < 0 || pe.value("DISPLAY").isEmpty()) {
-		qDebug() << "Robot:Console mode";
-		curConsoleField = new ConsoleField(10, 15);
-		DISPLAY = false;
-		if (!fName.isEmpty()) {
-			qDebug() << "LOAD FIELD ERR CODE:" << curConsoleField->loadFromFile(fName);
+	if (fName.isEmpty()) {
+		fnv = sett->value("Robot/SFF");
+		if (fnv.isValid()) {
+			fName = fnv.toString();
 		}
-		return "";
 	}
 
-	qDebug() << "Robot:GuiMode";
-#endif
+	qDebug() << "Robot::FIELD: |" << fName << "| ";
 
-	DISPLAY = true;
+	DISPLAY = (qobject_cast<QApplication*>(QCoreApplication::instance()) != 0);
+	if (configurationParameters.contains("tablesOnly"))
+		DISPLAY = false;
 
-	if (!configurationParameters.contains("tablesOnly")) {
+	if (!DISPLAY) {
+		qDebug() << "Robot: Console mode";
+		curConsoleField = new ConsoleField(8, 8);
+		if (!fName.isEmpty()) {
+			int err = curConsoleField->loadFromFile(fName);
+			qDebug() << "Robot: load CField '" << fName << "' ERR=" << err;
+		}
+
+	} else {
+		qDebug() << "Robot: GuiMode";
+
 		createGui();
 		redrawTimer = new QTimer();
 		connect(redrawTimer, SIGNAL(timeout()), this, SLOT(getTimer()));
 		redrawTimer->start(30);
-	}
 
-	if (!fName.isEmpty()) {
-		int err = LoadFromFile(fName);
-		if (err != 0) {
-			return "Error loading: '" + fName + "', code=" + err;
+		if (!fName.isEmpty()) {
+			int err = LoadFromFile(fName);
+			qDebug() << "Robot: load GField '" << fName << "' ERR=" << err;
+			if (err) {
+				createEmptyField(8, 8);
+			}
 		}
-	} else if (RobotModule::robotSettings()->value("Robot/SFF").isValid()) {
-		QString sName = RobotModule::robotSettings()->
-			value("Robot/SFF").toString();
-		int err = LoadFromFile(sName);
-		if (err != 0) {
-			qDebug() << "Error loading: '" + sName + "', code=" + err;
-			createEmptyField(7, 7);
+
+		if (sett->value("Robot/Dir").isValid()) {
+			curDir = sett->value("Robot/Dir").toString();
+			curPDir = curDir;
 		}
-	}
 
-	ExtensionSystem::SettingsPtr sett = robotSettings();
-	if (sett->value("Robot/Dir").isValid()) {
-		curDir = sett->value("Robot/Dir").toString();
-		curPDir = curDir;
-	}
-
-	if (!configurationParameters.contains("tablesOnly")) {
-		field->reloadSettings();
-		reloadSettings(robotSettings(), QStringList());
 	}
 
 	return "";
