@@ -247,6 +247,7 @@ void PainterModule::runLineTo(const int x1, const int y1)
 
 void PainterModule::runPolygon(const int N, const QVector<int> &xx, const QVector<int> &yy)
 {
+	fprintf(stderr, "N=%d, xxn=%d, yyn=%d \n", N, (int) xx.size(), (int) yy.size());
     QVector<QPoint> points(N);
     if (N!=xx.size() || N!=yy.size()) {
         setError(tr("Invalid points number"));
