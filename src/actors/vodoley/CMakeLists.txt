@@ -6,23 +6,27 @@ kumir2_use_qt(Core Gui)
 
 
 set(SOURCES
-    vodoleymodule.cpp
-    vodoley.cpp
-    pult.cpp
-    dialog.cpp
+	otimer.cpp
+	pult.cpp
+	dialog.cpp
+	vial.cpp
+	vodoley.cpp
+	vodoleymodule.cpp
 )
 
 set(MOC_HEADERS
-    vodoleymodule.h
-    vodoley.h
-    pult.h
-    dialog.h
+	otimer.h
+	pult.h
+	dialog.h
+	vial.h
+	vodoley.h
+	vodoleymodule.h
 )
 
 set(FORMS
-    dialog.ui
-    pult.ui
-    )
+	dialog.ui
+	pult.ui
+)
 
 kumir2_wrap_cpp(MOC_SOURCES ${MOC_HEADERS})
 kumir2_wrap_ui(UI_SOURCES ${FORMS})
