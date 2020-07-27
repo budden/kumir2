@@ -30,6 +30,7 @@
 #include <QFileDialog>
 #include <QGraphicsView>
 #include <QMessageBox>
+#include <QStatusBar>
 
 
 const double MAX_SIZE = 160.0;
