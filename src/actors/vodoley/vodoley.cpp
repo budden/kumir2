@@ -21,6 +21,8 @@
 #include "vial.h"
 
 #include <QtGlobal>
+#include <QDebug>
+#include <QSettings>
 #include <QSizePolicy>
 #include <QTextEdit>
 #include <QTextStream>
