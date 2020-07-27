@@ -20,13 +20,14 @@
 #include "dialog.h"
 #include "vial.h"
 
-#include <QtGui>
-#include <QSizePolicy>
 #include <QtGlobal>
+#include <QSizePolicy>
 #include <QTextEdit>
 #include <QTextStream>
 #include <QCloseEvent>
 #include <QFileDialog>
+#include <QGraphicsView>
+#include <QMessageBox>
 
 
 const double MAX_SIZE = 160.0;
