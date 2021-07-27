@@ -1,5 +1,5 @@
 {
-	"name": { "ascii": "JAOS 2", "ru_RU": "ЯОС 2" },
+	"name": { "ascii": "JAOS", "ru_RU": "ЯОС" },
 	"types": [
 		{
 			"name": { "ascii": "ANY", "ru_RU": "динамически типизированный укль" },
@@ -13,12 +13,13 @@
 			"name": {"ascii": "Podkljuchisq k JAOS", "ru_RU": "подключись к ЯОС" },
 			"async": false,
 			"arguments": [
-							{ "name": "port", "baseType": "int" },
+							{ "name": "port", "baseType": "int" }
 			],
 			"returnType": "int"
 },
 		{
 			"name": {"ascii": "Vyzovy funk iz cel v cel", "ru_RU": "вызови функцию из цел в цел" },
+			"async": false,
 			"returnType": "int",
 			"arguments": [
 				{ "name": "arg", "baseType": "int" }
