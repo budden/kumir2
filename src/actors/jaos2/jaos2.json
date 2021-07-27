@@ -1,0 +1,27 @@
+{
+	"name": { "ascii": "JAOS 2", "ru_RU": "ЯОС 2" },
+	"types": [
+		{
+			"name": { "ascii": "ANY", "ru_RU": "динамически типизированный укль" },
+			"fields": [
+				{ "name": "nomer", "baseType": "int" }
+			]
+		}
+	],
+	"methods": [
+		{
+			"name": {"ascii": "Podkljuchisq k JAOS", "ru_RU": "подключись к ЯОС" },
+			"async": false,
+			"arguments": [
+							{ "name": "port", "baseType": "int" },
+			],
+			"returnType": "int"
+},
+		{
+			"name": {"ascii": "Vyzovy funk iz cel v cel", "ru_RU": "вызови функцию из цел в цел" },
+			"returnType": "int",
+			"arguments": [
+				{ "name": "arg", "baseType": "int" }
+			]
+		}	]
+}
