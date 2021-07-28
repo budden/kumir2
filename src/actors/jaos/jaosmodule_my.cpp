@@ -26,6 +26,9 @@ namespace ActorJAOS {
         case 1: asyncCallStatusValue = acsvDoneWithError; break;
         case 2: 
             echoClient = new EchoClient(arg);
+            qDebug() << "about to call echoClient.start";
+            echoClient->start();
+            qDebug() << "called echoClient.start";
             // QObject::connect(echoClient, &EchoClient::connected1, this, &MyJAOSModuleBase::onEchoClientConnected);
             // QObject::connect(&client, &EchoClient::closed, &a, &QCoreApplication::quit);
             break;
