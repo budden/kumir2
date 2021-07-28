@@ -14,11 +14,11 @@
 				{ "name": "function_number", "baseType": "int" },
 				{ "name": "arg", "baseType": "int" }
 					]			},
-		{		"name": {"ascii": "Kumir_jaos_internal async call status", "ru_RU": "кумир_яос_внутр статус асинхронного вызова" },
+		{		"name": {"ascii": "Kumir_jaos_internal async_call_status", "ru_RU": "кумир_яос_внутр статус_асинхронного_вызова" },
 			"async": false,		"arguments": [],		"returnType": "int"		},
-		{		"name": {"ascii": "Kumir_jaos_internal last error code", "ru_RU": "кумир_яос_внутр код последней ошибки" },
+		{		"name": {"ascii": "Kumir_jaos_internal last_error_code", "ru_RU": "кумир_яос_внутр код_последней_ошибки" },
 			"async": false,		"arguments": [],		"returnType": "int"	},
 	{
-		"name": {"ascii": "Kumir_jaos_internal async call int result", "ru_RU": "кумир_яос_внутр результат асинхронного вызова цел" },
+		"name": {"ascii": "Kumir_jaos_internal async_call_int_result", "ru_RU": "кумир_яос_внутр результат_асинхронного_вызова_цел" },
 		"async": false,		"arguments": [],		"returnType": "int"	}]}
 		

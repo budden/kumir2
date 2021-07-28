@@ -95,29 +95,29 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
 {
     /* алг кумир_яос_внутр вызови_функцию_из_цел_в_цел(цел function_number, цел arg) */
     runKumir_jaos_internalCall_jaos_func_of_int_to_int_inner(function_number, arg);
+   
 }
 
-/* public slot */ int JAOSModule::runKumir_jaos_internalAsyncCallStatus()
+/* public slot */ int JAOSModule::runKumir_jaos_internalAsync_call_status()
 {
-    /* алг цел кумир_яос_внутр статус асинхронного вызова */
+    /* алг цел кумир_яос_внутр статус_асинхронного_вызова */
     // TODO implement me
     return int(asyncCallStatusValue);
     
 }
 
-/* public slot */ int JAOSModule::runKumir_jaos_internalLastErrorCode()
+/* public slot */ int JAOSModule::runKumir_jaos_internalLast_error_code()
 {
-    /* алг цел кумир_яос_внутр код последней ошибки */
+    /* алг цел кумир_яос_внутр код_последней_ошибки */
     // TODO implement me
     return int(lastErrorCodeValue);
     
 }
 
-/* public slot */ int JAOSModule::runKumir_jaos_internalAsyncCallIntResult()
+/* public slot */ int JAOSModule::runKumir_jaos_internalAsync_call_int_result()
 {
-
+    /* алг цел кумир_яос_внутр результат_асинхронного_вызова_цел */
     qDebug() << "entered runKumir_jaos_internalAsyncCallIntResult";
-    /* алг цел кумир_яос_внутр результат асинхронного вызова цел */
     // TODO implement me
     return int(internalAsyncCallIntResultValue);
     

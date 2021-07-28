@@ -42,9 +42,9 @@ public Q_SLOTS:
     void reset();
     void terminateEvaluation();
     void runKumir_jaos_internalCall_jaos_func_of_int_to_int(const int function_number, const int arg);
-    int runKumir_jaos_internalAsyncCallStatus();
-    int runKumir_jaos_internalLastErrorCode();
-    int runKumir_jaos_internalAsyncCallIntResult();
+    int runKumir_jaos_internalAsync_call_status();
+    int runKumir_jaos_internalLast_error_code();
+    int runKumir_jaos_internalAsync_call_int_result();
 
 
 
