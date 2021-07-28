@@ -25,8 +25,8 @@ namespace ActorJAOS {
             internalAsyncCallIntResultValue = 81; break;
         case 1: asyncCallStatusValue = acsvDoneWithError; break;
         case 2: 
-            echoClient = new EchoClient(QUrl(QString("ws://localhost:%1").arg(arg)), true);
-            QObject::connect(echoClient, &EchoClient::connected1, this, &MyJAOSModuleBase::onEchoClientConnected);
+            echoClient = new EchoClient(arg);
+            // QObject::connect(echoClient, &EchoClient::connected1, this, &MyJAOSModuleBase::onEchoClientConnected);
             // QObject::connect(&client, &EchoClient::closed, &a, &QCoreApplication::quit);
             break;
         default: 
