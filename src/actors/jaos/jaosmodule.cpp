@@ -91,9 +91,9 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
     // TODO implement me
 }
 
-/* public slot */ void JAOSModule::runKumir_jaos_internalCallJaosFuncOfIntToInt(const int function_number, const int arg)
+/* public slot */ void JAOSModule::runKumir_jaos_internalCall_jaos_func_of_int_to_int(const int function_number, const int arg)
 {
-    /* алг кумир_яос_внутр вызови функцию из цел в цел(цел function_number, цел arg) */
+    /* алг кумир_яос_внутр вызови_функцию_из_цел_в_цел(цел function_number, цел arg) */
 
     /** Коды функций: 
     0 - запусти яос (пока не делаем)
@@ -120,9 +120,6 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
 
     }
 }
-
-
-
 
 /* public slot */ int JAOSModule::runKumir_jaos_internalAsyncCallStatus()
 {

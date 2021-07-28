@@ -9,7 +9,7 @@
 		}
 	],
 	"methods": [
-		{		"name": {"ascii": "Kumir_jaos_internal call jaos func of int to int", "ru_RU": "кумир_яос_внутр вызови функцию из цел в цел" },
+		{		"name": {"ascii": "Kumir_jaos_internal call_jaos_func_of_int_to_int", "ru_RU": "кумир_яос_внутр вызови_функцию_из_цел_в_цел" },
 			"async": true,	"arguments": [
 				{ "name": "function_number", "baseType": "int" },
 				{ "name": "arg", "baseType": "int" }

@@ -35,14 +35,13 @@ class JAOSModule
 public /* methods */:
     JAOSModule(ExtensionSystem::KPlugin * parent);
     static QList<ExtensionSystem::CommandLineParameter> acceptableCommandLineParameters();
-    
 public Q_SLOTS:
     void changeGlobalState(ExtensionSystem::GlobalState old, ExtensionSystem::GlobalState current);
     void loadActorData(QIODevice * source);
     void reloadSettings(ExtensionSystem::SettingsPtr settings, const QStringList & keys);
     void reset();
     void terminateEvaluation();
-    void runKumir_jaos_internalCallJaosFuncOfIntToInt(const int function_number, const int arg);
+    void runKumir_jaos_internalCall_jaos_func_of_int_to_int(const int function_number, const int arg);
     int runKumir_jaos_internalAsyncCallStatus();
     int runKumir_jaos_internalLastErrorCode();
     int runKumir_jaos_internalAsyncCallIntResult();
@@ -50,6 +49,11 @@ public Q_SLOTS:
 
 
     /* ========= CLASS PRIVATE ========= */
+
+
+
+
+
 
 };
         
