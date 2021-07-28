@@ -9,20 +9,13 @@
 		}
 	],
 	"methods": [
-		{
-			"name": {"ascii": "Podkljuchisq k JAOS", "ru_RU": "подключись к ЯОС" },
-			"async": false,
-			"arguments": [
-							{ "name": "port", "baseType": "int" }
-			],
-			"returnType": "int"
-},
-		{
-			"name": {"ascii": "Vyzovy funk iz cel v cel", "ru_RU": "вызови функцию из цел в цел" },
-			"async": false,
-			"returnType": "int",
-			"arguments": [
-				{ "name": "arg", "baseType": "int" }
-			]
-		}	]
-}
+		{		"name": {"ascii": "Kumir_jaos_internal call jaos func of int to int", "ru_RU": "кумир_яос_внутр вызови функцию из цел в цел" },
+			"async": true,	"arguments": [		{ "name": "arg", "baseType": "int" }		]			},
+		{		"name": {"ascii": "Kumir_jaos_internal async call status", "ru_RU": "кумир_яос_внутр статус асинхронного вызова" },
+			"async": false,		"arguments": [],		"returnType": "int"		},
+		{		"name": {"ascii": "Kumir_jaos_internal last error code", "ru_RU": "кумир_яос_внутр код последней ошибки" },
+			"async": false,		"arguments": [],		"returnType": "int"	},
+	{
+		"name": {"ascii": "Kumir_jaos_internal async call int result", "ru_RU": "кумир_яос_внутр результат асинхронного вызова цел" },
+		"async": false,		"arguments": [],		"returnType": "int"	}]}
+		
