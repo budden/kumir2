@@ -39,7 +39,7 @@ public Q_SLOTS:
     void reloadSettings(ExtensionSystem::SettingsPtr settings, const QStringList & keys);
     void reset();
     void terminateEvaluation();
-    void runKumir_jaos_internalCallJaosFuncOfIntToInt(const int arg);
+    void runKumir_jaos_internalCallJaosFuncOfIntToInt(const int function_number, const int arg);
     int runKumir_jaos_internalAsyncCallStatus();
     int runKumir_jaos_internalLastErrorCode();
     int runKumir_jaos_internalAsyncCallIntResult();

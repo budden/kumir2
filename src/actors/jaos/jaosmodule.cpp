@@ -91,10 +91,11 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
     // TODO implement me
 }
 
-/* public slot */ void JAOSModule::runKumir_jaos_internalCallJaosFuncOfIntToInt(const int arg)
+/* public slot */ void JAOSModule::runKumir_jaos_internalCallJaosFuncOfIntToInt(const int function_number, const int arg)
 {
-    /* алг кумир_яос_внутр вызови функцию из цел в цел(цел arg) */
+    /* алг кумир_яос_внутр вызови функцию из цел в цел(цел function_number, цел arg) */
     // TODO implement me
+    Q_UNUSED(function_number)  // Remove this line on implementation;
     Q_UNUSED(arg)  // Remove this line on implementation;
     
 }

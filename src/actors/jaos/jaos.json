@@ -10,7 +10,10 @@
 	],
 	"methods": [
 		{		"name": {"ascii": "Kumir_jaos_internal call jaos func of int to int", "ru_RU": "кумир_яос_внутр вызови функцию из цел в цел" },
-			"async": true,	"arguments": [		{ "name": "arg", "baseType": "int" }		]			},
+			"async": true,	"arguments": [
+				{ "name": "function_number", "baseType": "int" },
+				{ "name": "arg", "baseType": "int" }
+					]			},
 		{		"name": {"ascii": "Kumir_jaos_internal async call status", "ru_RU": "кумир_яос_внутр статус асинхронного вызова" },
 			"async": false,		"arguments": [],		"returnType": "int"		},
 		{		"name": {"ascii": "Kumir_jaos_internal last error code", "ru_RU": "кумир_яос_внутр код последней ошибки" },
