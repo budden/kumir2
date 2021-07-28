@@ -1,2 +1,2 @@
-name    = JAOSComplexNumbers
+name    = JAOS
 gui     = false

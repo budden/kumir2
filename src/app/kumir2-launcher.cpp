@@ -32,7 +32,7 @@ static struct AsIf {
 	{"classic", "CourseManager,Editor,Actor*,KumirAnalizer(preload=Files),*CodeGenerator,KumirCodeRun,!CoreGUI(notabs,nostartpage,nosessions)"},
 	{"checkcourse", "ActorRobot,!CourseManager,KumirCodeGenerator,KumirCodeRun(console),KumirAnalizer(teacher,preload=Files,preload=Strings)"},
 	{"bc", "Actor*(tablesOnly),!KumirCompilerTool,KumirCodeGenerator,KumirAnalizer(teacher,preload=Files,preload=Strings)"},
-	{"xrun", "!KumirCodeRun(console),ActorRobot"},
+	{"xrun", "!KumirCodeRun(console),ActorRobot,ActorJAOS"},
 };
 static int asifs_size = sizeof(asifs) / sizeof(asifs[0]);
 

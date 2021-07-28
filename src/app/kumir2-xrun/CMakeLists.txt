@@ -4,5 +4,5 @@ project(kumir2-xrun)
 
 kumir2_add_launcher(
 	NAME            kumir2-xrun
-	CONFIGURATION   "!KumirCodeRun\(console\),ActorRobot"
+	CONFIGURATION   "!KumirCodeRun\(console\),ActorRobot,ActorJAOS"
 )
