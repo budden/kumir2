@@ -1,4 +1,12 @@
+#ifndef JAOSMODULE_MY_H
+#define JAOSMODULE_MY_H
+
 #include "echoclient.h"
+
+#include "jaosmodulebase.h"
+
+// Kumir includes
+#include <kumir2-libs/extensionsystem/kplugin.h>
 
 namespace ActorJAOS {
 
@@ -19,8 +27,11 @@ enum ConnectionStatusValue { csvNoConnection = 0,
  csvDisconnectError = 5}; 
 
 class MyJAOSModuleBase
-    : public JAOSModuleBase {
+    : public JAOSModuleBase 
 
+{
+
+Q_OBJECT
 
 public:
     MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
@@ -34,6 +45,10 @@ public:
     ConnectionStatusValue connectionStatusValue = csvNoConnection;
     EchoClient *echoClient = NULL;
 
+public Q_SLOTS:
+    void onEchoClientConnected(); 
+
     };
 
 }
+#endif

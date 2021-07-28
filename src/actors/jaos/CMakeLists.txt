@@ -8,6 +8,7 @@ kumir2_use_qt(Core Gui WebSockets)
 set(SOURCES
     echoclient.cpp
     jaosmodule.cpp
+    jaosmodule_my.cpp
 )
 
 set(MOC_HEADERS

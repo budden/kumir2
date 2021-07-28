@@ -60,6 +60,7 @@ public:
     explicit EchoClient(const QUrl &url, bool debug = false, QObject *parent = nullptr);
 
 Q_SIGNALS:
+    void connected1();
     void closed();
 
 private Q_SLOTS:

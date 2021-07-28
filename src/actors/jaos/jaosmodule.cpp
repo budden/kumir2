@@ -111,6 +111,7 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
         case 0: asyncCallStatusValue = acsvDoneWithError; break;
         case 1: 
             echoClient = new EchoClient(QUrl(QString("ws://localhost:%1").arg(arg)), true);
+            QObject::connect(echoClient, &EchoClient::connected1, this, &MyJAOSModuleBase::onEchoClientConnected);
             // QObject::connect(&client, &EchoClient::closed, &a, &QCoreApplication::quit);
             break;
         default: 
@@ -119,6 +120,9 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
 
     }
 }
+
+
+
 
 /* public slot */ int JAOSModule::runKumir_jaos_internalAsyncCallStatus()
 {
