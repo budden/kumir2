@@ -94,38 +94,14 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
 /* public slot */ void JAOSModule::runKumir_jaos_internalCall_jaos_func_of_int_to_int(const int function_number, const int arg)
 {
     /* алг кумир_яос_внутр вызови_функцию_из_цел_в_цел(цел function_number, цел arg) */
-
-    /** Коды функций: 
-    0 - запусти яос (пока не делаем)
-    1 - подключись к яос
-    2 - отключись от яос (пока не делаем)
-    3 - проверь, что подключение работает (пока не делаем)
-    4 - добавь единицу и верни результат
-    5 - умножь на два и верни результат
-    6 - запусти тетрис */
-    Q_ASSERT( asyncCallStatusValue != acsvRunning );
-    asyncCallStatusValue = acsvRunning;
-    lastErrorCodeValue = lecvErrorWithoutFurtherDetail;
-    
-    switch (function_number) {
-        case 0: asyncCallStatusValue = acsvDoneWithError; break;
-        case 1: 
-            echoClient = new EchoClient(QUrl(QString("ws://localhost:%1").arg(arg)), true);
-            QObject::connect(echoClient, &EchoClient::connected1, this, &MyJAOSModuleBase::onEchoClientConnected);
-            // QObject::connect(&client, &EchoClient::closed, &a, &QCoreApplication::quit);
-            break;
-        default: 
-            asyncCallStatusValue = acsvDoneWithError;
-            break;
-
-    }
+    runKumir_jaos_internalCall_jaos_func_of_int_to_int_inner(function_number, arg);
 }
 
 /* public slot */ int JAOSModule::runKumir_jaos_internalAsyncCallStatus()
 {
     /* алг цел кумир_яос_внутр статус асинхронного вызова */
     // TODO implement me
-    return 0;
+    return int(asyncCallStatusValue);
     
 }
 
@@ -133,15 +109,17 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
 {
     /* алг цел кумир_яос_внутр код последней ошибки */
     // TODO implement me
-    return 0;
+    return int(lastErrorCodeValue);
     
 }
 
 /* public slot */ int JAOSModule::runKumir_jaos_internalAsyncCallIntResult()
 {
+
+    qDebug() << "entered runKumir_jaos_internalAsyncCallIntResult";
     /* алг цел кумир_яос_внутр результат асинхронного вызова цел */
     // TODO implement me
-    return 0;
+    return int(internalAsyncCallIntResultValue);
     
 }
 

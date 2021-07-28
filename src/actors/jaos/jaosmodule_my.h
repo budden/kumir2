@@ -17,7 +17,7 @@ enum AsyncCallStatusValue {
  acsvOk = 2
 };
 
-enum LastErrorCodeValue { lecvOk = 0, lecvErrorWithoutFurtherDetail = 1 };
+const int32_t lecvOk = 0, lecvErrorWithoutFurtherDetail = 1;
 
 enum ConnectionStatusValue { csvNoConnection = 0, 
  csvConnecting = 1,
@@ -39,8 +39,10 @@ public:
 {
 }
 
+    void runKumir_jaos_internalCall_jaos_func_of_int_to_int_inner(const int function_number, const int arg);
+
     AsyncCallStatusValue asyncCallStatusValue = acsvOk; 
-    LastErrorCodeValue lastErrorCodeValue = lecvErrorWithoutFurtherDetail; 
+    int32_t lastErrorCodeValue = lecvErrorWithoutFurtherDetail; 
     int32_t internalAsyncCallIntResultValue; /* возвращаемое значение последнего вызова */
     ConnectionStatusValue connectionStatusValue = csvNoConnection;
     EchoClient *echoClient = NULL;
