@@ -23,7 +23,7 @@ You should change it corresponding to functionality.
 namespace ActorJAOS {
 
 JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
-    : JAOSModuleBase(parent)
+    : MyJAOSModuleBase(parent)
 {
     // Module constructor, called once on plugin load
     // TODO implement me
@@ -94,10 +94,30 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
 /* public slot */ void JAOSModule::runKumir_jaos_internalCallJaosFuncOfIntToInt(const int function_number, const int arg)
 {
     /* алг кумир_яос_внутр вызови функцию из цел в цел(цел function_number, цел arg) */
-    // TODO implement me
-    Q_UNUSED(function_number)  // Remove this line on implementation;
-    Q_UNUSED(arg)  // Remove this line on implementation;
+
+    /** Коды функций: 
+    0 - запусти яос (пока не делаем)
+    1 - подключись к яос
+    2 - отключись от яос (пока не делаем)
+    3 - проверь, что подключение работает (пока не делаем)
+    4 - добавь единицу и верни результат
+    5 - умножь на два и верни результат
+    6 - запусти тетрис */
+    Q_ASSERT( asyncCallStatusValue != acsvRunning );
+    asyncCallStatusValue = acsvRunning;
+    lastErrorCodeValue = lecvErrorWithoutFurtherDetail;
     
+    switch (function_number) {
+        case 0: asyncCallStatusValue = acsvDoneWithError; break;
+        case 1: 
+            echoClient = new EchoClient(QUrl(QString("ws://localhost:%1").arg(arg)), true);
+            // QObject::connect(&client, &EchoClient::closed, &a, &QCoreApplication::quit);
+            break;
+        default: 
+            asyncCallStatusValue = acsvDoneWithError;
+            break;
+
+    }
 }
 
 /* public slot */ int JAOSModule::runKumir_jaos_internalAsyncCallStatus()

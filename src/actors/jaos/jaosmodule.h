@@ -15,6 +15,8 @@ You should change it corresponding to functionality.
 // Kumir includes
 #include <kumir2-libs/extensionsystem/kplugin.h>
 
+#include "jaosmodule_my.h"
+
 // Qt includes
 #include <QtCore>
 #if QT_VERSION >= 0x050000
@@ -27,12 +29,13 @@ namespace ActorJAOS {
 
 
 class JAOSModule
-    : public JAOSModuleBase
+    : public MyJAOSModuleBase
 {
     Q_OBJECT
 public /* methods */:
     JAOSModule(ExtensionSystem::KPlugin * parent);
     static QList<ExtensionSystem::CommandLineParameter> acceptableCommandLineParameters();
+    
 public Q_SLOTS:
     void changeGlobalState(ExtensionSystem::GlobalState old, ExtensionSystem::GlobalState current);
     void loadActorData(QIODevice * source);
@@ -47,11 +50,6 @@ public Q_SLOTS:
 
 
     /* ========= CLASS PRIVATE ========= */
-
-
-
-
-
 
 };
         
