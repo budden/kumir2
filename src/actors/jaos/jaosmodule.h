@@ -39,8 +39,10 @@ public Q_SLOTS:
     void reloadSettings(ExtensionSystem::SettingsPtr settings, const QStringList & keys);
     void reset();
     void terminateEvaluation();
-    int runPodkljuchisqKJAOS(const int port);
-    int runVyzovyFunkIzCelVCel(const int arg);
+    void runKumir_jaos_internalCallJaosFuncOfIntToInt(const int arg);
+    int runKumir_jaos_internalAsyncCallStatus();
+    int runKumir_jaos_internalLastErrorCode();
+    int runKumir_jaos_internalAsyncCallIntResult();
 
 
 

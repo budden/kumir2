@@ -91,20 +91,34 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
     // TODO implement me
 }
 
-/* public slot */ int JAOSModule::runPodkljuchisqKJAOS(const int port)
+/* public slot */ void JAOSModule::runKumir_jaos_internalCallJaosFuncOfIntToInt(const int arg)
 {
-    /* алг цел подключись к ЯОС(цел port) */
+    /* алг кумир_яос_внутр вызови функцию из цел в цел(цел arg) */
     // TODO implement me
-    Q_UNUSED(port)  // Remove this line on implementation;
+    Q_UNUSED(arg)  // Remove this line on implementation;
+    
+}
+
+/* public slot */ int JAOSModule::runKumir_jaos_internalAsyncCallStatus()
+{
+    /* алг цел кумир_яос_внутр статус асинхронного вызова */
+    // TODO implement me
     return 0;
     
 }
 
-/* public slot */ int JAOSModule::runVyzovyFunkIzCelVCel(const int arg)
+/* public slot */ int JAOSModule::runKumir_jaos_internalLastErrorCode()
 {
-    /* алг цел вызови функцию из цел в цел(цел arg) */
+    /* алг цел кумир_яос_внутр код последней ошибки */
     // TODO implement me
-    Q_UNUSED(arg)  // Remove this line on implementation;
+    return 0;
+    
+}
+
+/* public slot */ int JAOSModule::runKumir_jaos_internalAsyncCallIntResult()
+{
+    /* алг цел кумир_яос_внутр результат асинхронного вызова цел */
+    // TODO implement me
     return 0;
     
 }
