@@ -22,8 +22,8 @@ public:
 public slots:
     void start();
     void startTransfer();
-    void updateClientProgress(qint64 numBytes);
     void displayError(QAbstractSocket::SocketError socketError);
+    void onReadyRead();
 
 public:
     int port_number;

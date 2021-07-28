@@ -19,8 +19,8 @@ EchoClient::EchoClient(int in_port_number, bool m_debug) :
     if (m_debug)
         qDebug() << "Creating dialog" ;
     connect(&tcpClient, &QAbstractSocket::connected, this, &EchoClient::startTransfer);
-    connect(&tcpClient, &QIODevice::bytesWritten,
-            this, &EchoClient::updateClientProgress);
+    connect(&tcpClient, &QIODevice::readyRead,
+            this, &EchoClient::onReadyRead);
     connect(&tcpClient, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
             this, &EchoClient::displayError);
 }
@@ -46,25 +46,23 @@ void EchoClient::displayError(QAbstractSocket::SocketError socketError)
     tcpClient.close();
 }
 
-void EchoClient::updateClientProgress(qint64 numBytes)
-{
-    // called when the TCP client has written some bytes
-    bytesWritten += int(numBytes);
-
-    // only write more if not finished and when the Qt write buffer is below a certain size.
-    //if (bytesToWrite > 0 && tcpClient.bytesToWrite() <= 4 * PayloadSize)
-    //    bytesToWrite -= tcpClient.write(QStringByteArray(qMin(bytesToWrite, PayloadSize), '@')
-    //);
-
-    qDebug() << "Written " << bytesWritten;
-
-    tcpClient.close();
+void EchoClient::onReadyRead()
+{ 
+    char in_data[1024];
+    qDebug() << "Entered onReadyRead";
+    Q_ASSERT(tcpClient.bytesToWrite() == 0);
+    if (tcpClient.canReadLine()) {
+        tcpClient.readLine(in_data,sizeof(in_data));
+        qDebug() << "onReadRead: readLine() got " << in_data; 
+    }
 }
 
 void EchoClient::startTransfer()
 {
     // called when the TCP client connected to the loopback server
-    qint64 bytesWrittenNow = tcpClient.write(QByteArray("1:1"));
+    qint64 bytesWrittenNow = tcpClient.write(QByteArray("1:3"));
+    bool flush_result = tcpClient.flush();
+    Q_ASSERT(flush_result);
     qDebug() << "Leaving startTransfer, bytes written = " << bytesWrittenNow;
     
 }
