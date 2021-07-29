@@ -1,8 +1,4 @@
 /****************************************************************************
- * ** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the examples of the Qt Toolkit.
 ****************************************************************************/
 #ifndef ECHOCLIENT_H
 #define ECHOCLIENT_H
@@ -11,28 +7,23 @@
 #include <QtWebSockets/QWebSocket>
 #include <QtNetwork>
 #include <QTcpSocket>
+#include <QtCore/QCoreApplication>
 
-class EchoClient : public QObject
-{
-    Q_OBJECT
+class ContainerThread : public QThread {
 
-public:
-    explicit EchoClient(int in_port_number, bool debug = false);
+Q_OBJECT
 
-public slots:
-    void start();
-    void startTransfer();
-    void displayError(QAbstractSocket::SocketError socketError);
-    void onReadyRead();
+public: 
 
-public:
-    int port_number;
-    QTcpSocket tcpClient;
-    QTcpSocket *tcpServerConnection = nullptr;
-    int bytesToWrite = 0;
-    int bytesWritten = 0;
-    int bytesReceived = 0;
+QCoreApplication *app;
+explicit ContainerThread(bool debug, QObject *parent, QCoreApplication *inApp);
+
+void run() override;
+
+Q_SIGNALS:
+    void onEventLoopExitingg();
 
 };
+
 
 #endif // ECHOCLIENT_H

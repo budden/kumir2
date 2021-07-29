@@ -7,62 +7,59 @@
 #include <QtNetwork>
 #include <QAbstractSocket>
 #include <QtGlobal>
+#include <QObject>
+#include <QtCore/QCoreApplication>
+
 static const int PayloadSize = 256;
 
 QT_USE_NAMESPACE
 
-//! [constructor]
-EchoClient::EchoClient(int in_port_number, bool m_debug) :
-    QObject(nullptr)
-{
-    port_number = in_port_number;
-    if (m_debug)
-        qDebug() << "Creating dialog" ;
-    connect(&tcpClient, &QAbstractSocket::connected, this, &EchoClient::startTransfer);
-    connect(&tcpClient, &QIODevice::readyRead,
-            this, &EchoClient::onReadyRead);
-    connect(&tcpClient, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
-            this, &EchoClient::displayError);
-}
-//! [constructor]
-
-void EchoClient::start()
-{
-
-    bytesWritten = 0;
-    bytesReceived = 0;
-    qDebug() << "EchoClient::start : connecting to localhost:" << port_number ;
-
-    tcpClient.connectToHost(QHostAddress::LocalHost, port_number);
+ContainerThread::ContainerThread(bool debug, QObject *parent, QCoreApplication *inApp) : QThread (parent) {
+    Q_UNUSED(debug);
+    app = inApp;
+    qDebug() << "entered ContainerThread::ContainerThread";
 }
 
-void EchoClient::displayError(QAbstractSocket::SocketError socketError)
-{
-    if (socketError == QTcpSocket::RemoteHostClosedError)
-        return;
-
-    qDebug() << "Network error" << "The following error occurred: %1." <<  tcpClient.errorString();
-
-    tcpClient.close();
-}
-
-void EchoClient::onReadyRead()
-{ 
-    char in_data[1024];
-    qDebug() << "Entered onReadyRead";
-    Q_ASSERT(tcpClient.bytesToWrite() == 0);
-    if (tcpClient.canReadLine()) {
-        tcpClient.readLine(in_data,sizeof(in_data));
+// https://stackoverflow.com/a/60192923
+void ContainerThread::run()  {
+    qDebug() << "entered ContainerThread::run";
+    // container->startWork();
+    QEventLoop eventLoop;
+    QTcpSocket *socket = new QTcpSocket(&eventLoop);
+    connect(socket, &QTcpSocket::readyRead, &eventLoop, [socket]
+    {
+        char in_data[1024];
+        qDebug() << "entered readyToRead";
+        if (socket->canReadLine()) {
+            socket->readLine(in_data,sizeof(in_data));
         qDebug() << "onReadRead: readLine() got " << in_data; 
-    }
+        socket->close();
+        }
+    });
+
+    socket->connect(socket, &QAbstractSocket::connected, &eventLoop, [socket]{
+        qint64 bytesWrittenNow = socket->write(QByteArray("1:17"));
+        // Q_ASSERT(tcpClient.flush()); // пусть хоть упадёт, не знаю, как быть пока что.
+        qDebug() << "Leaving startTransfer, bytes written to the buffer = " << bytesWrittenNow;        
+    });
+
+    // Quit the loop (and thread) if the socket it disconnected. You could also try
+    // reconnecting
+    socket->connect(socket, &QTcpSocket::disconnected, &eventLoop, [&eventLoop]
+    {
+        qDebug() << "QTcpSocket::disconnected signaled";
+        eventLoop.quit();
+    });
+
+    socket->connectToHost(QHostAddress::LocalHost, 8967);
+
+    eventLoop.exec();
+
+    delete socket;
+
+    qDebug() << "Thread object becomes an orphan, delete it please!";
+    // app->quit();
+
 }
 
-void EchoClient::startTransfer()
-{
-    // called when the TCP client connected to the loopback server
-    qint64 bytesWrittenNow = tcpClient.write(QByteArray("1:3"));
-    bool flush_result = tcpClient.flush();
-    Q_ASSERT(flush_result);
-    qDebug() << "Leaving startTransfer, bytes written = " << bytesWrittenNow;
-    
-}
+

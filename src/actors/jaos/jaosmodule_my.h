@@ -37,6 +37,8 @@ public:
     MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
     : JAOSModuleBase(parent)
 {
+    // echoClient = new EchoClient(this);
+    // connect(this, &MyJAOSModuleBase::CallStart, echoClient, &EchoClient::start);
 }
 
     void runKumir_jaos_internalCall_jaos_func_of_int_to_int_inner(const int function_number, const int arg);
@@ -45,12 +47,18 @@ public:
     int32_t lastErrorCodeValue = lecvErrorWithoutFurtherDetail; 
     int32_t internalAsyncCallIntResultValue; /* возвращаемое значение последнего вызова */
     ConnectionStatusValue connectionStatusValue = csvNoConnection;
-    EchoClient *echoClient = NULL;
+    ContainerThread *containerThread;
 
 public Q_SLOTS:
     void onEchoClientConnected(); 
 
+    void CallStart(const int arg) {
+        containerThread = new ContainerThread(true,nullptr,nullptr);
+    // a.connect(thread,&ContainerThread::onEventLoopExitingg,&a,&QCoreApplication::quit);
+        containerThread->start();
     };
+};
 
-}
+};
+
 #endif
