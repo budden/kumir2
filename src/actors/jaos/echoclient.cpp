@@ -14,7 +14,7 @@ static const int PayloadSize = 256;
 
 QT_USE_NAMESPACE
 
-ContainerThread::ContainerThread(bool debug, QObject *parent, QCoreApplication *inApp) : QThread (parent) {
+ContainerThread::ContainerThread(bool debug, QObject *parent, ActorJAOS::JAOSModuleBase *inApp) : QThread (parent) {
     Q_UNUSED(debug);
     app = inApp;
     qDebug() << "entered ContainerThread::ContainerThread";
@@ -40,18 +40,22 @@ void QJakClientEventLoop::onSocketReadyRead() {
         qDebug() << "entered readyToRead";
         if (socket.canReadLine()) {
             socket.readLine(in_data,sizeof(in_data));
-        qDebug() << "onReadRead: readLine() got " << in_data; 
-        socket.close();
+        qDebug() << "onReadyRead: readLine() got " << in_data; 
+        //socket.close();
+        emit GotReplyFromServer(QString::fromUtf8(in_data).toInt());
         }
     }
 }
 
-void QJakClientEventLoop::onSocketConnected() {
-        emit Connected();
-        qint64 bytesWrittenNow = socket.write(QByteArray("1:17"));
-        // Q_ASSERT(tcpClient.flush()); // пусть хоть упадёт, не знаю, как быть пока что.
-        qDebug() << "Leaving startTransfer, bytes written to the buffer = " << bytesWrittenNow;        
+void QJakClientEventLoop::sendCallToServer(const int function_number, const int arg) {
+    qint64 bytesWrittenNow = socket.write(QString("%d:%d").arg(function_number).arg(arg).toUtf8());
+    // Q_ASSERT(tcpClient.flush()); // пусть хоть упадёт, не знаю, как быть пока что.
+    qDebug() << "Leaving startTransfer, bytes written to the buffer = " << bytesWrittenNow;        
+}
 
+void QJakClientEventLoop::onSocketConnected() {
+        qDebug() << "QJakClientEventLoop::onSocketConnected ";     
+        emit Connected();
     }
 
 
@@ -78,14 +82,22 @@ void ContainerThread::run()  {
     eventLoop = new QJakClientEventLoop(nullptr) ;
     qDebug() << "created event loop";
 
-    connect(eventLoop,&QJakClientEventLoop::Connected,this,&ContainerThread::onConnected);
+    connect(eventLoop,&QJakClientEventLoop::Connected,this,
+        &ContainerThread::onConnected);
+
+    connect(this,&ContainerThread::SendCallToServer,eventLoop,
+        &QJakClientEventLoop::sendCallToServer);
+
+    connect(eventLoop,&QJakClientEventLoop::GotReplyFromServer,this,
+        &ContainerThread::onGotReplyFromServer);
+
     qDebug() << "connected event";
 
     startConnecting(8967);
     qDebug() << "returned from startConnecting";
     eventLoop->exec();
 
-    app->quit();
+    //app->quit();
 
 }
 

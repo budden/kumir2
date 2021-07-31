@@ -2,6 +2,52 @@
 
 namespace ActorJAOS {
 
+MyJAOSModuleBase::MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
+    : JAOSModuleBase(parent)
+{
+    // echoClient = new EchoClient(this);
+    // connect(this, &MyJAOSModuleBase::CallStart, echoClient, &EchoClient::start);
+}
+
+
+/* public slot */ void MyJAOSModuleBase::ConnectedToServer() {
+        qDebug() << "Entering ConnectedToServer";
+        connectionStatusValue = csvConnected;
+        asyncCallStatusValue = acsvOk;
+    }
+
+/* public slot */ void MyJAOSModuleBase::CallStart(const int arg) {
+        containerThread = new ContainerThread(true,nullptr,nullptr);
+        connect(containerThread,&ContainerThread::Connected, this, 
+            &MyJAOSModuleBase::ConnectedToServer);
+        connect(containerThread,&ContainerThread::onEventLoopExitingg, this, 
+            &MyJAOSModuleBase::DisconnectedFromServer);
+        connect(this, &MyJAOSModuleBase::MyJAOSModuleBaseSignalToDisconnectFromServer,
+            containerThread, &ContainerThread::startDisconnecting);
+        connect(this, &MyJAOSModuleBase::sendCallToServer,
+            containerThread, &ContainerThread::SendCallToServer);
+        connect(containerThread,&ContainerThread::GotReplyFromServer, this, 
+            &MyJAOSModuleBase::onGotReplyFromServer);
+        
+        containerThread->start();
+    };
+
+/* public slot */ void MyJAOSModuleBase::DisconnectedFromServer() {
+        qDebug() << "Entering DisconnectedFromServer";
+        containerThread = nullptr; // а кто его сотрёт? Не знаю. Пока пусть утекает. 
+        connectionStatusValue = csvNoConnection;
+        // это вообще-то не факт: могло произойти отключение не по нашей инициативе, 
+        // а в это время был какой-то другой вызов. Т.е. нужно уметь при отключении понимать, 
+        // это мы отключили или оно само отвалилось. Но пока пусть хоть так. 
+        asyncCallStatusValue = acsvOk;
+    }
+
+/* public slot */ void MyJAOSModuleBase::onGotReplyFromServer(const int result) {
+        asyncCallStatusValue = acsvOk;
+        internalAsyncCallIntResultValue = result;        
+    }
+
+
 /* public slot */ void MyJAOSModuleBase::runKumir_jaos_internalCall_jaos_func_of_int_to_int_inner(const int function_number, const int arg)
 {
 
@@ -14,10 +60,10 @@ namespace ActorJAOS {
     4 - статус подключения
 
     5 и далее - вызвать пользовательскую функцию с таким номером */
+    qDebug() << "entered runKumir_jaos_internalCall_jaos_func_of_int_to_int" << function_number;
     Q_ASSERT( asyncCallStatusValue != acsvRunning );
     asyncCallStatusValue = acsvRunning;
     lastErrorCodeValue = lecvErrorWithoutFurtherDetail;
-    qDebug() << "entered runKumir_jaos_internalCall_jaos_func_of_int_to_int" << function_number;
     switch (function_number) {
         case 0: asyncCallStatusValue = acsvOk; lastErrorCodeValue = lecvOk; 
             internalAsyncCallIntResultValue = 81; break;
@@ -38,11 +84,11 @@ namespace ActorJAOS {
             break;
         case 4:
             qDebug() << "entered 4 (see ConnectionStatusValue)";
-            if (!containerThread) {
-                internalAsyncCallIntResultValue = connectionStatusValue;
-            }
+            asyncCallStatusValue = acsvOk;
+            internalAsyncCallIntResultValue = connectionStatusValue;
+            break;
         default: 
-            asyncCallStatusValue = acsvDoneWithError;
+            emit sendCallToServer(function_number,arg);
             break;
    }
 }

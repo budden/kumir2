@@ -34,12 +34,7 @@ class MyJAOSModuleBase
 Q_OBJECT
 
 public:
-    MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
-    : JAOSModuleBase(parent)
-{
-    // echoClient = new EchoClient(this);
-    // connect(this, &MyJAOSModuleBase::CallStart, echoClient, &EchoClient::start);
-}
+    explicit MyJAOSModuleBase(ExtensionSystem::KPlugin * parent);
 
     void runKumir_jaos_internalCall_jaos_func_of_int_to_int_inner(const int function_number, const int arg);
 
@@ -52,28 +47,17 @@ public:
 public Q_SLOTS:
     void onEchoClientConnected(); 
 
-    void ConnectedToServer() {
-        connectionStatusValue = csvConnected;
-    }
+    void ConnectedToServer();
 
-    void CallStart(const int arg) {
-        containerThread = new ContainerThread(true,nullptr,nullptr);
-        connect(containerThread,&ContainerThread::Connected, this, 
-            &MyJAOSModuleBase::ConnectedToServer);
-        connect(containerThread,&ContainerThread::onEventLoopExitingg, this, 
-            &MyJAOSModuleBase::DisconnectedFromServer);
-        connect(this, &MyJAOSModuleBase::MyJAOSModuleBaseSignalToDisconnectFromServer,
-            containerThread, &ContainerThread::startDisconnecting);
-        containerThread->start();
-    };
+    void CallStart(const int arg);
 
-    void DisconnectedFromServer() {
-        containerThread = nullptr; // а кто его сотрёт? Не знаю. Пока пусть утекает. 
-        connectionStatusValue = csvNoConnection;
-    }
+    void DisconnectedFromServer();
+
+    void onGotReplyFromServer(const int result);
 
 Q_SIGNALS:
     void MyJAOSModuleBaseSignalToDisconnectFromServer();
+    void sendCallToServer(const int function_number, const int arg);
 };
 
 };

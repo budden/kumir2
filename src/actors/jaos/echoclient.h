@@ -9,6 +9,7 @@
 #include <QTcpSocket>
 #include <QtCore/QCoreApplication>
 
+#include "jaosmodulebase.h"
 
 class QJakClientEventLoop : public QEventLoop {
 
@@ -19,11 +20,13 @@ public:
 
 public slots:
     void onSocketReadyRead();
+    void sendCallToServer(const int function_number, const int arg);
     void onSocketConnected();
     void onSocketDisconnected();
 
 Q_SIGNALS:
     void Connected();
+    void GotReplyFromServer(const int result);
 
 };
 
@@ -33,10 +36,10 @@ Q_OBJECT
 
 public: 
 
-explicit ContainerThread(bool debug, QObject *parent, QCoreApplication *inApp);
+explicit ContainerThread(bool debug, QObject *parent, ActorJAOS::JAOSModuleBase *inApp);
 
 
-QCoreApplication *app;
+ActorJAOS::JAOSModuleBase *app;
 QJakClientEventLoop *eventLoop;
 
 
@@ -45,13 +48,22 @@ void run() override;
 Q_SIGNALS:
     void onEventLoopExitingg();
     void Connected();
+    void SendCallToServer(const int function_number, const int arg);
+    void GotReplyFromServer(const int result);
 
 public slots:
     void startConnecting(int port);
     void onConnected() {
+        qDebug() << "ContainerThread::onConnected";
         emit Connected();
     }
     void startDisconnecting();
+    void onSendCallToServer(const int function_number, const int arg) {
+        emit SendCallToServer(function_number, arg);
+    }
+    void onGotReplyFromServer(const int result) {
+        emit GotReplyFromServer(result);
+    }
 
 
 };
