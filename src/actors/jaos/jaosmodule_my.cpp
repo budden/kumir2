@@ -16,23 +16,40 @@ MyJAOSModuleBase::MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
         asyncCallStatusValue = acsvOk;
     }
 
-/* public slot */ void MyJAOSModuleBase::CallStart(const int arg) {
-        containerThread = new ContainerThread(true,nullptr);
+    // typedef void (*HackConnectEventCallback)(QObject *thread, QObject *plugin);
+    void HackConnectEvent(QObject *thread, QObject *plugin) {
+        ContainerThread *tthread = dynamic_cast<ContainerThread *>(thread);
+        MyJAOSModuleBase *tplugin = dynamic_cast<MyJAOSModuleBase *>(plugin);
+        Q_ASSERT(tthread = tplugin->containerThread);
+        tplugin->bindContainerThreadEvents();
+    }
+    
 
-    connect(containerThread,&ContainerThread::Connected, this, 
-            &ActorJAOS::MyJAOSModuleBase::ConnectedToServer);
-    connect(containerThread,&ContainerThread::onEventLoopExitingg, this, 
-            &ActorJAOS::MyJAOSModuleBase::DisconnectedFromServer);
-    connect(this, &ActorJAOS::MyJAOSModuleBase::MyJAOSModuleBaseSignalToDisconnectFromServer,
-           containerThread, &ContainerThread::startDisconnecting);
-    connect(this, &ActorJAOS::MyJAOSModuleBase::sendCallToServer,
-            containerThread, &ContainerThread::SendCallToServer);
-    connect(containerThread,&ContainerThread::GotReplyFromServer, this, 
-            &ActorJAOS::MyJAOSModuleBase::onGotReplyFromServer);
+/* public slot */ void MyJAOSModuleBase::CallStart(const int arg) {
+    containerThread = new ContainerThread(true,nullptr,&HackConnectEvent,this);
+    /* Это не работает, не знаю, почему. 
+    connect(containerThread,&ContainerThread::PleaseBindMyEvents,this,
+        &MyJAOSModuleBase::bindContainerThreadEvents); */
 
         
         containerThread->start();
     };
+
+
+/* public slot */ void MyJAOSModuleBase::bindContainerThreadEvents() {
+    connect(containerThread->eventLoop,&QJakClientEventLoop::Connected, this, 
+            &ActorJAOS::MyJAOSModuleBase::ConnectedToServer);
+    connect(containerThread,&ContainerThread::eventLoopDonee, this, 
+            &ActorJAOS::MyJAOSModuleBase::DisconnectedFromServer);
+    /* connect(this, &ActorJAOS::MyJAOSModuleBase::MyJAOSModuleBaseSignalToDisconnectFromServer,
+           containerThread->eventLoop, &QJakClientEventLoop::di  ContainerThread::startDisconnecting); */
+    connect(this, &ActorJAOS::MyJAOSModuleBase::sendCallToServer,
+            containerThread->eventLoop, &QJakClientEventLoop::sendCallToServer);
+    connect(containerThread->eventLoop,&QJakClientEventLoop::GotReplyFromServer, this, 
+            &ActorJAOS::MyJAOSModuleBase::onGotReplyFromServer);
+
+    qDebug() << "connected thread's event loop events to plugin";
+}
 
 /* public slot */ void MyJAOSModuleBase::DisconnectedFromServer() {
         qDebug() << "Entering DisconnectedFromServer";

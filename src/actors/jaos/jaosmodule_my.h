@@ -45,6 +45,8 @@ public:
     ContainerThread *containerThread;
 
 public Q_SLOTS:
+    void bindContainerThreadEvents();
+
     void onEchoClientConnected(); 
 
     void ConnectedToServer();

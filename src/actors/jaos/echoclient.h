@@ -27,39 +27,35 @@ Q_SIGNALS:
 
 };
 
+typedef void (*HackConnectEventCallback)(QObject *thread, QObject *plugin);
+
 class ContainerThread : public QThread {
 
 Q_OBJECT
 
 public: 
 
-explicit ContainerThread(bool debug, QObject *parent);
+explicit ContainerThread(bool debug, QObject *parent, HackConnectEventCallback inEventConnector, QObject *inPlugin);
 
+HackConnectEventCallback eventConnector;
+QObject *plugin; 
 
 QJakClientEventLoop *eventLoop;
 
 
 void run() override;
+void PleaseBindMyEvents();
 
 Q_SIGNALS:
-    void onEventLoopExitingg();
-    void Connected();
-    void SendCallToServer(const int function_number, const int arg);
-    void GotReplyFromServer(const int result);
+
+    void eventLoopDonee();
+    //void Connected();
+    //void SendCallToServer(const int function_number, const int arg);
+    //void GotReplyFromServer(const int result);
 
 public slots:
     void startConnecting(int port);
-    void onConnected() {
-        qDebug() << "ContainerThread::onConnected";
-        emit Connected();
-    }
     void startDisconnecting();
-    void onSendCallToServer(const int function_number, const int arg) {
-        emit SendCallToServer(function_number, arg);
-    }
-    void onGotReplyFromServer(const int result) {
-        emit GotReplyFromServer(result);
-    }
 
 
 };
