@@ -58,7 +58,7 @@ public Q_SLOTS:
 
     void CallStart(const int arg) {
         containerThread = new ContainerThread(true,nullptr,nullptr);
-        connect(containerThread,&ContainerThread::onConnected, this, 
+        connect(containerThread,&ContainerThread::Connected, this, 
             &MyJAOSModuleBase::ConnectedToServer);
         connect(containerThread,&ContainerThread::onEventLoopExitingg, this, 
             &MyJAOSModuleBase::DisconnectedFromServer);

@@ -75,11 +75,14 @@ void ContainerThread::startDisconnecting() {
 void ContainerThread::run()  {
     qDebug() << "entered ContainerThread::run";
     // container->startWork();
-    eventLoop = new QJakClientEventLoop(this) ;
+    eventLoop = new QJakClientEventLoop(nullptr) ;
+    qDebug() << "created event loop";
 
     connect(eventLoop,&QJakClientEventLoop::Connected,this,&ContainerThread::onConnected);
+    qDebug() << "connected event";
 
     startConnecting(8967);
+    qDebug() << "returned from startConnecting";
     eventLoop->exec();
 
     app->quit();
