@@ -51,6 +51,7 @@ QJakClientEventLoop::QJakClientEventLoop(QObject *parent) : QEventLoop(parent) {
 /* public slot */ void QJakClientEventLoop::sendCallToServer(const int function_number, const int arg1) {
     asyncCallStatusValue = acsvRunning;
     qint64 bytesWrittenNow = socket.write(QString("%1:%2").arg(function_number).arg(arg1).toUtf8());
+    Q_ASSERT(socket.flush());
     // Q_ASSERT(tcpClient.flush()); // пусть хоть упадёт, не знаю, как быть пока что.
     qDebug() << "Leaving startTransfer, bytes written to the buffer = " << bytesWrittenNow;        
 }
@@ -58,6 +59,7 @@ QJakClientEventLoop::QJakClientEventLoop(QObject *parent) : QEventLoop(parent) {
 /* public slot */ void QJakClientEventLoop::onSocketConnected() {
         qDebug() << "QJakClientEventLoop::onSocketConnected ";     
         connectionStatusValue = csvConnected;
+        asyncCallStatusValue = acsvOk;
         // emit Connected();
     }
 
