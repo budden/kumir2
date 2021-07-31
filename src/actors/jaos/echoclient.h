@@ -8,22 +8,36 @@
 #include <QtNetwork>
 #include <QTcpSocket>
 
+enum ConnectionStatusValue { csvNoConnection = 0, 
+ csvConnecting = 1,
+ csvConnectionError = 2,
+ csvConnected = 3,
+ csvDisconnecting = 4,
+ csvDisconnectError = 5}; 
+
+enum AsyncCallStatusValue {
+ acsvRunning = 0,
+ acsvDoneWithError = 1,
+ acsvOk = 2,
+ acsvDisconnected = 3
+};
+
+
 class QJakClientEventLoop : public QEventLoop {
 
 Q_OBJECT
 public:
     QTcpSocket socket;
     explicit QJakClientEventLoop(QObject *parent = nullptr);
+    AsyncCallStatusValue asyncCallStatusValue = acsvDisconnected;
+    ConnectionStatusValue connectionStatusValue = csvNoConnection;
+    int lastCallResult;
 
 public slots:
     void onSocketReadyRead();
     void sendCallToServer(const int function_number, const int arg);
     void onSocketConnected();
     void onSocketDisconnected();
-
-Q_SIGNALS:
-    void Connected();
-    void GotReplyFromServer(const int result);
 
 };
 
@@ -35,12 +49,11 @@ Q_OBJECT
 
 public: 
 
-explicit ContainerThread(bool debug, QObject *parent, HackConnectEventCallback inEventConnector, QObject *inPlugin);
+explicit ContainerThread(bool debug, QObject *parent);
 
 HackConnectEventCallback eventConnector;
-QObject *plugin; 
 
-QJakClientEventLoop *eventLoop;
+QJakClientEventLoop *eventLoop = nullptr;
 
 
 void run() override;

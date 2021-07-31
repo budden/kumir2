@@ -102,7 +102,7 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
 {
     /* алг цел кумир_яос_внутр статус_асинхронного_вызова */
     // TODO implement me
-    return int(asyncCallStatusValue);
+    return asyncCallStatusValue();
     
 }
 
@@ -119,7 +119,7 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
     /* алг цел кумир_яос_внутр результат_асинхронного_вызова_цел */
     qDebug() << "entered runKumir_jaos_internalAsyncCallIntResult";
     // TODO implement me
-    return int(internalAsyncCallIntResultValue);
+    return internalAsyncCallIntResultValue();
     
 }
 
