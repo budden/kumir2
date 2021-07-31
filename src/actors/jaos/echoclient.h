@@ -7,9 +7,6 @@
 #include <QtWebSockets/QWebSocket>
 #include <QtNetwork>
 #include <QTcpSocket>
-#include <QtCore/QCoreApplication>
-
-#include "jaosmodulebase.h"
 
 class QJakClientEventLoop : public QEventLoop {
 
@@ -36,10 +33,9 @@ Q_OBJECT
 
 public: 
 
-explicit ContainerThread(bool debug, QObject *parent, ActorJAOS::JAOSModuleBase *inApp);
+explicit ContainerThread(bool debug, QObject *parent);
 
 
-ActorJAOS::JAOSModuleBase *app;
 QJakClientEventLoop *eventLoop;
 
 

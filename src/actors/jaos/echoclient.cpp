@@ -14,11 +14,9 @@ static const int PayloadSize = 256;
 
 QT_USE_NAMESPACE
 
-ContainerThread::ContainerThread(bool debug, QObject *parent, ActorJAOS::JAOSModuleBase *inApp) : QThread (parent) {
+ContainerThread::ContainerThread(bool debug, QObject *parent) : QThread (parent) {
     Q_UNUSED(debug);
-    app = inApp;
     qDebug() << "entered ContainerThread::ContainerThread";
-
 }
 
 QJakClientEventLoop::QJakClientEventLoop(QObject *parent) : QEventLoop(parent) {

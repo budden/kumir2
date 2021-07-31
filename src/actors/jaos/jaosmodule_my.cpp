@@ -17,17 +17,19 @@ MyJAOSModuleBase::MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
     }
 
 /* public slot */ void MyJAOSModuleBase::CallStart(const int arg) {
-        containerThread = new ContainerThread(true,nullptr,nullptr);
-        connect(containerThread,&ContainerThread::Connected, this, 
-            &MyJAOSModuleBase::ConnectedToServer);
-        connect(containerThread,&ContainerThread::onEventLoopExitingg, this, 
-            &MyJAOSModuleBase::DisconnectedFromServer);
-        connect(this, &MyJAOSModuleBase::MyJAOSModuleBaseSignalToDisconnectFromServer,
-            containerThread, &ContainerThread::startDisconnecting);
-        connect(this, &MyJAOSModuleBase::sendCallToServer,
+        containerThread = new ContainerThread(true,nullptr);
+
+    connect(containerThread,&ContainerThread::Connected, this, 
+            &ActorJAOS::MyJAOSModuleBase::ConnectedToServer);
+    connect(containerThread,&ContainerThread::onEventLoopExitingg, this, 
+            &ActorJAOS::MyJAOSModuleBase::DisconnectedFromServer);
+    connect(this, &ActorJAOS::MyJAOSModuleBase::MyJAOSModuleBaseSignalToDisconnectFromServer,
+           containerThread, &ContainerThread::startDisconnecting);
+    connect(this, &ActorJAOS::MyJAOSModuleBase::sendCallToServer,
             containerThread, &ContainerThread::SendCallToServer);
-        connect(containerThread,&ContainerThread::GotReplyFromServer, this, 
-            &MyJAOSModuleBase::onGotReplyFromServer);
+    connect(containerThread,&ContainerThread::GotReplyFromServer, this, 
+            &ActorJAOS::MyJAOSModuleBase::onGotReplyFromServer);
+
         
         containerThread->start();
     };
