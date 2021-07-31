@@ -31,6 +31,7 @@ public:
     explicit QJakClientEventLoop(QObject *parent = nullptr);
     AsyncCallStatusValue asyncCallStatusValue = acsvDisconnected;
     ConnectionStatusValue connectionStatusValue = csvNoConnection;
+    bool signalsFromPluginAreBoundP = false;
     int lastCallResult;
 
 public slots:
@@ -38,6 +39,7 @@ public slots:
     void sendCallToServer(const int function_number, const int arg);
     void onSocketConnected();
     void onSocketDisconnected();
+    void startDisconnecting();
 
 };
 
@@ -68,9 +70,6 @@ Q_SIGNALS:
 
 public slots:
     void startConnecting(int port);
-    void startDisconnecting();
-
-
 };
 
 

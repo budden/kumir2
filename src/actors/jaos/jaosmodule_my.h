@@ -27,6 +27,8 @@ public:
     void runKumir_jaos_internalCall_jaos_func_of_int_to_int_inner(const int function_number, const int arg);
 
     AsyncCallStatusValue asyncCallStatusValue(); // напрямую читаем из полей цикла событий треда связи с сервером
+
+    void ensureSignalsToEventLoopAreBound(); // назначаем сигналы, если они не назначены
     ConnectionStatusValue connectionStatusValue(); 
     int32_t lastErrorCodeValue = lecvErrorWithoutFurtherDetail; 
     int internalAsyncCallIntResultValue(); /* возвращаемое значение последнего вызова */

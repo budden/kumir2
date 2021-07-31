@@ -20,6 +20,19 @@ MyJAOSModuleBase::MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
         return el->asyncCallStatusValue;
     }
     
+    void MyJAOSModuleBase::ensureSignalsToEventLoopAreBound() {
+        Q_ASSERT(containerThread != nullptr);
+        QJakClientEventLoop *el = containerThread->eventLoop;
+        Q_ASSERT(el != nullptr);
+        if (! el -> signalsFromPluginAreBoundP) { 
+            el->connect(this,&MyJAOSModuleBase::sendCallToServer,el,
+                &QJakClientEventLoop::sendCallToServer);
+            el->connect(this,&MyJAOSModuleBase::MyJAOSModuleBaseSignalToDisconnectFromServer,
+            el, &QJakClientEventLoop::startDisconnecting);
+        }
+    }
+
+
     ConnectionStatusValue MyJAOSModuleBase::connectionStatusValue() {
         if (containerThread == nullptr) { 
             return csvNoConnection;
@@ -38,11 +51,7 @@ MyJAOSModuleBase::MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
         return el->lastCallResult; 
     }
 
-
-    // typedef void (*HackConnectEventCallback)(QObject *thread, QObject *plugin);
-    void HackConnectEvent(QObject *thread, QObject *plugin) {
-    }
-    
+ 
 
 /* public slot */ void MyJAOSModuleBase::CallStart(const int arg) {
     containerThread = new ContainerThread(true,nullptr);
@@ -72,12 +81,14 @@ MyJAOSModuleBase::MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
         case 3: 
             qDebug() << "about to emit MyJAOSModuleBaseSignalToDisconnectFromServer";
             if (connectionStatusValue() == csvConnected) {
+                ensureSignalsToEventLoopAreBound();
                 emit MyJAOSModuleBaseSignalToDisconnectFromServer();
             } else {
                 Q_ASSERT(connectionStatusValue() == csvNoConnection);
             };
             break;
         default: 
+            ensureSignalsToEventLoopAreBound();
             emit sendCallToServer(function_number,arg);
             break;
    }

@@ -48,9 +48,9 @@ QJakClientEventLoop::QJakClientEventLoop(QObject *parent) : QEventLoop(parent) {
     }
 }
 
-/* public slot */ void QJakClientEventLoop::sendCallToServer(const int function_number, const int arg) {
+/* public slot */ void QJakClientEventLoop::sendCallToServer(const int function_number, const int arg1) {
     asyncCallStatusValue = acsvRunning;
-    qint64 bytesWrittenNow = socket.write(QString("%d:%d").arg(function_number).arg(arg).toUtf8());
+    qint64 bytesWrittenNow = socket.write(QString("%1:%2").arg(function_number).arg(arg1).toUtf8());
     // Q_ASSERT(tcpClient.flush()); // пусть хоть упадёт, не знаю, как быть пока что.
     qDebug() << "Leaving startTransfer, bytes written to the buffer = " << bytesWrittenNow;        
 }
@@ -60,6 +60,11 @@ QJakClientEventLoop::QJakClientEventLoop(QObject *parent) : QEventLoop(parent) {
         connectionStatusValue = csvConnected;
         // emit Connected();
     }
+
+/* public slot */void QJakClientEventLoop::startDisconnecting() {
+    qDebug() << "entered QJakClientEventLoop::startDisconnecting";
+    socket.disconnect();
+}    
 
 
 /* public slot */ void QJakClientEventLoop::onSocketDisconnected() {
@@ -71,11 +76,6 @@ QJakClientEventLoop::QJakClientEventLoop(QObject *parent) : QEventLoop(parent) {
 
 void ContainerThread::startConnecting(int port) {
     eventLoop->socket.connectToHost(QHostAddress::LocalHost, port);
-}
-
-void ContainerThread::startDisconnecting() {
-    qDebug() << "entered ContainerThread::startDisconnecting";
-    eventLoop->socket.disconnect();
 }
 
 // https://stackoverflow.com/a/60192923
