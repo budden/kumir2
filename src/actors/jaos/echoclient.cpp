@@ -18,6 +18,7 @@ ContainerThread::ContainerThread(bool debug, QObject *parent, QCoreApplication *
     Q_UNUSED(debug);
     app = inApp;
     qDebug() << "entered ContainerThread::ContainerThread";
+
 }
 
 QJakClientEventLoop::QJakClientEventLoop(QObject *parent) : QEventLoop(parent) {
@@ -46,9 +47,11 @@ void QJakClientEventLoop::onSocketReadyRead() {
 }
 
 void QJakClientEventLoop::onSocketConnected() {
+        emit Connected();
         qint64 bytesWrittenNow = socket.write(QByteArray("1:17"));
         // Q_ASSERT(tcpClient.flush()); // пусть хоть упадёт, не знаю, как быть пока что.
         qDebug() << "Leaving startTransfer, bytes written to the buffer = " << bytesWrittenNow;        
+
     }
 
 
@@ -62,6 +65,7 @@ void ContainerThread::startConnecting(int port) {
 }
 
 void ContainerThread::startDisconnecting() {
+    qDebug() << "entered ContainerThread::startDisconnecting";
     eventLoop->socket.disconnect();
 }
 
@@ -72,6 +76,8 @@ void ContainerThread::run()  {
     qDebug() << "entered ContainerThread::run";
     // container->startWork();
     eventLoop = new QJakClientEventLoop(this) ;
+
+    connect(eventLoop,&QJakClientEventLoop::Connected,this,&ContainerThread::onConnected);
 
     startConnecting(8967);
     eventLoop->exec();

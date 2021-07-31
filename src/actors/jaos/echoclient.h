@@ -22,6 +22,9 @@ public slots:
     void onSocketConnected();
     void onSocketDisconnected();
 
+Q_SIGNALS:
+    void Connected();
+
 };
 
 class ContainerThread : public QThread {
@@ -41,9 +44,13 @@ void run() override;
 
 Q_SIGNALS:
     void onEventLoopExitingg();
+    void Connected();
 
 public slots:
     void startConnecting(int port);
+    void onConnected() {
+        emit Connected();
+    }
     void startDisconnecting();
 
 

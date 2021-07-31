@@ -11,7 +11,7 @@ namespace ActorJAOS {
     1 - запусти яос (пока не делаем)
     2 - подключись к яос
     3 - отключись от яос (пока не делаем)
-    4 - проверь, что подключение работает (пока не делаем)
+    4 - статус подключения
 
     5 и далее - вызвать пользовательскую функцию с таким номером */
     Q_ASSERT( asyncCallStatusValue != acsvRunning );
@@ -25,10 +25,22 @@ namespace ActorJAOS {
         case 2: 
             qDebug() << "about to call echoClient.start";
             emit CallStart(arg);
+            connectionStatusValue = csvConnecting;
             qDebug() << "called echoClient.start";
-            // QObject::connect(echoClient, &EchoClient::connected1, this, &MyJAOSModuleBase::onEchoClientConnected);
-            // QObject::connect(&client, &EchoClient::closed, &a, &QCoreApplication::quit);
             break;
+        case 3: 
+            qDebug() << "about to call echoClient.startDisconnecting";
+            if (connectionStatusValue == csvConnected) {
+                emit MyJAOSModuleBaseSignalToDisconnectFromServer();
+            } else {
+                Q_ASSERT(connectionStatusValue == csvNoConnection);
+            };
+            break;
+        case 4:
+            qDebug() << "entered 4 (see ConnectionStatusValue)";
+            if (!containerThread) {
+                internalAsyncCallIntResultValue = connectionStatusValue;
+            }
         default: 
             asyncCallStatusValue = acsvDoneWithError;
             break;
