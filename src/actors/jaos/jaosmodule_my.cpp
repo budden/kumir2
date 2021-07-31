@@ -13,9 +13,7 @@ namespace ActorJAOS {
     3 - отключись от яос (пока не делаем)
     4 - проверь, что подключение работает (пока не делаем)
 
-    5 - добавь единицу и верни результат
-    6 - умножь на два и верни результат
-    7 - запусти тетрис */
+    5 и далее - вызвать пользовательскую функцию с таким номером */
     Q_ASSERT( asyncCallStatusValue != acsvRunning );
     asyncCallStatusValue = acsvRunning;
     lastErrorCodeValue = lecvErrorWithoutFurtherDetail;
