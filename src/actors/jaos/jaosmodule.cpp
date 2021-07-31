@@ -101,9 +101,7 @@ JAOSModule::JAOSModule(ExtensionSystem::KPlugin * parent)
 /* public slot */ int JAOSModule::runKumir_jaos_internalAsync_call_status()
 {
     /* алг цел кумир_яос_внутр статус_асинхронного_вызова */
-    // TODO implement me
     return asyncCallStatusValue();
-    
 }
 
 /* public slot */ int JAOSModule::runKumir_jaos_internalLast_error_code()
