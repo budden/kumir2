@@ -43,7 +43,9 @@ QJakClientEventLoop::QJakClientEventLoop(QObject *parent) : QEventLoop(parent) {
             readLength = socket.readLine(in_data,sizeof(in_data));
             qDebug() << "onReadyRead: readLine() got " << readLength << " bytes: " << in_data; 
             lastCallResult = QString::fromUtf8(in_data).toInt();
-            asyncCallStatusValue = acsvOk;
+            asyncCallStatusValue = acsvResultIsWaitingToBeConsumed;
+        } else {
+            qDebug() << "incomplete line";
         }
     }
 }
@@ -59,7 +61,7 @@ QJakClientEventLoop::QJakClientEventLoop(QObject *parent) : QEventLoop(parent) {
 /* public slot */ void QJakClientEventLoop::onSocketConnected() {
         qDebug() << "QJakClientEventLoop::onSocketConnected ";     
         connectionStatusValue = csvConnected;
-        asyncCallStatusValue = acsvOk;
+        asyncCallStatusValue = acsvWaitingForACall;
         // emit Connected();
     }
 
@@ -72,9 +74,16 @@ QJakClientEventLoop::QJakClientEventLoop(QObject *parent) : QEventLoop(parent) {
 /* public slot */ void QJakClientEventLoop::onSocketDisconnected() {
         qDebug() << "QTcpSocket::disconnected signaled";
         connectionStatusValue = csvNoConnection; 
-        asyncCallStatusValue = acsvOk; // на самом деле мы не знаем!
+        asyncCallStatusValue = acsvDisconnected; 
         quit();    
 }
+
+/* public slot */ void QJakClientEventLoop::onResultConsumed() {
+        qDebug() << "got a signal that the result is consumed";
+        Q_ASSERT(asyncCallStatusValue == acsvResultIsWaitingToBeConsumed);
+        asyncCallStatusValue = acsvWaitingForACall; 
+}
+
 
 void ContainerThread::startConnecting(int port) {
     eventLoop->socket.connectToHost(QHostAddress::LocalHost, port);

@@ -27,6 +27,8 @@ MyJAOSModuleBase::MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
         if (! el -> signalsFromPluginAreBoundP) { 
             el->connect(this,&MyJAOSModuleBase::sendCallToServer,el,
                 &QJakClientEventLoop::sendCallToServer);
+            el->connect(this,&MyJAOSModuleBase::ResultIsConsumed,el,
+                &QJakClientEventLoop::onResultConsumed);
             el->connect(this,&MyJAOSModuleBase::MyJAOSModuleBaseSignalToDisconnectFromServer,
             el, &QJakClientEventLoop::startDisconnecting);
         }
@@ -48,6 +50,8 @@ MyJAOSModuleBase::MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
         Q_ASSERT(containerThread != nullptr);
         QJakClientEventLoop *el = containerThread->eventLoop;
         Q_ASSERT(el != nullptr);
+        Q_ASSERT(el->asyncCallStatusValue == acsvResultIsWaitingToBeConsumed);
+        emit ResultIsConsumed();
         return el->lastCallResult; 
     }
 

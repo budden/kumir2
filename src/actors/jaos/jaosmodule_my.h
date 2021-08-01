@@ -31,7 +31,8 @@ public:
     void ensureSignalsToEventLoopAreBound(); // назначаем сигналы, если они не назначены
     ConnectionStatusValue connectionStatusValue(); 
     int32_t lastErrorCodeValue = lecvErrorWithoutFurtherDetail; 
-    int internalAsyncCallIntResultValue(); /* возвращаемое значение последнего вызова */
+    int internalAsyncCallIntResultValue(); /* возвращаемое значение последнего вызова. Сообщает
+        нити связи с сервером, что мы получили результат, и второй раз её вызывать после этого нельзя */
     ContainerThread *containerThread = nullptr;
 
 public Q_SLOTS:
@@ -40,6 +41,7 @@ public Q_SLOTS:
 Q_SIGNALS:
     void MyJAOSModuleBaseSignalToDisconnectFromServer();
     void sendCallToServer(const int function_number, const int arg);
+    void ResultIsConsumed();
 };
 
 };

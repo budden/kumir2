@@ -16,10 +16,11 @@ enum ConnectionStatusValue { csvNoConnection = 0,
  csvDisconnectError = 5}; 
 
 enum AsyncCallStatusValue {
- acsvRunning = 0,
- acsvDoneWithError = 1,
- acsvOk = 2,
- acsvDisconnected = 3
+ acsvWaitingForACall = 0,
+ acsvRunning = 1,
+ acsvDoneWithError = 2,
+ acsvResultIsWaitingToBeConsumed = 3,
+ acsvDisconnected = 4
 };
 
 
@@ -40,6 +41,7 @@ public slots:
     void onSocketConnected();
     void onSocketDisconnected();
     void startDisconnecting();
+    void onResultConsumed(); 
 
 };
 
