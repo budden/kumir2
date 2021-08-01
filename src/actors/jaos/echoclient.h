@@ -43,8 +43,6 @@ public slots:
 
 };
 
-typedef void (*HackConnectEventCallback)(QObject *thread, QObject *plugin);
-
 class ContainerThread : public QThread {
 
 Q_OBJECT
@@ -52,8 +50,6 @@ Q_OBJECT
 public: 
 
 explicit ContainerThread(bool debug, QObject *parent);
-
-HackConnectEventCallback eventConnector;
 
 QJakClientEventLoop *eventLoop = nullptr;
 
@@ -64,9 +60,6 @@ void PleaseBindMyEvents();
 Q_SIGNALS:
 
     void eventLoopDonee();
-    //void Connected();
-    //void SendCallToServer(const int function_number, const int arg);
-    //void GotReplyFromServer(const int result);
 
 public slots:
     void startConnecting(int port);

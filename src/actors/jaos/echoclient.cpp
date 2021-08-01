@@ -37,20 +37,20 @@ QJakClientEventLoop::QJakClientEventLoop(QObject *parent) : QEventLoop(parent) {
 /* public slot */ void QJakClientEventLoop::onSocketReadyRead() {
     {
         char in_data[1024];
+        qint64 readLength;
         qDebug() << "entered readyToRead";
         if (socket.canReadLine()) {
-            socket.readLine(in_data,sizeof(in_data));
-        qDebug() << "onReadyRead: readLine() got " << in_data; 
-        //socket.close();
-        lastCallResult = QString::fromUtf8(in_data).toInt();
-        asyncCallStatusValue = acsvOk;
+            readLength = socket.readLine(in_data,sizeof(in_data));
+            qDebug() << "onReadyRead: readLine() got " << readLength << " bytes: " << in_data; 
+            lastCallResult = QString::fromUtf8(in_data).toInt();
+            asyncCallStatusValue = acsvOk;
         }
     }
 }
 
 /* public slot */ void QJakClientEventLoop::sendCallToServer(const int function_number, const int arg1) {
     asyncCallStatusValue = acsvRunning;
-    qint64 bytesWrittenNow = socket.write(QString("%1:%2").arg(function_number).arg(arg1).toUtf8());
+    qint64 bytesWrittenNow = socket.write(QString("%1:%2\n").arg(function_number).arg(arg1).toUtf8());
     Q_ASSERT(socket.flush());
     // Q_ASSERT(tcpClient.flush()); // пусть хоть упадёт, не знаю, как быть пока что.
     qDebug() << "Leaving startTransfer, bytes written to the buffer = " << bytesWrittenNow;        
