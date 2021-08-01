@@ -21,6 +21,7 @@ MyJAOSModuleBase::MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
     }
     
     void MyJAOSModuleBase::ensureSignalsToEventLoopAreBound() {
+
         Q_ASSERT(containerThread != nullptr);
         QJakClientEventLoop *el = containerThread->eventLoop;
         Q_ASSERT(el != nullptr);
@@ -31,6 +32,7 @@ MyJAOSModuleBase::MyJAOSModuleBase(ExtensionSystem::KPlugin * parent)
                 &QJakClientEventLoop::onResultConsumed);
             el->connect(this,&MyJAOSModuleBase::MyJAOSModuleBaseSignalToDisconnectFromServer,
             el, &QJakClientEventLoop::startDisconnecting);
+            el -> signalsFromPluginAreBoundP = true;
         }
     }
 
