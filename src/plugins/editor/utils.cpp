@@ -98,6 +98,7 @@ QString Utils::textByKey(Qt::Key key,
 	bool /*teacherMode*/
 )
 {
+    return sourceKeyText;
 
 	Q_UNUSED(shiftPressed);
 	QString keyText = sourceKeyText;
