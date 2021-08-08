@@ -203,6 +203,7 @@ QKeyEvent *KeyboardLayoutModule::createKeyEventByCurrentLayout(QKeyEvent *keyEve
         {Qt::Key_P, { {"p", "P"}, {"з", "З"} }},
         {Qt::Key_Ucircumflex, { {"[", "{"}, {"х", "Х"} }},
         {Qt::Key_Yacute, { {"]", "}"}, {"ъ", "Ъ"} }},
+        {Qt::Key_Udiaeresis, { {"\\", "|"}, {"\\", "/"} }},
 
         {Qt::Key_A, { {"a", "A"}, {"ф", "Ф"} }},
         {Qt::Key_S, { {"s", "S"}, {"ы", "Ы"} }},
