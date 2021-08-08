@@ -242,7 +242,7 @@ QKeyEvent *KeyboardLayoutModule::createKeyEventByCurrentLayout(QKeyEvent *keyEve
 
     auto pairChar = CODES[keyEvent->nativeVirtualKey()];
     bool isModifiers = keyEvent->modifiers() & Qt::ShiftModifier;
-    isModifiers = isModifiers ? !checkCapsLock() : checkCapsLock();
+    isModifiers = isModifiers ? !isCapsLock() : isCapsLock();
 
     if (!isLayoutModified) {
         return new QKeyEvent(QEvent::KeyPress,
@@ -258,21 +258,24 @@ QKeyEvent *KeyboardLayoutModule::createKeyEventByCurrentLayout(QKeyEvent *keyEve
     }
 }
 
-bool KeyboardLayoutModule::checkCapsLock()
+bool KeyboardLayoutModule::isCapsLock()
 {
-#ifdef Q_OS_WIN32
-    return GetKeyState(VK_CAPITAL) == 1;
-#else
-    Display * d = XOpenDisplay((char*)0);
-    bool caps_state = false;
-    if (d)
-    {
+    bool result = false;
+#if defined(Q_WS_X11) || defined(Q_OS_LINUX)
+    Display *d = QX11Info::display();
+    if (d) {
         unsigned n;
         XkbGetIndicatorState(d, XkbUseCoreKbd, &n);
-        caps_state = (n & 0x01) == 1;
+        result = (n & 0x01) == 1;
     }
-    return caps_state;
 #endif
+#ifdef Q_OS_WIN32
+    result = GetKeyState(VK_CAPITAL) == 1;
+#endif
+#ifdef Q_OS_MACX
+    result = EditorMacUtil::isCapsLock();
+#endif
+    return result;
 }
 
 

@@ -75,7 +75,7 @@ private:
     bool isLayoutModified;
 
     QKeyEvent *createKeyEventByCurrentLayout(QKeyEvent *keyEvent);
-    bool checkCapsLock();
+    bool isCapsLock();
 
 };
         
