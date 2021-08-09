@@ -116,6 +116,12 @@ KeyboardLayoutModule::KeyboardLayoutModule(ExtensionSystem::KPlugin * parent)
 /* public slot */ void KeyboardLayoutModule::reset()
 {
     qApp->installEventFilter(this);
+
+#if defined(Q_WS_X11) || defined(Q_OS_LINUX)
+    Display * display = QX11Info::display();
+    Bool result;
+    XkbSetDetectableAutoRepeat(display, true, &result);
+#endif
 }
 
 /* public slot */ void KeyboardLayoutModule::setAnimationEnabled(bool enabled)
@@ -580,7 +586,7 @@ int KeyboardLayoutModule::translateKeyCode(int key)
     };
 
     if (isRussianLayout()) {
-        return KEY_MAPPING_LATIN[key];
+        return KEY_MAPPING_CYRILLIC[key];
     }
     else {
         return KEY_MAPPING_LATIN[key];
