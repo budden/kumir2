@@ -76,7 +76,8 @@ private:
 
     QKeyEvent *createKeyEventByCurrentLayout(QKeyEvent *keyEvent);
     bool isCapsLock();
-
+    bool isRussianLayout();
+    int translateKeyCode(int key);
 };
         
 
