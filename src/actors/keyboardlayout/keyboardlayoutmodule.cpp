@@ -46,8 +46,99 @@ KeyboardLayoutModule::KeyboardLayoutModule(ExtensionSystem::KPlugin * parent)
       isKeyModifierPressed(false),
       isLayoutModified(false)
 {
-    // Module constructor, called once on plugin load
-    // TODO implement me
+    //keycodesHash
+
+#define D(x1, q1, y1, h1, x2, q2, y2, h2) QPair<KeyInfo, KeyInfo>(KeyInfo(x1, q1, y1, h1), KeyInfo(x2, q2, y2, h2))
+#ifdef Q_OS_WIN32
+    keycodesHash.insert(Qt::Key_Q, D("q", 0x071, "Q", 0x051, "й", 0x439, "Й", 0x419));
+    keycodesHash.insert(Qt::Key_W, D("w", 0x077, "W", 0x057, "ц", 0x446, "Ц", 0x426));
+    keycodesHash.insert(Qt::Key_E, D("e", 0x065, "E", 0x045, "у", 0x443, "У", 0x423));
+    keycodesHash.insert(Qt::Key_R, D("r", 0x072, "R", 0x052, "к", 0x43a, "К", 0x41a));
+    keycodesHash.insert(Qt::Key_T, D("t", 0x074, "T", 0x054, "е", 0x435, "Е", 0x415));
+    keycodesHash.insert(Qt::Key_Y, D("y", 0x079, "Y", 0x059, "н", 0x43d, "Н", 0x41d));
+    keycodesHash.insert(Qt::Key_U, D("u", 0x075, "U", 0x055, "г", 0x433, "Г", 0x413));
+    keycodesHash.insert(Qt::Key_I, D("i", 0x069, "I", 0x049, "ш", 0x448, "Ш", 0x428));
+    keycodesHash.insert(Qt::Key_O, D("o", 0x06f, "O", 0x04f, "щ", 0x449, "Щ", 0x429));
+    keycodesHash.insert(Qt::Key_P, D("p", 0x070, "P", 0x050, "з", 0x437, "З", 0x417));
+    keycodesHash.insert(Qt::Key_Ucircumflex, D("[", 0x05b, "{", 0x07b, "х", 0x445, "Х", 0x425));
+    keycodesHash.insert(Qt::Key_Yacute, D("]", 0x05d, "}", 0x07d, "ъ", 0x44a, "Ъ", 0x42a));
+    keycodesHash.insert(Qt::Key_Udiaeresis, D("\\", 0x05c, "|", 0x07c, "\\", 0x05c, "/", 0x02f));
+
+    keycodesHash.insert(Qt::Key_A, D("a", 0x061, "A", 0x041, "ф", 0x444, "Ф", 0x424));
+    keycodesHash.insert(Qt::Key_S, D("s", 0x073, "S", 0x053, "ы", 0x44b, "Ы", 0x42b));
+    keycodesHash.insert(Qt::Key_D, D("d", 0x064, "D", 0x044, "в", 0x432, "В", 0x412));
+    keycodesHash.insert(Qt::Key_F, D("f", 0x066, "F", 0x046, "а", 0x430, "А", 0x410));
+    keycodesHash.insert(Qt::Key_G, D("g", 0x067, "G", 0x047, "п", 0x43f, "П", 0x41f));
+    keycodesHash.insert(Qt::Key_H, D("h", 0x068, "H", 0x048, "р", 0x440, "Р", 0x420));
+    keycodesHash.insert(Qt::Key_J, D("j", 0x06a, "J", 0x04a, "о", 0x43e, "О", 0x41e));
+    keycodesHash.insert(Qt::Key_K, D("k", 0x06b, "K", 0x04b, "л", 0x43b, "Л", 0x41b));
+    keycodesHash.insert(Qt::Key_L, D("l", 0x06c, "L", 0x04c, "д", 0x434, "Д", 0x414));
+    keycodesHash.insert(Qt::Key_masculine, D(";", 0x03b, ":", 0x03a, "ж", 0x436, "Ж", 0x416));
+    keycodesHash.insert(Qt::Key_THORN, D("'", 0x027, "\"",  0x022, "э", 0x44d, "Э", 0x42d));
+
+    keycodesHash.insert(Qt::Key_Z, D("z", 0x07a, "Z", 0x05a, "я", 0x44f, "Я", 0x42f));
+    keycodesHash.insert(Qt::Key_X, D("x", 0x078, "X", 0x058, "ч", 0x447, "Ч", 0x427));
+    keycodesHash.insert(Qt::Key_C, D("c", 0x063, "C", 0x043, "с", 0x441, "С", 0x421));
+    keycodesHash.insert(Qt::Key_V, D("v", 0x076, "V", 0x056, "м", 0x43c, "М", 0x41c));
+    keycodesHash.insert(Qt::Key_B, D("b", 0x062, "B", 0x042, "и", 0x438, "И", 0x418));
+    keycodesHash.insert(Qt::Key_N, D("n", 0x06e, "N", 0x04e, "т", 0x442, "Т", 0x422));
+    keycodesHash.insert(Qt::Key_M, D("m", 0x06d, "M", 0x04d, "ь", 0x44c, "Ь", 0x42c));
+    keycodesHash.insert(Qt::Key_onequarter, D(",", 0x02c, "<", 0x03c, "б", 0x431, "Б", 0x411));
+    keycodesHash.insert(Qt::Key_threequarters, D(".", 0x02e, ">", 0x03e, "ю", 0x44e, "Ю", 0x42e));
+    keycodesHash.insert(Qt::Key_questiondown, D("/", 0x02f, "?", 0x03f, ".", 0x02e, ",", 0x02c));
+
+    keycodesHash.insert(Qt::Key_Agrave, D("`", 0x060, "~", 0x07e, "ё", 0x451, "Ё", 0x401));
+    keycodesHash.insert(Qt::Key_2, D("2", 0x040, "@", 0x040, "2", 0x032, "\"", 0x022));
+    keycodesHash.insert(Qt::Key_3, D("3", 0x023, "#", 0x0a7, "3", 0x033, "№", 0x2116));
+    keycodesHash.insert(Qt::Key_4, D("4", 0x024, "$", 0x2020, "4", 0x034, ";", 0x03b));
+    keycodesHash.insert(Qt::Key_6, D("6", 0x05e, "^", 0x262d, "6", 0x036, ":", 0x03a));
+    keycodesHash.insert(Qt::Key_7, D("7", 0x026, "&", 0x0bf, "7", 0x037, "?", 0x03f));
+#else
+    keycodesHash.insert(24, D("q", 0x071, "Q", 0x051, "й", 0x439, "Й", 0x419));
+    keycodesHash.insert(25, D("w", 0x077, "W", 0x057, "ц", 0x446, "Ц", 0x426));
+    keycodesHash.insert(26, D("e", 0x065, "E", 0x045, "у", 0x443, "У", 0x423));
+    keycodesHash.insert(27, D("r", 0x072, "R", 0x052, "к", 0x43a, "К", 0x41a));
+    keycodesHash.insert(28, D("t", 0x074, "T", 0x054, "е", 0x435, "Е", 0x415));
+    keycodesHash.insert(29, D("y", 0x079, "Y", 0x059, "н", 0x43d, "Н", 0x41d));
+    keycodesHash.insert(30, D("u", 0x075, "U", 0x055, "г", 0x433, "Г", 0x413));
+    keycodesHash.insert(31, D("i", 0x069, "I", 0x049, "ш", 0x448, "Ш", 0x428));
+    keycodesHash.insert(32, D("o", 0x06f, "O", 0x04f, "щ", 0x449, "Щ", 0x429));
+    keycodesHash.insert(33, D("p", 0x070, "P", 0x050, "з", 0x437, "З", 0x417));
+    keycodesHash.insert(34, D("[", 0x05b, "{", 0x07b, "х", 0x445, "Х", 0x425));
+    keycodesHash.insert(35, D("]", 0x05d, "}", 0x07d, "ъ", 0x44a, "Ъ", 0x42a));
+    keycodesHash.insert(51, D("\\", 0x05c, "|", 0x07c, "\\", 0x05c, "/", 0x02f));
+
+    keycodesHash.insert(38, D("a", 0x061, "A", 0x041, "ф", 0x444, "Ф", 0x424));
+    keycodesHash.insert(39, D("s", 0x073, "S", 0x053, "ы", 0x44b, "Ы", 0x42b));
+    keycodesHash.insert(40, D("d", 0x064, "D", 0x044, "в", 0x432, "В", 0x412));
+    keycodesHash.insert(41, D("f", 0x066, "F", 0x046, "а", 0x430, "А", 0x410));
+    keycodesHash.insert(42, D("g", 0x067, "G", 0x047, "п", 0x43f, "П", 0x41f));
+    keycodesHash.insert(43, D("h", 0x068, "H", 0x048, "р", 0x440, "Р", 0x420));
+    keycodesHash.insert(44, D("j", 0x06a, "J", 0x04a, "о", 0x43e, "О", 0x41e));
+    keycodesHash.insert(45, D("k", 0x06b, "K", 0x04b, "л", 0x43b, "Л", 0x41b));
+    keycodesHash.insert(46, D("l", 0x06c, "L", 0x04c, "д", 0x434, "Д", 0x414));
+    keycodesHash.insert(47, D(";", 0x03b, ":", 0x03a, "ж", 0x436, "Ж", 0x416));
+    keycodesHash.insert(48, D("'", 0x027, "\"",  0x022, "э", 0x44d, "Э", 0x42d));
+
+    keycodesHash.insert(52, D("z", 0x07a, "Z", 0x05a, "я", 0x44f, "Я", 0x42f));
+    keycodesHash.insert(53, D("x", 0x078, "X", 0x058, "ч", 0x447, "Ч", 0x427));
+    keycodesHash.insert(54, D("c", 0x063, "C", 0x043, "с", 0x441, "С", 0x421));
+    keycodesHash.insert(55, D("v", 0x076, "V", 0x056, "м", 0x43c, "М", 0x41c));
+    keycodesHash.insert(56, D("b", 0x062, "B", 0x042, "и", 0x438, "И", 0x418));
+    keycodesHash.insert(57, D("n", 0x06e, "N", 0x04e, "т", 0x442, "Т", 0x422));
+    keycodesHash.insert(58, D("m", 0x06d, "M", 0x04d, "ь", 0x44c, "Ь", 0x42c));
+    keycodesHash.insert(59, D(",", 0x02c, "<", 0x03c, "б", 0x431, "Б", 0x411));
+    keycodesHash.insert(60, D(".", 0x02e, ">", 0x03e, "ю", 0x44e, "Ю", 0x42e));
+    keycodesHash.insert(61, D("/", 0x02f, "?", 0x03f, ".", 0x02e, ",", 0x02c));
+
+    keycodesHash.insert(49, D("`", 0x060, "~", 0x07e, "ё", 0x451, "Ё", 0x401));
+    keycodesHash.insert(11, D("2", 0x040, "@", 0x040, "2", 0x032, "\"", 0x022));
+    keycodesHash.insert(12, D("3", 0x023, "#", 0x0a7, "3", 0x033, "№", 0x2116));
+    keycodesHash.insert(13, D("4", 0x024, "$", 0x2020, "4", 0x034, ";", 0x03b));
+    keycodesHash.insert(15, D("6", 0x05e, "^", 0x262d, "6", 0x036, ":", 0x03a));
+    keycodesHash.insert(16, D("7", 0x026, "&", 0x0bf, "7", 0x037, "?", 0x03f));
+#endif
+#undef D
 }
 
 /* public static */ QList<ExtensionSystem::CommandLineParameter> KeyboardLayoutModule::acceptableCommandLineParameters()
@@ -198,75 +289,42 @@ bool KeyboardLayoutModule::eventFilter(QObject *obj, QEvent *event)
 }
 
 
-
 QKeyEvent *KeyboardLayoutModule::createKeyEventByCurrentLayout(QKeyEvent *keyEvent)
 {
-    static const QHash<int, QPair<KeyInfo, KeyInfo>> CODES = {
-        {Qt::Key_Q, { {"q", "Q"}, {"й", "Й"} }},
-        {Qt::Key_W, { {"w", "W"}, {"ц", "Ц"} }},
-        {Qt::Key_E, { {"e", "E"}, {"у", "У"} }},
-        {Qt::Key_R, { {"r", "R"}, {"к", "К"} }},
-        {Qt::Key_T, { {"t", "T"}, {"е", "Е"} }},
-        {Qt::Key_Y, { {"y", "Y"}, {"н", "Н"} }},
-        {Qt::Key_U, { {"u", "U"}, {"г", "Г"} }},
-        {Qt::Key_I, { {"i", "I"}, {"ш", "Ш"} }},
-        {Qt::Key_O, { {"o", "O"}, {"щ", "Щ"} }},
-        {Qt::Key_P, { {"p", "P"}, {"з", "З"} }},
-        {Qt::Key_Ucircumflex, { {"[", "{"}, {"х", "Х"} }},
-        {Qt::Key_Yacute, { {"]", "}"}, {"ъ", "Ъ"} }},
-        {Qt::Key_Udiaeresis, { {"\\", "|"}, {"\\", "/"} }},
+    qDebug() << "text" <<  keyEvent->text();
+    qDebug() << "key" <<  keyEvent->key();
+    qDebug() << "nativeScanCode" <<  keyEvent->nativeScanCode();
+    qDebug() << "nativeVirtualKey" << keyEvent->nativeVirtualKey();
 
-        {Qt::Key_A, { {"a", "A"}, {"ф", "Ф"} }},
-        {Qt::Key_S, { {"s", "S"}, {"ы", "Ы"} }},
-        {Qt::Key_D, { {"d", "D"}, {"в", "В"} }},
-        {Qt::Key_F, { {"f", "F"}, {"а", "А"} }},
-        {Qt::Key_G, { {"g", "G"}, {"п", "П"} }},
-        {Qt::Key_H, { {"h", "H"}, {"р", "Р"} }},
-        {Qt::Key_J, { {"j", "J"}, {"о", "О"} }},
-        {Qt::Key_K, { {"k", "K"}, {"л", "Л"} }},
-        {Qt::Key_L, { {"l", "L"}, {"д", "Д"} }},
-        {Qt::Key_masculine, { {";", ":"}, {"ж", "Ж"} }},
-        {Qt::Key_THORN, { {"'", "\""}, {"э", "Э"} }},
-
-        {Qt::Key_Z, { {"z", "Z"}, {"я", "Я"} }},
-        {Qt::Key_X, { {"x", "X"}, {"ч", "Ч"} }},
-        {Qt::Key_C, { {"c", "C"}, {"с", "С"} }},
-        {Qt::Key_V, { {"v", "V"}, {"м", "М"} }},
-        {Qt::Key_B, { {"b", "B"}, {"и", "И"} }},
-        {Qt::Key_N, { {"n", "N"}, {"т", "Т"} }},
-        {Qt::Key_M, { {"m", "M"}, {"ь", "Ь"} }},
-        {Qt::Key_onequarter, { {",", "<"}, {"б", "Б"} }},
-        {Qt::Key_threequarters, { {".", ">"}, {"ю", "Ю"} }},
-        {Qt::Key_questiondown, { {"/", "?"}, {".", ","} }},
-
-        {Qt::Key_Agrave, { {"`", "~"}, {"ё", "Ё"} }},
-        {Qt::Key_2, { {"2", "@"}, {"2", "\""} }},
-        {Qt::Key_3, { {"3", "#"}, {"3", "№"} }},
-        {Qt::Key_4, { {"4", "$"}, {"4", ";"} }},
-        {Qt::Key_6, { {"6", "^"}, {"6", ":"} }},
-        {Qt::Key_7, { {"7", "&"}, {"7", "?"} }},
-    };
-
-    auto keyCodeMapping = translateKeyCode(keyEvent->key());
-    if (!keyCodeMapping) {
+#ifdef Q_OS_WIN32
+    if (!keycodesHash.contains(keyEvent->nativeVirtualKey())) {
         return nullptr;
     }
+    auto pairChar = keycodesHash[keyEvent->nativeVirtualKey()];
+#else
+    if (!keycodesHash.contains(keyEvent->nativeScanCode())) {
+        return nullptr;
+    }
+    auto pairChar = keycodesHash[keyEvent->nativeScanCode()];
+#endif
 
-    auto pairChar = CODES[keyCodeMapping];
+
     bool isModifiers = keyEvent->modifiers() & Qt::ShiftModifier;
     isModifiers = isModifiers ? !isCapsLock() : isCapsLock();
 
     if (!isLayoutModified) {
+        int code = isModifiers ? pairChar.second.modifiedCode() : pairChar.second.normalCode();
         return new QKeyEvent(QEvent::KeyPress,
-                             keyEvent->nativeVirtualKey(),
+                             code,
                              keyEvent->modifiers(),
-                             isModifiers ? pairChar.second.modifiedChar() : pairChar.second.normalChar());
+                             QChar(code));
     }
     else {
+        int code = isModifiers ? pairChar.first.modifiedCode() : pairChar.first.normalCode();
         return new QKeyEvent(QEvent::KeyPress,
-                             keyEvent->nativeVirtualKey(),
+                             code,
                              keyEvent->modifiers(),
-                             isModifiers ? pairChar.first.modifiedChar() : pairChar.first.normalChar());
+                             QChar(code));
     }
 }
 
@@ -288,309 +346,6 @@ bool KeyboardLayoutModule::isCapsLock()
     result = EditorMacUtil::isCapsLock();
 #endif
     return result;
-}
-
-bool KeyboardLayoutModule::isRussianLayout()
-{
-    bool result = false;
-#if defined(Q_WS_X11) || defined(Q_OS_LINUX)
-#if QT_VERSION < 0x050000
-    // Qt4 implementation
-    QString keybLang = QApplication::keyboardInputLocale().name();
-    result = keybLang.contains("ru");
-#else
-    // Qt5 implementation
-    QInputMethod *inputMethod = QApplication::inputMethod();
-    QString keybLang = inputMethod->locale().name();
-    result = keybLang.contains("ru");
-    Display *d = QX11Info::display();
-    if (d && !result) {  // Might be variant of main input method
-        // solution found at: http://www.linux.org.ru/forum/development/12852504
-        XkbStateRec xkbState;
-        XkbGetState(d, XkbUseCoreKbd, &xkbState);
-        Atom real_prop_type;
-        int fmt;
-        unsigned long nitems, extra_bytes;
-        char *prop_data = NULL;
-        Atom rules_atom = XInternAtom(d, "_XKB_RULES_NAMES", False);
-        XGetWindowProperty(d, DefaultRootWindow(d), rules_atom, 0L, 1024,
-            False, XA_STRING, &real_prop_type, &fmt, &nitems, &extra_bytes, (unsigned char **)(void *) &prop_data);
-        QStringList names;
-        for (char *p = prop_data; p - prop_data < (long)nitems && p != NULL; p += strlen(p) + 1) {
-            names.append(p);
-        }
-        if (names.count() > 3) {
-            names = names[2].split(",");
-        }
-        XFree(prop_data);
-        keybLang = names[xkbState.group];
-        result = keybLang.contains("ru");
-    }
-#endif
-#endif // X11
-
-#ifdef Q_OS_WIN32
-    HKL l = GetKeyboardLayout(0);
-    result = unsigned(l) == 0x4190419;
-#endif
-#ifdef Q_OS_MACX
-    result = EditorMacUtil::isRussianLayout();
-#endif
-    return result;
-}
-
-int KeyboardLayoutModule::translateKeyCode(int key)
-{
-    static const QHash<int, int> KEY_MAPPING_CYRILLIC = {
-        { 0x451, Qt::Key_Agrave},
-        { 0x401, Qt::Key_Agrave},
-
-        { 0x032, Qt::Key_2},
-        { 0x022, Qt::Key_2},
-
-        { 0x033, Qt::Key_3},
-        { 0x2116, Qt::Key_3},
-
-        { 0x034, Qt::Key_4},
-        { 0x03b, Qt::Key_4},
-
-        { 0x036, Qt::Key_6},
-        { 0x03a, Qt::Key_6},
-
-        { 0x037, Qt::Key_7},
-        { 0x03f, Qt::Key_7},
-
-        { 0x439, Qt::Key_Q},
-        { 0x419, Qt::Key_Q},
-
-        { 0x446, Qt::Key_W},
-        { 0x426, Qt::Key_W},
-
-        { 0x443, Qt::Key_E},
-        { 0x423, Qt::Key_E},
-
-        { 0x43a, Qt::Key_R},
-        { 0x41a, Qt::Key_R},
-
-        { 0x435, Qt::Key_T},
-        { 0x415, Qt::Key_T},
-
-        { 0x43d, Qt::Key_Y},
-        { 0x41d, Qt::Key_Y},
-
-        { 0x433, Qt::Key_U},
-        { 0x413, Qt::Key_U},
-
-        { 0x448, Qt::Key_I},
-        { 0x428, Qt::Key_I},
-
-        { 0x449, Qt::Key_O},
-        { 0x429, Qt::Key_O},
-
-        { 0x437, Qt::Key_P},
-        { 0x417, Qt::Key_P},
-
-        { 0x445, Qt::Key_Ucircumflex},
-        { 0x425, Qt::Key_Ucircumflex},
-
-        { 0x44a, Qt::Key_Yacute},
-        { 0x42a, Qt::Key_Yacute},
-
-        { 0x05c, Qt::Key_Udiaeresis},
-        { 0x2665, Qt::Key_Udiaeresis},
-
-        { 0x444, Qt::Key_A},
-        { 0x424, Qt::Key_A},
-
-        { 0x44b, Qt::Key_S},
-        { 0x42b, Qt::Key_S},
-
-        { 0x432, Qt::Key_D},
-        { 0x412, Qt::Key_D},
-
-        { 0x430, Qt::Key_F},
-        { 0x410, Qt::Key_F},
-
-        { 0x43f, Qt::Key_G},
-        { 0x41f, Qt::Key_G},
-
-        { 0x440, Qt::Key_H},
-        { 0x420, Qt::Key_H},
-
-        { 0x43e, Qt::Key_J},
-        { 0x41e, Qt::Key_J},
-
-        { 0x43b, Qt::Key_K},
-        { 0x41b, Qt::Key_K},
-
-        { 0x434, Qt::Key_L},
-        { 0x414, Qt::Key_L},
-
-        { 0x416, Qt::Key_masculine},
-        { 0x436, Qt::Key_masculine},
-
-        { 0x44d, Qt::Key_THORN},
-        { 0x42d, Qt::Key_THORN},
-
-        { 0x44f, Qt::Key_Z},
-        { 0x42f, Qt::Key_Z},
-
-        { 0x447, Qt::Key_X},
-        { 0x427, Qt::Key_X},
-
-        { 0x441, Qt::Key_C},
-        { 0x421, Qt::Key_C},
-
-        { 0x43c, Qt::Key_V},
-        { 0x41c, Qt::Key_V},
-
-        { 0x438, Qt::Key_B},
-        { 0x418, Qt::Key_B},
-
-        { 0x442, Qt::Key_N},
-        { 0x422, Qt::Key_N},
-
-        { 0x44c, Qt::Key_M},
-        { 0x42c, Qt::Key_M},
-
-        { 0x431, Qt::Key_onequarter},
-        { 0x411, Qt::Key_onequarter},
-
-        { 0x44e, Qt::Key_threequarters},
-        { 0x42e, Qt::Key_threequarters},
-
-        { 0x02e, Qt::Key_questiondown},
-        { 0x02c, Qt::Key_questiondown},
-    };
-
-    static const QHash<int, int> KEY_MAPPING_LATIN = {
-        { 0x060, Qt::Key_Agrave},
-        { 0x07e, Qt::Key_Agrave},
-
-        { 0x040, Qt::Key_2},
-        { 0x040, Qt::Key_2},
-
-        { 0x023, Qt::Key_3},
-        { 0x0a7, Qt::Key_3},
-
-        { 0x024, Qt::Key_4},
-        { 0x2020, Qt::Key_4},
-
-        { 0x05e, Qt::Key_6},
-        { 0x262d, Qt::Key_6},
-
-        { 0x026, Qt::Key_7},
-        { 0x0bf, Qt::Key_7},
-
-        { 0x071, Qt::Key_Q},
-        { 0x051, Qt::Key_Q},
-
-        { 0x077, Qt::Key_W},
-        { 0x057, Qt::Key_W},
-
-        { 0x065, Qt::Key_E},
-        { 0x045, Qt::Key_E},
-
-        { 0x072, Qt::Key_R},
-        { 0x052, Qt::Key_R},
-
-        { 0x074, Qt::Key_T},
-        { 0x054, Qt::Key_T},
-
-        { 0x079, Qt::Key_Y},
-        { 0x059, Qt::Key_Y},
-
-        { 0x075, Qt::Key_U},
-        { 0x055, Qt::Key_U},
-
-        { 0x069, Qt::Key_I},
-        { 0x049, Qt::Key_I},
-
-        { 0x06f, Qt::Key_O},
-        { 0x04f, Qt::Key_O},
-
-        { 0x070, Qt::Key_P},
-        { 0x050, Qt::Key_P},
-
-        { 0x05b, Qt::Key_Ucircumflex},
-        { 0x07b, Qt::Key_Ucircumflex},
-
-        { 0x05d, Qt::Key_Yacute},
-        { 0x07d, Qt::Key_Yacute},
-
-        { 0x07c, Qt::Key_Udiaeresis},
-        { 0x02a, Qt::Key_Udiaeresis},
-
-        { 0x061, Qt::Key_A},
-        { 0x041, Qt::Key_A},
-
-        { 0x073, Qt::Key_S},
-        { 0x053, Qt::Key_S},
-
-        { 0x064, Qt::Key_D},
-        { 0x044, Qt::Key_D},
-
-        { 0x066, Qt::Key_F},
-        { 0x046, Qt::Key_F},
-
-        { 0x067, Qt::Key_G},
-        { 0x047, Qt::Key_G},
-
-        { 0x068, Qt::Key_H},
-        { 0x048, Qt::Key_H},
-
-        { 0x06a, Qt::Key_J},
-        { 0x04a, Qt::Key_J},
-
-        { 0x06b, Qt::Key_K},
-        { 0x04b, Qt::Key_K},
-
-        { 0x06c, Qt::Key_L},
-        { 0x04c, Qt::Key_L},
-
-        { 0x03b, Qt::Key_masculine},
-        { 0x03a, Qt::Key_masculine},
-
-        { 0x027, Qt::Key_THORN},
-        { 0x022, Qt::Key_THORN},
-
-        { 0x07a, Qt::Key_Z},
-        { 0x05a, Qt::Key_Z},
-
-        { 0x078, Qt::Key_X},
-        { 0x058, Qt::Key_X},
-
-        { 0x063, Qt::Key_C},
-        { 0x043, Qt::Key_C},
-
-        { 0x076, Qt::Key_V},
-        { 0x056, Qt::Key_V},
-
-        { 0x062, Qt::Key_B},
-        { 0x042, Qt::Key_B},
-
-        { 0x06e, Qt::Key_N},
-        { 0x04e, Qt::Key_N},
-
-        { 0x06d, Qt::Key_M},
-        { 0x04d, Qt::Key_M},
-
-        { 0x03c, Qt::Key_onequarter},
-        { 0x02c, Qt::Key_onequarter},
-
-        { 0x03e, Qt::Key_threequarters},
-        { 0x02e, Qt::Key_threequarters},
-
-        { 0x03f, Qt::Key_questiondown},
-        { 0x02f, Qt::Key_questiondown},
-    };
-
-    if (isRussianLayout()) {
-        return KEY_MAPPING_CYRILLIC[key];
-    }
-    else {
-        return KEY_MAPPING_LATIN[key];
-    }
 }
 
 } // namespace ActorKeyboardLayout

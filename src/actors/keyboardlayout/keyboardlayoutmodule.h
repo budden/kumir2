@@ -51,9 +51,11 @@ private:
     struct KeyInfo {
     public:
         KeyInfo() {}
-        KeyInfo(const QString &normalChar, const QString &modifiedChar):
+        KeyInfo(const QString &normalChar, int normalCode, const QString &modifiedChar, int modifiedCode):
             normalChar_(normalChar),
-            modifiedChar_(modifiedChar)
+            normalCode_(normalCode),
+            modifiedChar_(modifiedChar),
+            modifiedCode_(modifiedCode)
         {
 
         }
@@ -62,24 +64,34 @@ private:
             return normalChar_;
         }
 
+        int normalCode() {
+            return normalCode_;
+        }
+
         QString modifiedChar() {
             return modifiedChar_;
-        };
+        }
+
+        int modifiedCode() {
+            return modifiedCode_;
+        }
 
     private:
         QString normalChar_;
+        int normalCode_;
         QString modifiedChar_;
+        int modifiedCode_;
     };
 
     bool isKeyModifierPressed;
     bool isLayoutModified;
 
+    QHash<int, QPair<KeyInfo, KeyInfo>> keycodesHash;
+
     QKeyEvent *createKeyEventByCurrentLayout(QKeyEvent *keyEvent);
     bool isCapsLock();
-    bool isRussianLayout();
-    int translateKeyCode(int key);
 };
-        
+
 
 } // namespace ActorKeyboardLayout
 
