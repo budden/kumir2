@@ -520,50 +520,50 @@ void StatusBar::paintCursorItem(QPainter &p, int x)
 
 void StatusBar::paintKeyboardItem(QPainter &p, int x)
 {   
-    if (MainWindow::StartPage == documentType_)
-        return;
-    paintItemRect(p, keyboardLayoutItemSize(), x);
-    bool active = parentWidget() && parentWidget()->isActiveWindow();
-    const QColor activeColor = palette().brush(QPalette::Active, QPalette::Text).color();
-    const QColor disabledColor = palette().brush(QPalette::Disabled, QPalette::Text).color();
-    QColor altColor, shiftColor;
-    if (active) {
-        altColor = keyboardAlt_? activeColor : disabledColor;
-        shiftColor = keyboardShift_ ? activeColor : disabledColor;
-    }
-    else {
-        altColor = shiftColor = disabledColor;
-    }
-    QImage shiftImage = makeIndicatorIcon("shift", shiftColor);
-    QImage altImage = makeIndicatorIcon("alt", altColor);
-    p.save();
-    p.drawImage(x + ItemPadding, (height() - 12) / 2, shiftImage);
-    p.drawImage(x + 12 + ItemPadding, (height() - 12) / 2, altImage);
-    const QRect textRect(QPoint(x + 25 + ItemPadding, (height() - fontHeight()) / 2),
-                         keyboardLayoutItemSize() - QSize(25 + 2*ItemPadding, 0));
-    QTextOption opt;
-    QString text;
-    QLocale::Language lang = keyboardLayout_;
-    if (keyboardAlt_) {
-        if (lang == QLocale::Russian)
-            text = tr("lat");
-        else
-            text = tr("rus");
-    }
-    else {
-        if (lang == QLocale::Russian)
-            text = tr("rus");
-        else
-            text = tr("lat");
-    }
-    bool upperCase =
-            (keyboardCaps_ && !keyboardShift_) ||
-            (!keyboardCaps_ && keyboardShift_);
-    if (upperCase)
-        text = text.toUpper();
-    opt.setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    p.drawText(textRect, text, opt);
-    p.restore();
+//    if (MainWindow::StartPage == documentType_)
+//        return;
+//    paintItemRect(p, keyboardLayoutItemSize(), x);
+//    bool active = parentWidget() && parentWidget()->isActiveWindow();
+//    const QColor activeColor = palette().brush(QPalette::Active, QPalette::Text).color();
+//    const QColor disabledColor = palette().brush(QPalette::Disabled, QPalette::Text).color();
+//    QColor altColor, shiftColor;
+//    if (active) {
+//        altColor = keyboardAlt_? activeColor : disabledColor;
+//        shiftColor = keyboardShift_ ? activeColor : disabledColor;
+//    }
+//    else {
+//        altColor = shiftColor = disabledColor;
+//    }
+//    QImage shiftImage = makeIndicatorIcon("shift", shiftColor);
+//    QImage altImage = makeIndicatorIcon("alt", altColor);
+//    p.save();
+//    p.drawImage(x + ItemPadding, (height() - 12) / 2, shiftImage);
+//    p.drawImage(x + 12 + ItemPadding, (height() - 12) / 2, altImage);
+//    const QRect textRect(QPoint(x + 25 + ItemPadding, (height() - fontHeight()) / 2),
+//                         keyboardLayoutItemSize() - QSize(25 + 2*ItemPadding, 0));
+//    QTextOption opt;
+//    QString text;
+//    QLocale::Language lang = keyboardLayout_;
+//    if (keyboardAlt_) {
+//        if (lang == QLocale::Russian)
+//            text = tr("lat");
+//        else
+//            text = tr("rus");
+//    }
+//    else {
+//        if (lang == QLocale::Russian)
+//            text = tr("rus");
+//        else
+//            text = tr("lat");
+//    }
+//    bool upperCase =
+//            (keyboardCaps_ && !keyboardShift_) ||
+//            (!keyboardCaps_ && keyboardShift_);
+//    if (upperCase)
+//        text = text.toUpper();
+//    opt.setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
+//    p.drawText(textRect, text, opt);
+//    p.restore();
 }
 
 QImage StatusBar::makeIndicatorIcon(const QString & name, const QColor &color)

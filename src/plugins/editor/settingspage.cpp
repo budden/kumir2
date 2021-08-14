@@ -109,6 +109,8 @@ SettingsPage::SettingsPage(ExtensionSystem::SettingsPtr  settings, QWidget *pare
 	connect(ui->commentColor, SIGNAL(clicked()), this, SLOT(showColorDialog()));
 	connect(ui->templateFileName, SIGNAL(textChanged(QString)), this, SLOT(validateProgramTemplateFile()));
 	connect(ui->btnBrowseTemplateFile, SIGNAL(clicked()), this, SLOT(browseInitialProgramTemplateFile()));
+
+    ui->groupKeyboard->setVisible(false);
 }
 
 void SettingsPage::accept()
